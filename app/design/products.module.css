@@ -1,0 +1,10 @@
+/* espace-client/app/design/products.module.css */
+.customScrollbar {
+    scrollbar-color: #71717A #2F2E2E;
+    scrollbar-width: thin;
+  }
+
+.full-container {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,37 @@
+{
+    "salon": [
+      {
+        "image": "https://yjjcsltvcfvpidxnhiuf.supabase.co/storage/v1/object/public/menu-ressource/salon-icons/Style_Minimalist.png?t=2024-07-02T18%3A28%3A06.465Z",
+        "title": "Salon Minimaliste",
+        "unicityPath" : "MyAsset/AssetDemo0.1/Salon/Minimaliste/Salon_Minimalist",
+        "price": 200
+      },
+      {
+        "image": "https://yjjcsltvcfvpidxnhiuf.supabase.co/storage/v1/object/public/menu-ressource/salon-icons/Style_Neutre.png?t=2024-06-28T12%3A41%3A33.746Z",
+        "title": "Salon Neutre",
+        "unicityPath" : "MyAsset/AssetDemo0.1/Salon/Neutre/Salon_Neutre", 
+        "price": 200
+      }
+    ],
+    "cuisine": [
+      {
+        "image": "https://yjjcsltvcfvpidxnhiuf.supabase.co/storage/v1/object/public/menu-ressource/cuisine-icons/cuisine_variante_3_ph_1ok_.png?t=2024-06-29T13%3A05%3A59.670Z",
+        "title": "Cuisine Minimaliste",
+        "unicityPath" : "MyAsset/AssetDemo0.1/Cuisine/Minimaliste/Cuisine_Minimaliste",
+        "price": 300
+      },
+      {
+        "image": "https://yjjcsltvcfvpidxnhiuf.supabase.co/storage/v1/object/public/menu-ressource/cuisine-icons/Nouvelle_Cuisine_3D_view.png?t=2024-06-28T13%3A12%3A59.091Z",
+        "title": "Cuisine Nature",
+        "unicityPath" : "MyAsset/AssetDemo0.1/Cuisine/Nature/Cuisine_Nature",
+        "price": 150
+      },
+      {
+        "image": "https://yjjcsltvcfvpidxnhiuf.supabase.co/storage/v1/object/public/menu-ressource/cuisine-icons/Ancienne_cuisine_sans_Ilot.png?t=2024-06-28T13%3A12%3A50.383Z",
+        "title": "Chaise de cuisine",
+        "unicityPath": "MyAsset/AssetDemo0.1/Cuisine/Neutre/Cuisine_Neutre",
+        "price": 150
+      }
+    ]
+  }
+  
