@@ -1,22 +1,40 @@
-import React from 'react';
+// SideNavigation.tsx
+"use client";
+import React, { useState } from 'react';
 
 interface NavItem {
   text: string;
   number: number;
-  active: boolean;
+}
+
+interface SideNavigationProps {
+  setCurrentPage: (page: number) => void;
 }
 
 const navItems: NavItem[] = [
-  { text: "Votre bien", number: 1, active: true },
-  { text: "Travaux d'isolation", number: 2, active: false },
-  { text: "Énergétique", number: 3, active: false },
+  { text: "Votre bien", number: 1 },
+  { text: "Travaux d'isolation", number: 2 },
+  { text: "Énergétique", number: 3 },
 ];
 
-const SideNavigation: React.FC = () => {
+const SideNavigation: React.FC<SideNavigationProps> = ({ setCurrentPage }) => {
+  const [activeItem, setActiveItem] = useState<number>(1);
+
+  const handleItemClick = (number: number) => {
+    setCurrentPage(number);
+    setActiveItem(number);
+  };
+
   return (
-    <div className="flex flex-col rounded-3xl bg-neutral-700">
-      {navItems.map((item, index) => (
-        <div key={index} className={`flex p-10 my-auto ${item.active ? 'text-blue-300' : 'text-slate-100'}`}>{item.text}</div>
+    <div className="rounded-3xl bg-neutral-700">
+      {navItems.map((item) => (
+        <div
+          key={item.number}
+          className={`flex p-10 my-auto ${activeItem === item.number ? 'text-blue-300' : 'text-slate-100'}`}
+          onClick={() => handleItemClick(item.number)}
+        >
+          {item.text}
+        </div>
       ))}
     </div>
   );

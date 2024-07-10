@@ -46,7 +46,7 @@ module.exports = {
           400: '#37CC5F',
           500: '#227D3A',        
         },
-        background: '#FFFAEF',
+        background: '#FFFFFF',
         foreground: "#2F2E2E",
         unitybg: '#FFFAEF',
       },

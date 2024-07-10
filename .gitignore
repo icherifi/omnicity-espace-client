@@ -36,6 +36,4 @@ yarn-error.log*
 next-env.d.ts
 
 #Game 
-public/UnityGame/Build/UnityGame.data
-public/UnityGame/Build/UnityGame.framework.js
-public/UnityGame/Build/UnityGame.wasm
+public/UnityGame

@@ -1,11 +1,16 @@
 "use client";
 import React, { useState } from 'react';
 
-const IncomeSlider: React.FC = () => {
+type IncomeSliderProps = {
+  onChange: (value: number) => void;
+};
+
+const IncomeSlider: React.FC<IncomeSliderProps> = ({onChange}) => {
   const [income, setIncome] = useState(5000000);
 
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIncome(Number(event.target.value));
+    onChange(Number(event.target.value)); 
   };
 
   const formattedIncome = new Intl.NumberFormat('fr-FR').format(income);
