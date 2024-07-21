@@ -1,0 +1,63 @@
+{
+    "Sa surface habitable (m²) :": "50",
+    "L'année de construction du logement :": [
+        "Entre 1989 et 2000"
+    ],
+    "Sa forme :": [
+        "Rectangulaire allongée"
+    ],
+    "Le nombre de niveaux habités :": [
+        "1"
+    ],
+    "La maison est-elle mitoyenne ?": [
+        "Non"
+    ],
+    "Avez-vous déjà effectué des travaux d'isolation de vos murs ?": [
+        "Je ne sais pas"
+    ],
+    "Le type de toiture :": [
+        "Toit terrasse"
+    ],
+    "Avez-vous déjà effectué des travaux d'isolation de votre toiture ?": [
+        "Pas de travaux"
+    ],
+    "Quel est votre type de planchers bas ?": [
+        "Terre plein"
+    ],
+    "Avez-vous déjà effectué des travaux d'isolation de vos planchers bas ?": [
+        "Je ne sais pas"
+    ],
+    "Comment est le vitrage de vos fenêtres ?": [
+        "Double vitrage ancien (plus de 25 ans)"
+    ],
+    "Quel est le matériau de vos fenêtres ?": [
+        "Aluminium"
+    ],
+    "Quelle est la source d'énergie de chauffage principale ?": [
+        "Electricité"
+    ],
+    "Le type d'appareil de votre chauffage principal :": [
+        "Convecteurs électriques"
+    ],
+    "Quel appareil produit votre eau chaude sanitaire ?": [
+        "Ballon électrique"
+    ],
+    "Possédez-vous un second type de chauffage ?": [
+        "Non"
+    ],
+    "Quel est le type de ventilation ?": [
+        "Ventilation naturelle"
+    ],
+    "Par rapport au logement, vous êtes ?": [
+        "Propriétaire résidence principale"
+    ],
+    "Vous habitez": [
+        "En Ile de France"
+    ],
+    "Nombre d'habitants composant votre foyer fiscal": [
+        "3"
+    ],
+    "Revenu annuel moyen de votre foyer fiscal": [
+        "Entre 41 493 € et 50 513 €"
+    ]
+}

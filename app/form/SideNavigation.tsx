@@ -1,6 +1,6 @@
 // SideNavigation.tsx
 "use client";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface NavItem {
   text: string;
@@ -26,11 +26,15 @@ const SideNavigation: React.FC<SideNavigationProps> = ({ setCurrentPage }) => {
   };
 
   return (
-    <div className="rounded-3xl bg-neutral-700">
+    <div className="rounded-3xl bg-neutral-700 shadow-lg">
       {navItems.map((item) => (
         <div
           key={item.number}
-          className={`flex p-10 my-auto ${activeItem === item.number ? 'text-blue-300' : 'text-slate-100'}`}
+          className={`p-5 my-2 mx-5 cursor-pointer transition-colors duration-300 rounded-lg hover:bg-neutral-600 ${
+            activeItem === item.number
+              ? "text-blue-200 bg-neutral-600"
+              : "text-slate-100"
+          }`}
           onClick={() => handleItemClick(item.number)}
         >
           {item.text}
