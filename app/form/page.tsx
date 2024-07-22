@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SideNavigation from "./SideNavigation";
 import PropertySelector from "./components/PropertySelector";
 import InputField from "./components/InputField";
@@ -9,6 +9,7 @@ import EnergySourceCard from "./components/EnergySourceCard";
 import SelectField from "./components/SelectField";
 import { handleSubmit } from "./server-request";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 type HandleResponseType = (questionId: string, response: any) => void;
 
@@ -210,6 +211,33 @@ const energieNode = (handleResponse: HandleResponseType) => {
 const Form = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const supabase = createClient();
+  const [isCheckingUser, setIsCheckingUser] = useState(true);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await createClient().auth.getUser();
+      if (!user) {
+        router.push("/login");
+      } else {
+        const { data: account, error } = await createClient()
+          .from("accounts")
+          .select("admin")
+          .eq("user", user.id)
+          .single();
+
+        if (!account || error) {
+          console.error("Error fetching account:", error);
+        }
+        setIsCheckingUser(false); // Vérification terminée, utilisateur connecté et compte trouvé
+      }
+    };
+
+    checkUser();
+  }, [router]);
+
   const [responses, setResponses] = useState({
     "Sa surface habitable (m²) :": "50",
     "L'année de construction du logement :": ["Entre 1989 et 2000"],
@@ -309,6 +337,10 @@ const Form = () => {
         );
     }
   };
+
+  if (isCheckingUser) {
+    return <div>Loading...</div>; // Ou tout autre indicateur de chargement de votre choix
+  }
 
   return (
     <div className="m-5 flex-col items-center justify-center w-screen h-screen">
