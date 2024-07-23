@@ -1,6 +1,6 @@
 // pages/form.js
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 // Helper function to format numbers
@@ -11,7 +11,7 @@ const formatCurrency = (value: any) => {
   }).format(value);
 };
 
-const Results = () => {
+const ResultsContent = () => {
   const searchParams = useSearchParams();
   const data = searchParams.get("data");
   let parsedData;
@@ -59,6 +59,14 @@ const Results = () => {
         <p>Aucune donnée disponible</p>
       )}
     </div>
+  );
+};
+
+const Results = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResultsContent />
+    </Suspense>
   );
 };
 
