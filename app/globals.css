@@ -37,6 +37,10 @@
     --grade-e: 255, 188, 0;  /* E: Orange clair */
     --grade-f: 255, 136, 47; /* F: Orange foncé */
     --grade-g: 236, 1, 24;   /* G: Rouge */
+
+    --status-completed: 134, 239, 172;  /* Vert clair */
+    --status-inprogress: 255, 165, 0; /* Orange */
+    --status-abandoned: 239, 68, 68;    /* Rouge */
   }
 
   .dark {
@@ -72,6 +76,10 @@
     --grade-e: 255, 188, 0;  /* E: Orange clair */
     --grade-f: 255, 136, 47; /* F: Orange foncé */
     --grade-g: 236, 1, 24;   /* G: Rouge */
+
+    --status-completed: 134, 239, 172;  /* Vert clair */
+    --status-inprogress: 255, 165, 0; /* Orange */
+    --status-abandoned: 239, 68, 68;    /* Rouge */
   }
 }
 
