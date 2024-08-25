@@ -9,31 +9,53 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import Image from "next/image"
+import { Badge } from "./ui/badge"
 
 export default function DashboardCarousel() {
   return (
     <Carousel
       opts={{
         align: "start",
+        loop: true,
+        
       }}
-      className="w-11/12 justify-self-center"
+      className="w-11/12 justify-self-center h-5/6"
+      style={{maxWidth: "945px"}}
     >
-      <CarouselContent>
+      <CarouselContent className="h-full">
         {Array.from({ length: 5 }).map((_, index) => (
-          <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-            <div className="p-1">
-              <Card className=" hover:cursor-pointer">
-                <CardContent className="flex-col aspect-square items-center justify-center p-6">
-                    <Image width={290} height={290} src={`/immo${index+1}.jpg`} alt="3d models of real estate" />
-                    <CardTitle className="text-center mt-4">
+          <CarouselItem key={index} className="basis-1/3 h-full">
+            <div className="p-1 h-full">
+              <Card className="h-full hover:cursor-pointer">
+                <CardContent className="flex flex-col items-center p-6 h-full">
+                  
+                  <Carousel className="w-44" opts={{loop: true}}>
+                    <CarouselContent>
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <CarouselItem key={index}>
+                          <div className="p-1">
+                            <Card>
+                              <CardContent className="flex aspect-square items-center justify-center p-6">
+                                <span className="text-4xl font-semibold">{index + 1}</span>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
+
+                    <CardTitle className="text-center mt-8">
                         <h1>T4 Villeneuve</h1>
                     </CardTitle>
                     <CardDescription className="text-center mt-4">
-                        <p>1 pièce
-                            45 m²
+                        <p className="font-semibold mt-4">1 pièce &bull;
+                            45 m² &bull;
                             Étage 1/4</p>
-                        <p>Status...</p>
-                        <p>Last update...</p>
+                        <Badge variant={"inprogress"} className="mt-4 mb-4 text-black">En cours...</Badge>
+                        <p className="text-xs text-muted-foreground">Dernière modification: <br></br> 23 Novembre 2023</p>
                     </CardDescription>
                 </CardContent>
               </Card>
