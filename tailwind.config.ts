@@ -11,6 +11,14 @@ const config = {
 	],
   prefix: "",
   theme: {
+    screens: {
+      "sm": "640px",
+      "md": "768px",
+      "lg": "1024px",
+      "xl": "1280px",
+      "2xl": "1536px",
+      "3xl": "1750px"
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -121,3 +129,4 @@ const config = {
 } satisfies Config
 
 export default config
+

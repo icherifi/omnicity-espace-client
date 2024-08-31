@@ -1,5 +1,5 @@
+"use client"
 import * as React from "react"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Carousel,
@@ -12,6 +12,33 @@ import Image from "next/image"
 import { Badge } from "./ui/badge"
 
 export default function DashboardCarousel() {
+  const [api, setApi] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    const updateVisibility = () => {
+      const items = document.querySelectorAll('.carousel-item');
+      const visibleIndexes = api.slidesInView(); // Récupère les indexes des items visibles
+
+      items.forEach((item, index) => {
+        if (visibleIndexes.includes(index)) {
+          item.style.display = "block";  // Montre les items visibles
+        } else {
+          item.style.display = "none";   // Cache les items non visibles
+        }
+      });
+    };
+
+    api.on('select', updateVisibility);  // Mets à jour la visibilité lors de la sélection d'un nouvel item
+
+    updateVisibility();  // Mets à jour immédiatement après l'initialisation
+
+    return () => {
+      api.off('select', updateVisibility);  // Nettoie les événements lorsque le composant est démonté
+    };
+  }, [api]);
+
   return (
     <Carousel
       opts={{
@@ -19,12 +46,13 @@ export default function DashboardCarousel() {
         loop: true,
         
       }}
-      className="w-11/12 justify-self-center h-5/6"
+      className="w-11/12 justify-self-center"
       style={{maxWidth: "945px"}}
+      setApi={setApi}
     >
       <CarouselContent className="h-full">
         {Array.from({ length: 5 }).map((_, index) => (
-          <CarouselItem key={index} className="basis-1/3 h-full">
+          <CarouselItem key={index} className={`h-full xl:basis-1/2 3xl:basis-1/3 carousel-item`}>
             <div className="p-1 h-full">
               <Card className="h-full hover:cursor-pointer">
                 <CardContent className="flex flex-col items-center p-6 h-full">
