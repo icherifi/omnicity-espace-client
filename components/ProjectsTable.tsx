@@ -77,7 +77,7 @@ function ProjectsTable() {
                           </TableCell>
                           <TableCell className="hidden sm:table-cell">4700€</TableCell>
                           <TableCell className="hidden md:table-cell">
-                            45 873€
+                            ????
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             <Badge variant={"completed"} className="mt-4 mb-4 text-black">Terminé</Badge>
@@ -101,7 +101,7 @@ function ProjectsTable() {
                           </TableCell>
                           <TableCell className="hidden sm:table-cell">4700€</TableCell>
                           <TableCell className="hidden md:table-cell">
-                            45 873€
+                            ????
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             <Badge variant={"completed"} className="mt-4 mb-4 text-black">Terminé</Badge>
