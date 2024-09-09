@@ -55,8 +55,32 @@ import { Separator } from "@/components/ui/separator"
 import DashboardCarousel from "@/components/DashboardCarousel"
 import MarksUsed from "@/components/MarksUsed"
 import EnergyRating from "@/components/EnergyRating"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import ProjectsTable from "@/components/ProjectsTable"
+import { Label } from "@/components/ui/label"
+import NewProjectForm from "@/components/NewProjectForm"
+
 
 export default function Dashboard() {
   return (
@@ -239,7 +263,7 @@ export default function Dashboard() {
           </DropdownMenu>
         </header>
         
-        <main className="grid flex-1 gap-4 p-4 lg:gap-6 lg:p-6 lg:gap-8 xl:grid-cols-3">
+        <main className="grid flex-1 gap-4 p-4 lg:gap-6 lg:p-6 xl:gap-8 1.5xl:grid-cols-3">
           <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-2 3xl:grid-cols-4">
               <Card
@@ -252,7 +276,7 @@ export default function Dashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <Button>Nouveau projet</Button>
+                  <NewProjectForm />
                 </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
@@ -285,9 +309,50 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            <DashboardCarousel />
+            <Carousel className="2xl:w-11/12 justify-self-center w-9/12" opts={{loop: true}}>
+              <CarouselContent className="-ml-1">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <CarouselItem key={index} className="pl-1 sm:basis-full 2xl:basis-1/2 3xl:basis-1/3">
+                    <div className="p-1">
+                      <Card>
+                        <CardContent className="flex flex-col items-center justify-center p-2">
+
+
+                        <Carousel className="max-w-32 max-h-40" opts={{loop: true}}>
+                          <CarouselContent>
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <CarouselItem key={index} className="pr-4">
+                                  <Image src={"/immo1.jpg"} alt="immo" width={250} height={250} />
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                        </Carousel>
+
+                        <CardTitle className="text-center mt-8">
+                            <h1>T4 Villeneuve</h1>
+                        </CardTitle>
+                        <CardDescription className="text-center mt-4">
+                            <p className="font-semibold mt-4">1 pièce &bull;
+                                45 m² &bull;
+                                Étage 1/4</p>
+                            <Badge variant={"inprogress"} className="mt-4 mb-4 text-black">En cours...</Badge>
+                            <p className="text-xs text-muted-foreground">Dernière modification: <br></br> 23 Novembre 2023</p>
+                        </CardDescription>
+
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
             
             <ProjectsTable />
+
           </div>
 
           <ScrollArea>
@@ -339,7 +404,7 @@ export default function Dashboard() {
                       <CardTitle>Notes énergétiques</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center">
+                      <div className="flex justify-center items-center 1.5xl:flex-col 3xl:flex-row">
                         <EnergyRating energyRatingValue="e" state="Actuel"/>
                         <EnergyRating energyRatingValue="b" state="Visé"/>
                       </div>
