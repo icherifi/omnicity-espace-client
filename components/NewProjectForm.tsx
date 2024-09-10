@@ -13,6 +13,7 @@ import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import DatePicker from './DatePicker'
+import EnergyForm from './EnergyForm/EnergyForm'
 
 function NewProjectForm() {
   return (
@@ -88,7 +89,8 @@ function NewProjectForm() {
 
                 </div>
                 <DialogFooter>
-                <Button type="submit">Créer le projet</Button>
+                {/*<Button type="submit">Créer le projet</Button> */}
+                <EnergyForm />
                 </DialogFooter>
             </DialogContent>
         </Dialog>

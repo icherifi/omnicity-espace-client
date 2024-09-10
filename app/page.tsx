@@ -268,7 +268,7 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-2 3xl:grid-cols-4">
               <Card
                 className="sm:col-span-2" x-chunk="dashboard-05-chunk-0"
-              >
+              > 
                 <CardHeader className="pb-3">
                   <CardTitle>Vos projets</CardTitle>
                   <CardDescription className="text-balance max-w-lg leading-relaxed">
