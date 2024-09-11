@@ -13,6 +13,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import Property from "./components/Property"
+import InsulationWork from "./components/InsulationWork"
+import Energy from "./components/Energy"
 
 export default function EnergyForm() {
     const [currentPage, setCurrentPage] = React.useState(1)
@@ -30,18 +32,28 @@ export default function EnergyForm() {
             </DrawerHeader>
 
             <div className="p-4 pb-0 max-w-2xl">
-                <Property />
+                {currentPage == 1 && <Property />}
+                {currentPage == 2 && <InsulationWork />}
+                {currentPage == 3 && <Energy />}
             </div>
 
             <DrawerFooter className="max-w-sm w-full">
-            <Button onClick={() => {
-                currentPage == 3 ? {/* onSubmit */} : setCurrentPage(currentPage + 1)
-            }}>{`${currentPage == 3 ? "Terminer" : "Suivant"}`}</Button>
-            <DrawerClose asChild>
+
+            {currentPage == 3 ? <DrawerClose asChild>
+                <Button>Terminer</Button>
+            </DrawerClose> :
                 <Button onClick={() => {
-                    currentPage == 1 ? {/* back */} : setCurrentPage(currentPage - 1)
-                }} variant="outline">{`${currentPage == 1 ? "Annuler" : "Retour"}`}</Button>
-            </DrawerClose>
+                    setCurrentPage(currentPage +1)
+                }}>Suivant</Button>
+            }
+
+            {currentPage == 1 ? <DrawerClose asChild>
+                <Button variant="outline">Annuler</Button>
+            </DrawerClose> :
+                <Button onClick={() => {
+                    setCurrentPage(currentPage - 1)
+                }} variant="outline">Retour</Button>
+            }
             </DrawerFooter>
         </div>
         </DrawerContent>
