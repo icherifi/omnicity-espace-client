@@ -3,6 +3,11 @@ import "../app/globals.css"
 import { Inter as FontSans } from "next/font/google"
 import { cn } from "@/lib/utils"
 import Providers from "./providers";
+import NewProjectFormContextProvider from "@/contexts/newProjectForm.context";
+
+export interface useCustomHook {
+  children: React.ReactNode
+}
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -19,6 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <NewProjectFormContextProvider>
     <html lang="en">
       <body
         className={cn(
@@ -31,5 +37,6 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
+    </NewProjectFormContextProvider>
   )
 }
