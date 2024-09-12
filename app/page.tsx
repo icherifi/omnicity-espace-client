@@ -1,51 +1,254 @@
-import AuthButton from "../components/AuthButton";
-import { createClient } from "@/utils/supabase/server";
-import Header from "@/components/Header";
-import { redirect } from "next/navigation";
-import  StartButton from '../components/StartButton';
+import Link from "next/link"
+import {
+  CircleUser,
+  FolderKanban,
+  Home,
+  Import,
+  LifeBuoy,
+  List,
+  Menu,
+  Package2,
+  PencilRuler,
+  Search,
+  Settings
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import * as React from "react"
+import Image from "next/image"
+import { Progress } from "@/components/ui/progress"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import ProjectsTable from "@/components/ProjectsTable"
+import NewProjectForm from "@/components/NewProjectForm"
+import ProjectDetails from "@/components/ProjectDetails"
+import Navbar from "@/components/Navbar"
 
-export default async function Index() {
-  const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: account, error } = await supabase.from('accounts').select('admin').eq('user', user?.id).single();
-  
-  if (!user) {
-    return redirect("/login");
-  }
-
+export default function Dashboard() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm border-b border-b-foreground/10 h-16">
-        <AuthButton />
-      </div>
-      <div className="animate-in flex-1 flex flex-col gap-20 opacity-1 max-w-4xl px-3">
-        <Header />
-        { account?.admin ? 
-        <StartButton /> : 
-        <div role="alert" className="alert alert-error">
-          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>Please upgrade your account for more content</span>
-        </div>
-        }
-      </div>
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <Navbar />
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+              <nav className="grid gap-2 text-lg font-medium">
+                <Link
+                  href="#"
+                  className="flex items-center gap-2 text-lg font-semibold"
+                >
+                  <Package2 className="h-6 w-6" />
+                  <span className="sr-only">Omnicity</span>
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+                >
+                  <Home className="h-5 w-5" />
+                  Tableau de bord
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                  <FolderKanban className="h-5 w-5" />
+                  Projets
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                  <Import className="h-5 w-5" />
+                  Import
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                  <PencilRuler className="h-5 w-5" />
+                  Design
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                  <List className="h-5 w-5" />
+                  Formulaire
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                  <LifeBuoy className="h-5 w-5" />
+                  Aide
+                </Link>
+                <Link
+                  href="#"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                  <Settings className="h-5 w-5" />
+                  Parametres
+                </Link>
+              </nav>
+            </SheetContent>
+          </Sheet>
+          <div className="w-full flex-1">
+            <form>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search projets..."
+                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                />
+              </div>
+            </form>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <CircleUser className="h-5 w-5" />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Parametres</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Se déconnecter</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        
+        <main className="grid flex-1 gap-4 p-4 lg:gap-6 lg:p-6 xl:gap-8 1.5xl:grid-cols-3">
+          <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-2 3xl:grid-cols-4">
+              <Card
+                className="sm:col-span-2" x-chunk="dashboard-05-chunk-0"
+              > 
+                <CardHeader className="pb-3">
+                  <CardTitle>Vos projets</CardTitle>
+                  <CardDescription className="text-balance max-w-lg leading-relaxed">
+                    Créez votre prochain projet en quelques clics. Donnez vie à vos idées dès maintenant !
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <NewProjectForm />
+                </CardFooter>
+              </Card>
+              <Card x-chunk="dashboard-05-chunk-1">
+                <CardHeader className="pb-2">
+                  <CardDescription>Projets en cours</CardDescription>
+                  <CardTitle className="text-4xl">3</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs text-muted-foreground">
+                    +25% depuis la semaine passée
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={25} aria-label="25% increase" />
+                </CardFooter>
+              </Card>
+              <Card x-chunk="dashboard-05-chunk-2">
+                <CardHeader className="pb-2">
+                  <CardDescription>Projets finis</CardDescription>
+                  <CardTitle className="text-4xl">14</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs text-muted-foreground">
+                    +10% depuis le mois passé
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={12} aria-label="12% increase" />
+                </CardFooter>
+              </Card>
+            </div>
 
-      <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
-        <p>
-          Powered by{" "}
-          <a
-            href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-            target="_blank"
-            className="font-bold hover:underline"
-            rel="noreferrer"
-          >
-            Supabase
-          </a>
-        </p>
-      </footer>
+            <Carousel className="2xl:w-11/12 justify-self-center w-9/12" opts={{loop: true}}>
+              <CarouselContent className="-ml-1">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <CarouselItem key={index} className="pl-1 sm:basis-full 2xl:basis-1/2 3xl:basis-1/3">
+                    <div className="p-1">
+                      <Card>
+                        <CardContent className="flex flex-col items-center justify-center p-2">
+
+
+                        <Carousel className="max-w-32 max-h-40" opts={{loop: true}}>
+                          <CarouselContent>
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <CarouselItem key={index} className="pr-4">
+                                  <Image src={"/immo1.jpg"} alt="immo" width={250} height={250} />
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                        </Carousel>
+
+                        <CardTitle className="text-center mt-8">
+                            <h1>T4 Villeneuve</h1>
+                        </CardTitle>
+                        <CardDescription className="text-center mt-4">
+                            <p className="font-semibold mt-4">1 pièce &bull;
+                                45 m² &bull;
+                                Étage 1/4</p>
+                            <Badge variant={"inprogress"} className="mt-4 mb-4 text-black">En cours...</Badge>
+                            <p className="text-xs text-muted-foreground">Dernière modification: <br></br> 23 Novembre 2023</p>
+                        </CardDescription>
+
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+            
+            <ProjectsTable />
+          </div>
+          <ProjectDetails />
+        </main>
+      </div>
     </div>
-  );
+  )
 }
