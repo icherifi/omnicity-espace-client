@@ -1,76 +1,64 @@
 "use client"
-import * as React from "react"
-import { Button } from "@/components/ui/button"
+import React, { useState } from 'react'
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import Property from "./components/Property"
-import InsulationWork from "./components/InsulationWork"
-import Energy from "./components/Energy"
-import { useNewProjectFormContext } from "@/contexts/newProjectForm.context"
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog"
+import { Button } from '../ui/button'
+import { useNewProjectFormContext } from '@/contexts/newProjectForm.context'
+import Property from "@/components/EnergyForm/components/Property"
+import InsulationWork from "@/components/EnergyForm/components/InsulationWork"
+import Energy from "@/components/EnergyForm/components/Energy"
+import { useEnergyFormContext } from '@/contexts/energyForm.context'
 
-export default function EnergyForm() {
-    const [currentPage, setCurrentPage] = React.useState(1)
-    const {isEnergyFormDisplayed, setIsEnergyFormDisplayed} = useNewProjectFormContext()
+function EnergyForm() {
+    const {setIsEnergyFormDisplayed} = useEnergyFormContext()
+    const {currentEnergyFormPage, setCurrentEnergyFormPage} = useEnergyFormContext()
+  return (
+    <DialogContent className="sm:max-w-[750px]">
+            <DialogHeader>
+                <DialogTitle>Formulaire energétique</DialogTitle>
+                <DialogDescription>
+                    Complétez ce formulaire pour gérer la partie éléctrique de votre projet.
+                </DialogDescription>
+            </DialogHeader>
 
-    return (
-    <Drawer>
-        <DrawerTrigger asChild>
-            <div className="flex items-center justify-around space-x-2 mt-4 mb-4">
-                <div onClick={() => {
-                    setIsEnergyFormDisplayed(true)
-                }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${isEnergyFormDisplayed  && 'border-black'}`}>
-                    <p>Oui</p>
-                </div>
-                <div onClick={(e) => {
-                    e.stopPropagation()
-                    setIsEnergyFormDisplayed(false)
-                }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${!isEnergyFormDisplayed && 'border-black'}`}>
-                    <p>Non</p>
-                </div>
-            </div>
-        </DrawerTrigger>
-        
-        <DrawerContent>
-        <div className="mx-auto w-full flex flex-col items-center">
-            <DrawerHeader className="mawx-w-sm">
-            <DrawerTitle>Formulaire énergétique</DrawerTitle>
-            <DrawerDescription>Complétez ce formulaire pour gérer la partie éléctrique de votre projet.</DrawerDescription>
-            </DrawerHeader>
-
-            <div className="p-4 pb-0 max-w-2xl">
-                {currentPage == 1 && <Property />}
-                {currentPage == 2 && <InsulationWork />}
-                {currentPage == 3 && <Energy />}
+            <div className="p-4 pb-0">
+                {currentEnergyFormPage == 1 && <Property />}
+                {currentEnergyFormPage == 2 && <InsulationWork />}
+                {currentEnergyFormPage == 3 && <Energy />}
             </div>
 
-            <DrawerFooter className="max-w-sm w-full">
-
-            {currentPage == 3 ? <DrawerClose asChild>
-                <Button>Terminer</Button>
-            </DrawerClose> :
+            <DialogFooter>
+            {currentEnergyFormPage == 3 ? 
                 <Button onClick={() => {
-                    setCurrentPage(currentPage +1)
+                    setIsEnergyFormDisplayed(false)
+                    setCurrentEnergyFormPage(1)
+                }}>Terminer</Button>
+                :
+                <Button onClick={() => {
+                    setCurrentEnergyFormPage(currentEnergyFormPage +1)
                 }}>Suivant</Button>
             }
 
-            {currentPage == 1 ? <DrawerClose asChild>
-                <Button variant="outline">Annuler</Button>
-            </DrawerClose> :
+            {currentEnergyFormPage == 1 ? 
+                <Button variant="outline" onClick={() => {
+                    setIsEnergyFormDisplayed(false)
+                }}>Annuler</Button>
+                :
                 <Button onClick={() => {
-                    setCurrentPage(currentPage - 1)
+                    setCurrentEnergyFormPage(currentEnergyFormPage - 1)
                 }} variant="outline">Retour</Button>
             }
-            </DrawerFooter>
-        </div>
-        </DrawerContent>
-    </Drawer>
-    )
+            </DialogFooter>
+        </DialogContent>  
+  )
 }
+
+export default EnergyForm

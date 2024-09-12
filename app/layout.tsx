@@ -4,6 +4,7 @@ import { Inter as FontSans } from "next/font/google"
 import { cn } from "@/lib/utils"
 import Providers from "./providers";
 import NewProjectFormContextProvider from "@/contexts/newProjectForm.context";
+import EnergyFormContextProvider from "@/contexts/energyForm.context";
 
 export interface useCustomHook {
   children: React.ReactNode
@@ -25,6 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <NewProjectFormContextProvider>
+    <EnergyFormContextProvider>
     <html lang="en">
       <body
         className={cn(
@@ -37,6 +39,7 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
+    </EnergyFormContextProvider>
     </NewProjectFormContextProvider>
   )
 }
