@@ -9,43 +9,45 @@ SelectItem,
 SelectTrigger,
 SelectValue,
 } from "@/components/ui/select"
+import { useEnergyFormContext } from '@/contexts/energyForm.context'
 
-type EnergyType = "Electricity" | "Wood" | "Gas or propane" | "Fuel oil" | "Coal"
-type HeatingType = "Electric Transmitters" | "Heat pumps"
 
-function Energy() {
-    const [selectedForEnergyType, setSelectedForEnergyType] = useState<EnergyType>("Electricity")
-    const [selectedHeatingType, setSelectedHeatingType] = useState<HeatingType>("Heat pumps")
+
+function Energy () {
+    const {selectedEnergyType, setSelectedEnergyType} = useEnergyFormContext()
+    const {selectedHeatingType, setSelectedHeatingType} = useEnergyFormContext()
+    const {hotWaterProductType, setHotWaterProductType} = useEnergyFormContext()
+    const {ventilationType, setVentilationType} = useEnergyFormContext()
     return (
     <div className="flex flex-col items-center justify-center space-x-2">
         <div className="flex items-center justify-around space-x-2 mt-4 mb-4">
             <div onClick={() => {
-                setSelectedForEnergyType("Electricity")
-            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForEnergyType == "Electricity" && 'border-black'}`}>
+                setSelectedEnergyType("Electricity")
+            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedEnergyType == "Electricity" && 'border-black'}`}>
                 <Image src={"/electricity.svg"} width={70} height={70} alt='Electricity icon' style={{fill: "red"}}/>
                 <p>Electricité</p>
             </div>
             <div onClick={() => {
-                setSelectedForEnergyType("Wood")
-            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForEnergyType == "Wood" && 'border-black'}`}>
+                setSelectedEnergyType("Wood")
+            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedEnergyType == "Wood" && 'border-black'}`}>
                 <Image src={"/wood.svg"} width={70} height={70} alt='Wood icon'/>
                 <p>Bois</p>
             </div>
             <div onClick={() => {
-                setSelectedForEnergyType("Gas or propane")
-            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForEnergyType == "Gas or propane" && 'border-black'}`}>
+                setSelectedEnergyType("Gas or propane")
+            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedEnergyType == "Gas or propane" && 'border-black'}`}>
                 <Image src={"/gas.svg"} width={70} height={70} alt='Gas icon'/>
                 <p>Gaz ou propane</p>
             </div>
             <div onClick={() => {
-                setSelectedForEnergyType("Fuel oil")
-            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForEnergyType == "Fuel oil" && 'border-black'}`}>
+                setSelectedEnergyType("Fuel oil")
+            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedEnergyType == "Fuel oil" && 'border-black'}`}>
                 <Image src={"/fuel.svg"} width={70} height={70} alt='Fuel oil icon'/>
                 <p>Fioul</p>
             </div>
             <div onClick={() => {
-                setSelectedForEnergyType("Coal")
-            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForEnergyType == "Coal" && 'border-black'}`}>
+                setSelectedEnergyType("Coal")
+            }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedEnergyType == "Coal" && 'border-black'}`}>
                 <Image src={"/coal.svg"} width={70} height={70} alt='Coal icon'/>
                 <p>Charbon</p>
             </div>
@@ -67,9 +69,11 @@ function Energy() {
         </div>
         <div className="flex justify-between items-start space-x-2 mt-4 mb-4">
             <div className="flex flex-col items-center justify-center space-x-2 mt-4">
-                <Label htmlFor='glazingType' className='mb-2 text-center'>Quel appareil produit votre eau chaude sanitaire?</Label>
+                <Label htmlFor='hotWaterProductType' className='mb-2 text-center'>Quel appareil produit votre eau chaude sanitaire?</Label>
                 
-                <Select defaultValue='Mon systeme de chauffage'>
+                <Select defaultValue='Mon systeme de chauffage' value={hotWaterProductType} onValueChange={(e) => {
+                    setHotWaterProductType(e)
+                }}>
                     <SelectTrigger className="w-[250px] self-center">
                         <SelectValue placeholder="Mon systeme de chauffage"/>
                     </SelectTrigger>
@@ -82,9 +86,11 @@ function Energy() {
             </div>
 
             <div className="flex flex-col items-center justify-center space-x-2 mt-4">
-                <Label htmlFor='glazingType' className='mb-2 text-center'>Type de ventilation</Label>
+                <Label htmlFor='ventilationType' className='mb-2 text-center'>Type de ventilation</Label>
                 
-                <Select defaultValue='Ventilation naturelle'>
+                <Select defaultValue='Ventilation naturelle' value={ventilationType} onValueChange={(e) => {
+                    setVentilationType(e)
+                }}>
                     <SelectTrigger className="w-[275px] self-center">
                         <SelectValue placeholder="Ventilation naturelle"/>
                     </SelectTrigger>

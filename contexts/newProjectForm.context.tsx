@@ -2,25 +2,82 @@
 import { useCustomHook } from "@/app/layout";
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react";
 
+interface GeneralInformationType {
+    size: string,
+    roomsNumber: number,
+    floorsNumber: number
+}
+
 interface NewProjectFormType {
-    isEnergyFormDisplayed: boolean,
-    setIsEnergyFormDisplayed: Dispatch<SetStateAction<boolean>>
+    projectAuthorName: string,
+    setProjectAuthorName: Dispatch<SetStateAction<string>>,
+    projectName: string,
+    setProjectName: Dispatch<SetStateAction<string>>,
+    projectAddress: string,
+    setProjectAddress: Dispatch<SetStateAction<string>>,
+    projectDescription: string,
+    setProjectDescription: Dispatch<SetStateAction<string>>,
+    projectDate: Date,
+    setProjectDate: Dispatch<SetStateAction<Date>>,
+    projectGeneralInformation: GeneralInformationType,
+    setProjectGeneralInformation: Dispatch<SetStateAction<GeneralInformationType>>,
+    resetProjectForm: () => void
 }
 
 export const NewProjectFormContext = createContext<NewProjectFormType | null>(null)
 
-export default function NewProjectFormContextProvider ({children}: useCustomHook) {
-    const [isEnergyFormDisplayed, setIsEnergyFormDisplayed] = useState(false)
+// Valeurs initiales du formulaire
+const initialState = {
+    projectAuthorName: "",
+    projectName: "",
+    projectAddress: "",
+    projectDescription: "",
+    projectDate: new Date("1956-05-12"),
+    projectGeneralInformation: {
+        size: "",
+        roomsNumber: 0,
+        floorsNumber: 0
+    }
+};
+
+export default function NewProjectFormContextProvider({ children }: useCustomHook) {
+    const [projectAuthorName, setProjectAuthorName] = useState(initialState.projectAuthorName);
+    const [projectName, setProjectName] = useState(initialState.projectName);
+    const [projectAddress, setProjectAddress] = useState(initialState.projectAddress);
+    const [projectDescription, setProjectDescription] = useState(initialState.projectDescription);
+    const [projectDate, setProjectDate] = useState(initialState.projectDate);
+    const [projectGeneralInformation, setProjectGeneralInformation] = useState<GeneralInformationType>(initialState.projectGeneralInformation);
+
+    // Fonction pour réinitialiser tous les états
+    const resetProjectForm = () => {
+        setProjectAuthorName(initialState.projectAuthorName);
+        setProjectName(initialState.projectName);
+        setProjectAddress(initialState.projectAddress);
+        setProjectDescription(initialState.projectDescription);
+        setProjectDate(initialState.projectDate);
+        setProjectGeneralInformation(initialState.projectGeneralInformation);
+    };
+
     return (
         <NewProjectFormContext.Provider value={{
-            isEnergyFormDisplayed: isEnergyFormDisplayed,
-            setIsEnergyFormDisplayed: setIsEnergyFormDisplayed
+            projectAuthorName,
+            setProjectAuthorName,
+            projectName,
+            setProjectName,
+            projectAddress,
+            setProjectAddress,
+            projectDescription,
+            setProjectDescription,
+            projectDate,
+            setProjectDate,
+            projectGeneralInformation,
+            setProjectGeneralInformation,
+            resetProjectForm 
         }}>
             {children}
         </NewProjectFormContext.Provider>
-    )
+    );
 }
-
 export function useNewProjectFormContext () {
     const context = useContext(NewProjectFormContext)
     if(!context) {

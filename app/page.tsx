@@ -1,27 +1,16 @@
 import Link from "next/link"
 import {
-  Bell,
-  ChevronLeft,
-  ChevronRight,
   CircleUser,
-  Copy,
-  CreditCard,
   FolderKanban,
   Home,
   Import,
   LifeBuoy,
-  LineChart,
   List,
   Menu,
-  MoreVertical,
-  Package,
   Package2,
   PencilRuler,
   Search,
-  Settings,
-  ShoppingCart,
-  Users,
-  File
+  Settings
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -45,31 +34,7 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import * as React from "react"
 import Image from "next/image"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
-import DashboardCarousel from "@/components/DashboardCarousel"
-import MarksUsed from "@/components/MarksUsed"
-import EnergyRating from "@/components/EnergyRating"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Carousel,
   CarouselContent,
@@ -78,87 +43,15 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import ProjectsTable from "@/components/ProjectsTable"
-import { Label } from "@/components/ui/label"
 import NewProjectForm from "@/components/NewProjectForm"
+import ProjectDetails from "@/components/ProjectDetails"
+import Navbar from "@/components/Navbar"
 
 
 export default function Dashboard() {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-
-      <div className="hidden border-r bg-muted/40 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6" />
-              <span className="">Omnicity</span>
-            </Link>
-            <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
-              <Bell className="h-4 w-4" />
-              <span className="sr-only">Toggle notifications</span>
-            </Button>
-          </div>
-          <div className="flex-1">
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
-              >
-                <Home className="h-4 w-4" />
-                Tableau de bord
-              </Link>
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <FolderKanban className="h-4 w-4" />
-                Projets
-              </Link>
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Import className="h-4 w-4" />
-                Import
-              </Link>
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <PencilRuler className="h-4 w-4" />
-                Design
-              </Link>
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <List className="h-4 w-4" />
-                Formulaire
-              </Link>
-            </nav>
-          </div>
-
-          <div className="flex-col mt-auto mb-4">
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <LifeBuoy className="h-4 w-4" />
-                Aide
-              </Link>
-              <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Settings className="h-4 w-4" />
-                Paramètres
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </div>
-
+      <Navbar />
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           <Sheet>
@@ -352,160 +245,8 @@ export default function Dashboard() {
             </Carousel>
             
             <ProjectsTable />
-
           </div>
-
-          <ScrollArea>
-            <Card
-              className="overflow-hidden" x-chunk="dashboard-05-chunk-4"
-            >
-              <CardHeader className="flex flex-row items-start bg-muted/50">
-                <div className="grid gap-0.5">
-                  <CardTitle className="group flex items-center gap-2 text-lg">
-                    Projet #Oe31b70H
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      <Copy className="h-3 w-3" />
-                      <span className="sr-only">Copier l'ID du projet</span>
-                    </Button>
-                  </CardTitle>
-                  <CardDescription>Date: 23 Novembre 2023</CardDescription>
-                </div>
-                <div className="ml-auto flex items-center gap-1">
-                  <Button size="sm" variant="outline" className="h-8 gap-1">
-                    <File className="h-3.5 w-3.5" />
-                    <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-                      Exporter devis
-                    </span>
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="outline" className="h-8 w-8">
-                        <MoreVertical className="h-3.5 w-3.5" />
-                        <span className="sr-only">Plus</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Voir</DropdownMenuItem>
-                      <DropdownMenuItem>Modifier</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>Supprimer</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 text-sm">
-                <div className="grid gap-3">                  
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle>Notes énergétiques</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-center items-center 1.5xl:flex-col 3xl:flex-row">
-                        <EnergyRating energyRatingValue="e" state="Actuel"/>
-                        <EnergyRating energyRatingValue="b" state="Visé"/>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Separator className="my-2" />
-                  
-                  <div className="text-lg font-semibold">Caractéristiques</div>
-                  <div className="grid grid-cols-2 gap-4">
-
-                    <div className="flex flex-col gap-3">
-                      <div className="font-semibold">Services et accessibilité</div>
-                      <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        <span>Ascenseur</span>
-                        <span>Gardien</span>
-                        <span>Digicode</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      <div className="font-semibold">Extérieur</div>
-                      <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        <span>Balcon</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      <div className="font-semibold">Surfaces annexes</div>
-                      <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        <span>Parking</span>
-                        <span>Cave</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      <div className="font-semibold">Hygiène</div>
-                      <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        <span>Salle de bain</span>
-                        <span>Toilettes</span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-                <Separator className="my-4" />
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      Etat des lieux
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>QUARTIER GARE-JEAN-JAURÈS - VITRY SUR SEINE (94400)
-                    Dans une copropriété sécurisé avec gardien et espace vert, studio comprenant : entrée, séjour donnant sur balcon, cuisine, et une salle de bains avec wc, et une cave. 10 min du métro Mairie d'Ivry et du RERC et proche de toutes commodites.
-
-                    Référence agence : 563</p>
-                  </CardContent>
-                </Card>
-
-                <Separator className="my-4" />
-                  <MarksUsed />
-                <Separator className="my-4" />
-                
-                  <div className="font-semibold pb-4">Estimation des coûts</div>
-                  <ul className="grid gap-3">
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Avant travaux</span>
-                      <span>178 000€</span>
-                    </li>
-                    <li className="flex items-center justify-between font-semibold">
-                      <span className="text-muted-foreground">Apres travaux</span>
-                      <span>213 000€</span>
-                    </li>
-                  </ul>
-              </CardContent>
-
-              <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
-                <div className="text-xs text-muted-foreground">
-                  Mis à jour le <time dateTime="2023-11-23">23 Novembre 2023</time>
-                </div>
-                <Pagination className="ml-auto mr-0 w-auto">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <Button size="icon" variant="outline" className="h-6 w-6">
-                        <ChevronLeft className="h-3.5 w-3.5" />
-                        <span className="sr-only">Projet précédent</span>
-                      </Button>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <Button size="icon" variant="outline" className="h-6 w-6">
-                        <ChevronRight className="h-3.5 w-3.5" />
-                        <span className="sr-only">Prochain Projet</span>
-                      </Button>
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </CardFooter>
-            </Card>
-          </ScrollArea>
-
+          <ProjectDetails />
         </main>
       </div>
     </div>

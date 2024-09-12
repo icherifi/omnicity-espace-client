@@ -8,7 +8,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import Image from "next/image"
 import { Badge } from "./ui/badge"
 
 export default function DashboardCarousel() {

@@ -12,9 +12,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useNewProjectFormContext } from "@/contexts/newProjectForm.context"
 
 export default function DatePicker () {
   const [date, setDate] = React.useState<Date>()
+  const { setProjectDate } = useNewProjectFormContext()
+
+  React.useEffect(() => {
+    setProjectDate(date!)
+  }, [date])
 
   return (
     <Popover>
