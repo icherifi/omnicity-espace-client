@@ -38,17 +38,17 @@ function InsulationWork() {
                 <div onClick={() => {
                     setSelectedForWalls("Between10And20")
                 }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForWalls == "Between10And20" && 'bg-black'}`}>
-                    <p className={`${selectedForWalls == "Between10And20" && 'text-white'}`}>10ans - 20ans</p>
+                    <p className={`${selectedForWalls == "Between10And20" && 'text-white'}`}>10ans-20ans</p>
                 </div>
                 <div onClick={() => {
                     setSelectedForWalls("Between20And30")
                 }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForWalls == "Between20And30" && 'bg-black'}`}>
-                    <p className={`${selectedForWalls == "Between20And30" && 'text-white'}`}>20ans -30ans</p>
+                    <p className={`${selectedForWalls == "Between20And30" && 'text-white'}`}>20ans-30ans</p>
                 </div>
                 <div onClick={() => {
                     setSelectedForWalls("Between30And40")
                 }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForWalls == "Between30And40" && 'bg-black'}`}>
-                    <p className={`${selectedForWalls == "Between30And40" && 'text-white'}`}>30ans - 40ans</p>
+                    <p className={`${selectedForWalls == "Between30And40" && 'text-white'}`}>30ans-40ans</p>
                 </div>
             </div>
         </div>
@@ -69,17 +69,17 @@ function InsulationWork() {
                 <div onClick={() => {
                     setSelectedForFloors("Between10And20")
                 }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForFloors == "Between10And20" && 'bg-black'}`}>
-                    <p className={`${selectedForFloors == "Between10And20" && 'text-white'}`}>10ans - 20ans</p>
+                    <p className={`${selectedForFloors == "Between10And20" && 'text-white'}`}>10ans-20ans</p>
                 </div>
                 <div onClick={() => {
                     setSelectedForFloors("Between20And30")
                 }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForFloors == "Between20And30" && 'bg-black'}`}>
-                    <p className={`${selectedForFloors == "Between20And30" && 'text-white'}`}>20ans -30ans</p>
+                    <p className={`${selectedForFloors == "Between20And30" && 'text-white'}`}>20ans-30ans</p>
                 </div>
                 <div onClick={() => {
                     setSelectedForFloors("Between30And40")
-                }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForWalls == "Between30And40" && 'bg-black'}`}>
-                    <p className={`${selectedForWalls == "Between30And40" && 'text-white'}`}>30ans - 40ans</p>
+                }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${selectedForFloors == "Between30And40" && 'bg-black'}`}>
+                    <p className={`${selectedForFloors == "Between30And40" && 'text-white'}`}>30ans-40ans</p>
                 </div>
             </div>
         </div>

@@ -1,6 +1,5 @@
 "use client"
 import * as React from "react"
-
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -15,15 +14,30 @@ import {
 import Property from "./components/Property"
 import InsulationWork from "./components/InsulationWork"
 import Energy from "./components/Energy"
+import { useNewProjectFormContext } from "@/contexts/newProjectForm.context"
 
 export default function EnergyForm() {
     const [currentPage, setCurrentPage] = React.useState(1)
-    
+    const {isEnergyFormDisplayed, setIsEnergyFormDisplayed} = useNewProjectFormContext()
+
     return (
     <Drawer>
         <DrawerTrigger asChild>
-        <Button>Créer le projet</Button>
+            <div className="flex items-center justify-around space-x-2 mt-4 mb-4">
+                <div onClick={() => {
+                    setIsEnergyFormDisplayed(true)
+                }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${isEnergyFormDisplayed  && 'border-black'}`}>
+                    <p>Oui</p>
+                </div>
+                <div onClick={(e) => {
+                    e.stopPropagation()
+                    setIsEnergyFormDisplayed(false)
+                }} className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${!isEnergyFormDisplayed && 'border-black'}`}>
+                    <p>Non</p>
+                </div>
+            </div>
         </DrawerTrigger>
+        
         <DrawerContent>
         <div className="mx-auto w-full flex flex-col items-center">
             <DrawerHeader className="mawx-w-sm">

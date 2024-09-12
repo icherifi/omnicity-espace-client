@@ -56,7 +56,7 @@ function Property() {
                 <Label htmlFor='livingArea' className='mb-2'>
                     {`Surface habitable(m²)`}
                 </Label>
-                <Input type="number" id='livingArea' value={95}/>
+                <Input type="number" id='livingArea' defaultValue={95}/>
             </div>
         </div>
         
