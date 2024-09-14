@@ -29,8 +29,8 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination"
 import { Separator } from "@/components/ui/separator"
-import MarksUsed from "@/components/MarksUsed"
-import EnergyRating from "@/components/EnergyRating"
+import MarksUsed from "@/components/marksUsed"
+import EnergyRating from "@/components/energyRating"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 function ProjectDetails() {

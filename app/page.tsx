@@ -224,7 +224,7 @@ export default function Dashboard() {
                         </Carousel>
 
                         <CardTitle className="text-center mt-8">
-                            <h1>T4 Villeneuve</h1>
+                            <p>T4 Villeneuve</p>
                         </CardTitle>
                         <CardDescription className="text-center mt-4">
                             <p className="font-semibold mt-4">1 pièce &bull;
