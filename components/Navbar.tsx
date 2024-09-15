@@ -11,10 +11,10 @@ import {
   Settings,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { NavbarProps } from "@/types/dashboard.types" 
 import * as React from "react"
 
-
-function Navbar() {
+function Navbar({ setContent }: NavbarProps) {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
     <div className="flex h-full max-h-screen flex-col gap-2">
@@ -32,12 +32,14 @@ function Navbar() {
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
           <Link
             href="#"
+            onClick={() => setContent("main")}
             className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
           >
             <Home className="h-4 w-4" />
             Tableau de bord
           </Link>
           <Link
+            onClick={() => setContent("projects")}
             href="#"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
@@ -45,6 +47,7 @@ function Navbar() {
             Projets
           </Link>
           <Link
+            onClick={() => setContent("import")}
             href="#"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
@@ -52,13 +55,15 @@ function Navbar() {
             Import
           </Link>
           <Link
-            href="#"
+            onClick={() => setContent("design")}
+            href="/design"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
             <PencilRuler className="h-4 w-4" />
             Design
           </Link>
           <Link
+            onClick={() => setContent("form")}
             href="#"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
