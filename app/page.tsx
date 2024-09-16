@@ -1,17 +1,7 @@
 "use client";
-import Link from "next/link"
 import {
   CircleUser,
-  FolderKanban,
-  Home,
-  Import,
-  LifeBuoy,
-  List,
-  Menu,
-  Package2,
-  PencilRuler,
   Search,
-  Settings
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,7 +22,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import * as React from "react"
 import Image from "next/image"
 import { Progress } from "@/components/ui/progress"
@@ -48,8 +37,9 @@ import NewProjectForm from "@/components/NewProjectForm"
 import ProjectDetails from "@/components/ProjectDetails"
 import Navbar from "@/components/Navbar"
 import { ComponentsMap } from "@/types/dashboard.types"
-import ModelViewer from "@/components/scans/ModelViewer3D";
 import ImportPage from "@/components/scans/Import";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 const componentsMap: ComponentsMap = {
   main:         
@@ -152,10 +142,35 @@ const componentsMap: ComponentsMap = {
 };
 
 export default function Dashboard() {
+  const [loading, setLoading] = React.useState(true);
   const [content, setContent] = React.useState<keyof typeof componentsMap>("main");
+  const router = useRouter();
   const renderContent = () => {
     return componentsMap[content] || <div>Dashboard Content</div>;
   };
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await createClient().auth.getUser();
+      if (!user) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, [router]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading state while checking authentication
+  }
+
+  const handleLogout = async () => {
+    await createClient().auth.signOut();
+    router.push('/login'); // Redirect to login page after logging out
+  };
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <Navbar setContent={setContent}/>
@@ -186,7 +201,7 @@ export default function Dashboard() {
               <DropdownMenuItem>Parametres</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Se déconnecter</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>Se déconnecter</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
