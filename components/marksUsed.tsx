@@ -17,13 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { month: "Ikea", desktop: 186 },
-  { month: "H&M Home", desktop: 305 },
-  { month: "Diptyque", desktop: 237 },
-  { month: "Zara home", desktop: 73 },
-  { month: "Benatura", desktop: 209 },
-]
+import { MarksMostUsedObjectType } from "@/contexts/dashboard.context"
 
 const chartConfig = {
   desktop: {
@@ -35,7 +29,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export default function MarksUsed () {
+interface MarksUsedProps {
+  marksUsedData: MarksMostUsedObjectType[]
+}
+
+export default function MarksUsed (props: MarksUsedProps) {
   return (
     <Card>
       <CardHeader>
@@ -46,7 +44,7 @@ export default function MarksUsed () {
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={props.marksUsedData}
             layout="vertical"
             margin={{
               right: 16,
@@ -54,7 +52,7 @@ export default function MarksUsed () {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="mark"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -62,26 +60,26 @@ export default function MarksUsed () {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="desktop" type="number" hide />
+            <XAxis dataKey="percentage" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="desktop"
+              dataKey="percentage"
               layout="vertical"
               fill="var(--color-desktop)"
               radius={4}
             >
               <LabelList
-                dataKey="month"
+                dataKey="mark"
                 position="insideLeft"
                 offset={8}
                 className="fill-[--color-label]"
                 fontSize={12}
               />
               <LabelList
-                dataKey="desktop"
+                dataKey="percentage"
                 position="right"
                 offset={8}
                 className="fill-foreground"

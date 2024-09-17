@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import * as React from "react"
 
 
-function Navbar() {
+function DashboardNavbar() {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
     <div className="flex h-full max-h-screen flex-col gap-2">
@@ -52,7 +52,7 @@ function Navbar() {
             Import
           </Link>
           <Link
-            href="#"
+            href="/design"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
             <PencilRuler className="h-4 w-4" />
@@ -91,4 +91,4 @@ function Navbar() {
   )
 }
 
-export default Navbar
+export default DashboardNavbar

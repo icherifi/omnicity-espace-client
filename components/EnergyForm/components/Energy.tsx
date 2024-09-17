@@ -20,6 +20,7 @@ function Energy () {
     const {ventilationType, setVentilationType} = useEnergyFormContext()
     return (
     <div className="flex flex-col items-center justify-center space-x-2">
+        <Label className='mb-2 text-center'>Quelle est la source d'énergie de chauffage principale?</Label>
         <div className="flex items-center justify-around space-x-2 mt-4 mb-4">
             <div onClick={() => {
                 setSelectedEnergyType("Electricity")

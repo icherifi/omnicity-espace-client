@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import Providers from "./providers";
 import NewProjectFormContextProvider from "@/contexts/newProjectForm.context";
 import EnergyFormContextProvider from "@/contexts/energyForm.context";
+import DashboardContextProvider from "@/contexts/dashboard.context";
 
 export interface useCustomHook {
   children: React.ReactNode
@@ -27,10 +28,11 @@ export default function RootLayout({
   return (
     <NewProjectFormContextProvider>
     <EnergyFormContextProvider>
+    <DashboardContextProvider>
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "overflow-scroll min-h-screen bg-background font-sans antialiased md:overflow-hidden",
           fontSans.variable
         )}
       >
@@ -39,6 +41,7 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
+    </DashboardContextProvider>
     </EnergyFormContextProvider>
     </NewProjectFormContextProvider>
   )
