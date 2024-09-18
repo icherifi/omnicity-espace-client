@@ -90,8 +90,8 @@ function ProjectDetails(props: ProjectDetailsProps) {
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Services et accessibilité</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        {currentProjectDisplayed.features.servicesAndAccessibility.map(service => (
-                            <span>{service}</span>
+                        {currentProjectDisplayed.features.servicesAndAccessibility.map((service, i) => (
+                            <span key={i}>{service}</span>
                         ))}
                     </div>
                 </div>
@@ -99,8 +99,8 @@ function ProjectDetails(props: ProjectDetailsProps) {
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Extérieur</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        {currentProjectDisplayed.features.outsite.map(outsideElement => (
-                            <span>{outsideElement}</span>
+                        {currentProjectDisplayed.features.outsite.map((outsideElement, i) => (
+                            <span key={i}>{outsideElement}</span>
                         ))}
                     </div>
                 </div>
@@ -108,8 +108,8 @@ function ProjectDetails(props: ProjectDetailsProps) {
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Surfaces annexes</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        {currentProjectDisplayed.features.additionalAres.map(additionalArea => (
-                            <span>{additionalArea}</span>
+                        {currentProjectDisplayed.features.additionalAres.map((additionalArea, i) => (
+                            <span key={i}>{additionalArea}</span>
                         ))}
                     </div>
                 </div>
@@ -117,8 +117,8 @@ function ProjectDetails(props: ProjectDetailsProps) {
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Hygiène</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                        {currentProjectDisplayed.features.hygiene.map(hygieneElement => (
-                            <span>{hygieneElement}</span>
+                        {currentProjectDisplayed.features.hygiene.map((hygieneElement, i) => (
+                            <span key={i}>{hygieneElement}</span>
                         ))}
                     </div>
                 </div>

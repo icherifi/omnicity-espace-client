@@ -7,6 +7,7 @@ type WorkPeriodSlices = "None" | "Under10" | "Between10And20" | "Between20And30"
 type GlazingType = "Bois / Bois métal" | "PVC" | "Aluminium";
 type EnergyType = "Electricity" | "Wood" | "Gas or propane" | "Fuel oil" | "Coal"
 type HeatingType = "Electric Transmitters" | "Heat pumps"
+type EnergyLabelSolutionsType = "Simplicity" | "Balance" | "Performance"
 
 interface EnergyFormType {
     isEnergyFormDisplayed: boolean,
@@ -43,6 +44,8 @@ interface EnergyFormType {
     setHotWaterProductType: Dispatch<SetStateAction<string>>,
     ventilationType: string,
     setVentilationType: Dispatch<SetStateAction<string>>,
+    energyLabelSolutionsType: EnergyLabelSolutionsType,
+    setEnergyLabelSolutionsType: Dispatch<SetStateAction<EnergyLabelSolutionsType>>
     resetEnergyForm: () => void  // Fonction de reset
 }
 
@@ -65,6 +68,7 @@ const initialState = {
     selectedHeatingType: "Heat pumps" as HeatingType,
     hotWaterProductType: "Mon systeme de chauffage",
     ventilationType: "Ventilation naturelle",
+    energyLabelSolutionsType: "Simplicity" as EnergyLabelSolutionsType
 };
 
 export const EnergyFormContext = createContext<EnergyFormType | null>(null);
@@ -87,7 +91,7 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
     const [selectedHeatingType, setSelectedHeatingType] = useState(initialState.selectedHeatingType);
     const [hotWaterProductType, setHotWaterProductType] = useState(initialState.hotWaterProductType);
     const [ventilationType, setVentilationType] = useState(initialState.ventilationType);
-
+    const [energyLabelSolutionsType, setEnergyLabelSolutionsType] = useState<EnergyLabelSolutionsType>(initialState.energyLabelSolutionsType)
     // Fonction pour réinitialiser tous les états
     const resetEnergyForm = () => {
         setIsEnergyFormDisplayed(initialState.isEnergyFormDisplayed);
@@ -107,6 +111,7 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
         setSelectedHeatingType(initialState.selectedHeatingType);
         setHotWaterProductType(initialState.hotWaterProductType);
         setVentilationType(initialState.ventilationType)
+        setEnergyLabelSolutionsType(initialState.energyLabelSolutionsType)
     };
 
     return (
@@ -145,6 +150,8 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
             setHotWaterProductType,
             ventilationType,
             setVentilationType,
+            energyLabelSolutionsType,
+            setEnergyLabelSolutionsType,
             resetEnergyForm // Expose la fonction reset
         }}>
             {children}

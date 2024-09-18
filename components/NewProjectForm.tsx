@@ -20,6 +20,8 @@ import Property from "@/components/EnergyForm/components/Property"
 import InsulationWork from "@/components/EnergyForm/components/InsulationWork"
 import Energy from "@/components/EnergyForm/components/Energy"
 import { useEnergyFormContext } from '@/contexts/energyForm.context'
+import PropertyState from './EnergyForm/components/PropertyState'
+import EnergyLabelSolutions from './EnergyForm/components/EnergyLabelSolutions'
 
 function NewProjectForm() {
     const {isEnergyFormDisplayed, setIsEnergyFormDisplayed, setEnergyFormGotOpened, energyFormGotOpened} = useEnergyFormContext()
@@ -64,10 +66,12 @@ function NewProjectForm() {
                 {currentEnergyFormPage == 1 && <Property />}
                 {currentEnergyFormPage == 2 && <InsulationWork />}
                 {currentEnergyFormPage == 3 && <Energy />}
+                {currentEnergyFormPage == 4 && <PropertyState />}
+                {currentEnergyFormPage == 5 && <EnergyLabelSolutions />}
             </div>
 
             <DialogFooter>
-            {currentEnergyFormPage == 3 ? 
+            {currentEnergyFormPage == 5 ? 
                 <Button onClick={() => {
                     setIsEnergyFormDisplayed(false)
                     setCurrentEnergyFormPage(1)
@@ -90,7 +94,7 @@ function NewProjectForm() {
             </DialogFooter>
             </DialogContent>    
             :
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[700px]">
                 <DialogHeader>
                 <DialogTitle>Nouveau projet</DialogTitle>
                 <DialogDescription>
@@ -140,27 +144,27 @@ function NewProjectForm() {
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         
-                        <Label className="text-right">
+                        <Label className='text-right'>
                         Informations générales
                         </Label>
-                        <div className="flex w-full justify-around col-span-3">
+                        <div className="flex w-full items-center justify-around col-span-3">
                             <div className="flex flex-col w-1/4">
                                 <Label htmlFor='size'>
                                     Taille du bien
                                 </Label>
-                                <Input id="size" value={projectGeneralInformation.size} placeholder="44m²" className="col-span-3 mt-2" onChange={handleGeneralInformationInputChange}/>
+                                <Input id="size" value={projectGeneralInformation.size} placeholder="44m²" className="col-span-3 mt-2" onChange={handleGeneralInformationInputChange} />
                             </div>
-                            <div className="flex flex-col w-1/4">
+                            <div className="flex flex-col w-1/3">
                                 <Label htmlFor='roomsNumber'>
                                     Nombre de pièces
                                 </Label>
-                                <Input id="roomsNumber" value={projectGeneralInformation.roomsNumber} placeholder="5" className="col-span-3 mt-2" onChange={handleGeneralInformationInputChange}/>
+                                <Input id="roomsNumber" value={projectGeneralInformation.roomsNumber} placeholder="5" className="col-span-3 mt-2" onChange={handleGeneralInformationInputChange} />
                             </div>
-                            <div className="flex flex-col w-1/4">
+                            <div className="flex flex-col w-1/3">
                                 <Label htmlFor='floorsNumber'>
                                     Nombre d'étages
                                 </Label>
-                                <Input id="floorsNumber" value={projectGeneralInformation.floorsNumber} placeholder="0" className="col-span-3 mt-2" onChange={handleGeneralInformationInputChange}/>
+                                <Input id="floorsNumber" value={projectGeneralInformation.floorsNumber} placeholder="0" className="col-span-3 mt-2" onChange={handleGeneralInformationInputChange} />
                             </div>
                         </div>
                     </div>
