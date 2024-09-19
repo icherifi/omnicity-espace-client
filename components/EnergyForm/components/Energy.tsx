@@ -9,7 +9,7 @@ SelectItem,
 SelectTrigger,
 SelectValue,
 } from "@/components/ui/select"
-import { useEnergyFormContext } from '@/contexts/energyForm.context'
+import { HotWaterProductType, useEnergyFormContext, VentilationType } from '@/contexts/energyForm.context'
 
 
 
@@ -73,7 +73,7 @@ function Energy () {
                 <Label htmlFor='hotWaterProductType' className='mb-2 text-center'>Quel appareil produit votre eau chaude sanitaire?</Label>
                 
                 <Select defaultValue='Mon systeme de chauffage' value={hotWaterProductType} onValueChange={(e) => {
-                    setHotWaterProductType(e)
+                    setHotWaterProductType(e as HotWaterProductType)
                 }}>
                     <SelectTrigger className="w-[250px] self-center">
                         <SelectValue placeholder="Mon systeme de chauffage"/>
@@ -90,7 +90,7 @@ function Energy () {
                 <Label htmlFor='ventilationType' className='mb-2 text-center'>Type de ventilation</Label>
                 
                 <Select defaultValue='Ventilation naturelle' value={ventilationType} onValueChange={(e) => {
-                    setVentilationType(e)
+                    setVentilationType(e as VentilationType)
                 }}>
                     <SelectTrigger className="w-[275px] self-center">
                         <SelectValue placeholder="Ventilation naturelle"/>

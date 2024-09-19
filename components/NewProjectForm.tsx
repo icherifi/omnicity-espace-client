@@ -22,6 +22,7 @@ import Energy from "@/components/EnergyForm/components/Energy"
 import { useEnergyFormContext } from '@/contexts/energyForm.context'
 import PropertyState from './EnergyForm/components/PropertyState'
 import EnergyLabelSolutions from './EnergyForm/components/EnergyLabelSolutions'
+import { useRouter } from 'next/navigation'
 
 function NewProjectForm() {
     const {isEnergyFormDisplayed, setIsEnergyFormDisplayed, setEnergyFormGotOpened, energyFormGotOpened} = useEnergyFormContext()
@@ -33,14 +34,16 @@ function NewProjectForm() {
     const {projectGeneralInformation, setProjectGeneralInformation} = useNewProjectFormContext()
     const { resetProjectForm } = useNewProjectFormContext()
     const { resetEnergyForm } = useEnergyFormContext()
+    const router = useRouter()
+
     function handleGeneralInformationInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { id, value } = e.currentTarget;
-    
-    // Met à jour seulement la clé qui correspond à l'ID de l'input
-    setProjectGeneralInformation(prevState => ({
-        ...prevState,
-        [id]: value
-    }));
+        const { id, value } = e.currentTarget;
+        
+        // Met à jour seulement la clé qui correspond à l'ID de l'input
+        setProjectGeneralInformation(prevState => ({
+            ...prevState,
+            [id]: value
+        }));
     }
 
   return (
@@ -54,7 +57,7 @@ function NewProjectForm() {
             </DialogTrigger>
             
             {isEnergyFormDisplayed ? 
-            <DialogContent className="sm:max-w-[750px]">
+            <DialogContent className={`${currentEnergyFormPage == 5 ? "sm:max-w-[1050px]" : "sm:max-w-[750px]"}`}>
             <DialogHeader>
                 <DialogTitle>Formulaire energétique</DialogTitle>
                 <DialogDescription>
@@ -73,8 +76,9 @@ function NewProjectForm() {
             <DialogFooter>
             {currentEnergyFormPage == 5 ? 
                 <Button onClick={() => {
-                    setIsEnergyFormDisplayed(false)
-                    setCurrentEnergyFormPage(1)
+                    router.push("/temp")
+                    //setCurrentEnergyFormPage(1)
+                    //setIsEnergyFormDisplayed(false)
                 }}>Terminer</Button>
                 :
                 <Button onClick={() => {
@@ -174,11 +178,19 @@ function NewProjectForm() {
                             Partie énergétique
                         </Label>
                         <div className="flex items-center justify-around space-x-2 mt-4 mb-4">
-                            {energyFormGotOpened ? <div className='flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer' onClick={() => {
+                            {energyFormGotOpened ? <>
+                                <div className='flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer' onClick={() => {
                                 setIsEnergyFormDisplayed(true)
                             }}>
                                 <p>Modifier</p>
                             </div>
+                            <div className='flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer' onClick={() => {
+                                setIsEnergyFormDisplayed(false)
+                                setEnergyFormGotOpened(false)
+                            }}>
+                                <p>Annuler</p>
+                            </div>
+                            </>
                             :
                             <>
                                 <div onClick={() => {
@@ -199,7 +211,9 @@ function NewProjectForm() {
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button type="submit">Créer le projet</Button>
+                        <Button onClick={() => {
+                            router.push("/temp")
+                        }}>Créer le projet</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent> 

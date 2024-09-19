@@ -6,6 +6,7 @@ import Providers from "./providers";
 import NewProjectFormContextProvider from "@/contexts/newProjectForm.context";
 import EnergyFormContextProvider from "@/contexts/energyForm.context";
 import DashboardContextProvider from "@/contexts/dashboard.context";
+import DesignPageContextProvider from "@/contexts/designPage.context";
 
 export interface useCustomHook {
   children: React.ReactNode
@@ -29,6 +30,7 @@ export default function RootLayout({
     <NewProjectFormContextProvider>
     <EnergyFormContextProvider>
     <DashboardContextProvider>
+    <DesignPageContextProvider>
     <html lang="en">
       <body
         className={cn(
@@ -41,6 +43,7 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
+    </DesignPageContextProvider>
     </DashboardContextProvider>
     </EnergyFormContextProvider>
     </NewProjectFormContextProvider>

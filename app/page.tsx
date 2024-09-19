@@ -151,8 +151,17 @@ export default function Dashboard() {
     checkUser();
   }, [router]);
 
+  const [progress, setProgress] = React.useState(13)
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setProgress(100), 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   if (loading) {
-    return <div>Loading...</div>; // Show a loading state while checking authentication
+    return <div className="h-screen w-full flex flex-col items-center mt-16">
+      <Progress value={progress} className="w-[60%]" />
+    </div>; // Show a loading state while checking authentication
   }
 
   const handleLogout = async () => {
@@ -162,7 +171,7 @@ export default function Dashboard() {
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <Navbar setContent={setContent} />
+      <Navbar content={content} setContent={setContent} />
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           <div className="w-full flex-1">
@@ -171,7 +180,7 @@ export default function Dashboard() {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search projets..."
+                  placeholder="Chercer un projet..."
                   className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
                 />
               </div>

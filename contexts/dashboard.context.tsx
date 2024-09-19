@@ -43,12 +43,14 @@ export interface ProjectType {
 interface DashboardType {
     currentProjectDisplayed: ProjectType,
     setCurrentProjectDisplayed: Dispatch<SetStateAction<ProjectType>>,
+    costEstimation: CostEstimationType,
+    setCostEstimation: Dispatch<SetStateAction<CostEstimationType>>,
     resetDashboard: () => void  // Fonction de reset
 }
 
 // Définir l'état initial
 const initialState = {
-    //Fetch et prendre le 1st project
+    //Fetch de la db
     currentProjectDisplayed: {
         id: "#Oe31b70H",
         name: "T2 VITRY",
@@ -68,8 +70,8 @@ const initialState = {
         stateOfPlay: "QUARTIER GARE-JEAN-JAURÈS - VITRY SUR SEINE (94400) Dans une copropriété sécurisé avec gardien et espace vert, studio comprenant : entrée, séjour donnant sur balcon, cuisine, et une salle de bains avec wc, et une cave. 10 min du métro Mairie d'Ivry et du RERC et proche de toutes commodites. Référence agence : 563",
         marksMostUsed: [{mark: "Ikea", percentage: 26}, {mark: "H&M home", percentage: 14}, {mark: "Diptyque", percentage: 19}, {mark: "Zara home", percentage: 32}, {mark: "Benatura", percentage: 9}],
         costEstimation: {
-            withAid: 178000,
-            withoutAid: 213000
+            withAid: 0,
+            withoutAid: 0
         },
         status: "inprogress",
         lastUpdate: "17 September 2024",
@@ -82,7 +84,7 @@ export const DashboardContext = createContext<DashboardType | null>(null);
 
 export default function DashboardContextProvider({ children }: useCustomHook) {
     const [currentProjectDisplayed, setCurrentProjectDisplayed] = useState<ProjectType>(initialState.currentProjectDisplayed);
-
+    const [costEstimation, setCostEstimation] = useState(initialState.currentProjectDisplayed.costEstimation)
     // Fonction pour réinitialiser tous les états
     const resetDashboard = () => {
         setCurrentProjectDisplayed(initialState.currentProjectDisplayed)
@@ -92,6 +94,8 @@ export default function DashboardContextProvider({ children }: useCustomHook) {
         <DashboardContext.Provider value={{
             currentProjectDisplayed,
             setCurrentProjectDisplayed,
+            costEstimation,
+            setCostEstimation,
             resetDashboard // Expose la fonction reset
         }}>
             {children}

@@ -3,9 +3,9 @@ import { useCustomHook } from "@/app/layout";
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react";
 
 interface GeneralInformationType {
-    size: string,
-    roomsNumber: number,
-    floorsNumber: number
+    size?: string,
+    roomsNumber?: number,
+    floorsNumber?: number
 }
 
 interface NewProjectFormType {
@@ -17,8 +17,8 @@ interface NewProjectFormType {
     setProjectAddress: Dispatch<SetStateAction<string>>,
     projectDescription: string,
     setProjectDescription: Dispatch<SetStateAction<string>>,
-    projectDate: Date,
-    setProjectDate: Dispatch<SetStateAction<Date>>,
+    projectDate: Date | undefined,
+    setProjectDate: Dispatch<SetStateAction<Date | undefined>>,
     projectGeneralInformation: GeneralInformationType,
     setProjectGeneralInformation: Dispatch<SetStateAction<GeneralInformationType>>,
     resetProjectForm: () => void
@@ -32,11 +32,11 @@ const initialState = {
     projectName: "",
     projectAddress: "",
     projectDescription: "",
-    projectDate: new Date("1956-05-12"),
+    projectDate: undefined,
     projectGeneralInformation: {
         size: "",
-        roomsNumber: 0,
-        floorsNumber: 0
+        roomsNumber: undefined,
+        floorsNumber: undefined
     }
 };
 
@@ -45,7 +45,7 @@ export default function NewProjectFormContextProvider({ children }: useCustomHoo
     const [projectName, setProjectName] = useState(initialState.projectName);
     const [projectAddress, setProjectAddress] = useState(initialState.projectAddress);
     const [projectDescription, setProjectDescription] = useState(initialState.projectDescription);
-    const [projectDate, setProjectDate] = useState(initialState.projectDate);
+    const [projectDate, setProjectDate] = useState<Date | undefined>(initialState.projectDate);
     const [projectGeneralInformation, setProjectGeneralInformation] = useState<GeneralInformationType>(initialState.projectGeneralInformation);
 
     // Fonction pour réinitialiser tous les états

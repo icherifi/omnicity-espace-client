@@ -30,6 +30,7 @@ interface ProjectsTableProps {
 }
 
 export const projects: ProjectType[] = [
+  //Récuperer de la db
   {
       id: "#Oe31b70H",
       name: "T2 VITRY",

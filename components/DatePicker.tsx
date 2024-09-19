@@ -15,13 +15,7 @@ import {
 import { useNewProjectFormContext } from "@/contexts/newProjectForm.context"
 
 export default function DatePicker () {
-  const [date, setDate] = React.useState<Date>()
-  const { setProjectDate } = useNewProjectFormContext()
-
-  React.useEffect(() => {
-    setProjectDate(date!)
-  }, [date])
-
+  const { projectDate, setProjectDate } = useNewProjectFormContext()
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -29,18 +23,18 @@ export default function DatePicker () {
           variant={"outline"}
           className={cn(
             "w-[240px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !projectDate && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Choisi une date</span>}
+          {projectDate ? format(projectDate, "PPP") : <span>Choisi une date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={date}
-          onSelect={setDate}
+          selected={projectDate}
+          onSelect={setProjectDate}
           initialFocus
         />
       </PopoverContent>
