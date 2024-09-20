@@ -98,7 +98,7 @@ function NewProjectForm() {
             </DialogFooter>
             </DialogContent>    
             :
-            <DialogContent className="sm:max-w-[700px]">
+            <DialogContent className="sm:max-w-[750px]">
                 <DialogHeader>
                 <DialogTitle>Nouveau projet</DialogTitle>
                 <DialogDescription>
@@ -110,7 +110,8 @@ function NewProjectForm() {
                         <Label htmlFor="authorName" className="text-right">
                         Nom de l'auteur
                         </Label>
-                        <Input id="authorName" defaultValue="Saikou Sow" value={projectAuthorName} className="col-span-3" onChange={(e) => {
+                        <Input id="authorName" value={projectAuthorName} className="col-span-3" 
+                        onChange={(e) => {
                             setProjectAuthorName(e.currentTarget.value)
                         }}/>
                     </div>
@@ -148,7 +149,7 @@ function NewProjectForm() {
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         
-                        <Label className='text-right'>
+                        <Label className='text-right w-full'>
                         Informations générales
                         </Label>
                         <div className="flex w-full items-center justify-around col-span-3">
@@ -211,9 +212,7 @@ function NewProjectForm() {
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button onClick={() => {
-                            router.push("/temp")
-                        }}>Créer le projet</Button>
+                        <Button>Créer le projet</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent> 

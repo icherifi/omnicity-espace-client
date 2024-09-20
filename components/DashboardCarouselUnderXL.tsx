@@ -35,11 +35,14 @@ function DashboardCarouselUnderXL() {
                     <CardContent className="flex flex-col items-center justify-center p-2">
                     <Carousel className="max-w-32 max-h-40" opts={{loop: true}}>
                         <CarouselContent>
-                        {Array.from({ length: 5 }).map((_, index) => (
+                        {Array.from({ length: 3 }).map((_, index) => {
+                            const imageNumber = i * 3 + index + 1; // Par exemple: i=0 -> dalle1, dalle2, dalle3; i=1 -> dalle4, dalle5, dalle6, etc.
+                            return (
                             <CarouselItem key={index} className="pr-4">
-                                <Image src={"/immo1.jpg"} alt="immo" width={250} height={250} />
+                                <Image src={`/dalle${imageNumber}.png`} alt="property image" width={250} height={250} />
                             </CarouselItem>
-                        ))}
+                            )
+                        })}
                         </CarouselContent>
                         <CarouselPrevious />
                         <CarouselNext />

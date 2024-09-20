@@ -169,10 +169,10 @@ function ProjectsTable(props: ProjectsTableProps) {
                               {project.id_bouquet}
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
-                              {project.costEstimation.withAid}€
+                              {project.costEstimation.withAid.toLocaleString('fr-FR')}€
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
-                              {project.costEstimation.withoutAid}€
+                              {project.costEstimation.withoutAid.toLocaleString('fr-FR')}€
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
                               ????

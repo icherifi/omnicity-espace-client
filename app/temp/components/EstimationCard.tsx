@@ -27,7 +27,7 @@ function EstimationCard() {
     const {selectedAssets} = useDesignPageContext()
     const selectedSalon = selectedAssets.filter(asset => (asset.roomType == "salon"))
     const selectedCuisine = selectedAssets.filter(asset => (asset.roomType == "cuisine"))
-    const {costEstimation, setCostEstimation} = useDashboardContext()
+    const {costEstimation, setCostEstimation} = useDesignPageContext()
   return (
     <div>
         <Card
@@ -119,7 +119,7 @@ function EstimationCard() {
                 <dt className="flex items-center gap-1 text-md text-muted-foreground">
                     Avec aides
                 </dt>
-                <dd className="font-semibold text-lg">{costEstimation.withAid}€</dd>
+                <dd className="font-semibold text-lg">{costEstimation.withAid.toLocaleString('fr-FR')}€</dd>
                 </div>
             </dl>
             <dl className="grid gap-3">
@@ -127,7 +127,7 @@ function EstimationCard() {
                 <dt className="flex items-center text-md gap-1 text-muted-foreground">
                     Sans aides
                 </dt>
-                <dd className="font-semibold text-lg">{costEstimation.withoutAid}€</dd>
+                <dd className="font-semibold text-lg">{costEstimation.withoutAid.toLocaleString('fr-FR')}€</dd>
                 </div>
             </dl>
             </div>

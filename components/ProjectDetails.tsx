@@ -146,11 +146,11 @@ function ProjectDetails(props: ProjectDetailsProps) {
                 <ul className="grid gap-3">
                 <li className="flex items-center justify-between">
                     <span className="text-muted-foreground">Sans aides</span>
-                    <span>{currentProjectDisplayed.costEstimation.withoutAid}€</span>
+                    <span>{currentProjectDisplayed.costEstimation.withoutAid.toLocaleString('fr-FR')}€</span>
                 </li>
                 <li className="flex items-center justify-between font-semibold">
                     <span className="text-muted-foreground">Avec aides</span>
-                    <span>{currentProjectDisplayed.costEstimation.withAid}€</span>
+                    <span>{currentProjectDisplayed.costEstimation.withAid.toLocaleString('fr-FR')}€</span>
                 </li>
                 </ul>
             </CardContent>

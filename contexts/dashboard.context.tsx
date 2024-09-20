@@ -1,5 +1,6 @@
 "use client"
 import { useCustomHook } from "@/app/layout";
+import { projects } from "@/components/ProjectsTable";
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react";
 
 interface ProjectFeaturesType {
@@ -43,48 +44,19 @@ export interface ProjectType {
 interface DashboardType {
     currentProjectDisplayed: ProjectType,
     setCurrentProjectDisplayed: Dispatch<SetStateAction<ProjectType>>,
-    costEstimation: CostEstimationType,
-    setCostEstimation: Dispatch<SetStateAction<CostEstimationType>>,
     resetDashboard: () => void  // Fonction de reset
 }
 
 // Définir l'état initial
 const initialState = {
     //Fetch de la db
-    currentProjectDisplayed: {
-        id: "#Oe31b70H",
-        name: "T2 VITRY",
-        date: "23 Juin 2024",
-        address: "337 Centre Cial V Deux, 94400",
-        actualEnergyRating: "e",
-        targetedEnergyRating: "b",
-        features: {
-            servicesAndAccessibility: ["Ascenseur", "Gardien", "Digicode"],
-            outsite: ["Balcon"],
-            additionalAres: ["Parking", "Cave"],
-            hygiene: ["Salle de bain", "Toilettes"],
-            size: "65m²",
-            roomsNumber: 5,
-            floorsNumber: 2
-        },
-        stateOfPlay: "QUARTIER GARE-JEAN-JAURÈS - VITRY SUR SEINE (94400) Dans une copropriété sécurisé avec gardien et espace vert, studio comprenant : entrée, séjour donnant sur balcon, cuisine, et une salle de bains avec wc, et une cave. 10 min du métro Mairie d'Ivry et du RERC et proche de toutes commodites. Référence agence : 563",
-        marksMostUsed: [{mark: "Ikea", percentage: 26}, {mark: "H&M home", percentage: 14}, {mark: "Diptyque", percentage: 19}, {mark: "Zara home", percentage: 32}, {mark: "Benatura", percentage: 9}],
-        costEstimation: {
-            withAid: 0,
-            withoutAid: 0
-        },
-        status: "inprogress",
-        lastUpdate: "17 September 2024",
-        id_bouquet: "#Oe31b70k",
-        id_design: "#Zk41b70H"
-    } as ProjectType
+    currentProjectDisplayed: projects[0]
 };
 
 export const DashboardContext = createContext<DashboardType | null>(null);
 
 export default function DashboardContextProvider({ children }: useCustomHook) {
     const [currentProjectDisplayed, setCurrentProjectDisplayed] = useState<ProjectType>(initialState.currentProjectDisplayed);
-    const [costEstimation, setCostEstimation] = useState(initialState.currentProjectDisplayed.costEstimation)
     // Fonction pour réinitialiser tous les états
     const resetDashboard = () => {
         setCurrentProjectDisplayed(initialState.currentProjectDisplayed)
@@ -94,8 +66,6 @@ export default function DashboardContextProvider({ children }: useCustomHook) {
         <DashboardContext.Provider value={{
             currentProjectDisplayed,
             setCurrentProjectDisplayed,
-            costEstimation,
-            setCostEstimation,
             resetDashboard // Expose la fonction reset
         }}>
             {children}

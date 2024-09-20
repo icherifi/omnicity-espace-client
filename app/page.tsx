@@ -125,7 +125,7 @@ const componentsMap: ComponentsMap = {
   <div>
     <ImportPage />
   </div>,
-  design: <div>Loading...</div>,
+  //design: <div>Loading...</div>,
   form: <div>Form Comming Soon</div>,
   projects: <div>Projects Comming Soon</div>,
 };

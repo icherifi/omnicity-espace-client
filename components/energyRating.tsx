@@ -85,7 +85,6 @@ export default function EnergyRating(props: EnergyRatingProps) {
       className="mx-auto aspect-square w-full max-w-[200px]" // Réduction de la taille
     >
       <PieChart>
-        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
         <Pie
           data={desktopData}
           dataKey="desktop"

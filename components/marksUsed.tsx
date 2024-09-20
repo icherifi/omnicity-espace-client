@@ -61,10 +61,6 @@ export default function MarksUsed (props: MarksUsedProps) {
               hide
             />
             <XAxis dataKey="percentage" type="number" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
             <Bar
               dataKey="percentage"
               layout="vertical"

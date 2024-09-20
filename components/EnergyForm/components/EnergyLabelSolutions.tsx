@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from '@/components/ui/separator'
 import { useDashboardContext } from '@/contexts/dashboard.context'
+import { useDesignPageContext } from '@/contexts/designPage.context'
 
 function EnergyLabelTypeCard (props: {
   energyLabelSolutionsType: EnergyLabelSolutionsType
@@ -223,8 +224,8 @@ function EnergyLabelTypeCard (props: {
 }
 
 function EnergyLabelSolutions() {
-  const {energyLabelSolutionsType, setEnergyLabelSolutionsType} = useEnergyFormContext()
-  const {setCostEstimation} = useDashboardContext()
+  const { energyLabelSolutionsType, setEnergyLabelSolutionsType } = useEnergyFormContext()
+  const { setCostEstimation } = useDesignPageContext()
 
   useEffect(() => {
     setCostEstimation({

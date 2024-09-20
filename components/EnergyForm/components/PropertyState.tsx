@@ -9,6 +9,7 @@ import EnergyRating from '@/components/energyRating'
 import EnergyPerformanceBadge from '@/components/EnergyPerformanceBadge'
 import { useEnergyFormContext } from '@/contexts/energyForm.context'
 import { Progress } from "@/components/ui/progress"
+import Image from 'next/image'
 
 function PropertyState() {
     const {workPeriodForWalls, workPeriodForFloors, glazingType} = useEnergyFormContext()
@@ -65,7 +66,8 @@ function PropertyState() {
                     <AccordionContent>
                         <ul>
                             {workPeriodForFloors != "None" &&
-                            <li>
+                            <li className='flex items-center py-0.5'>
+                            <Image className='mr-2' src={"/floorplan.svg"} width={16} height={16} alt='floor icon'/>
                             {workPeriodForFloors == "Between10And20" && "Sols: Entre 10 et 20 ans"}
                             {workPeriodForFloors == "Between20And30" && "Sols: Entre 20 et 30 ans"}
                             {workPeriodForFloors == "Between30And40" && "Sols: Entre 30 et 40 ans"}
@@ -73,14 +75,21 @@ function PropertyState() {
                             </li>
                             }
                             {workPeriodForWalls != "None" &&
-                            <li>
+                            <li className='flex items-center py-0.5'>
+                            <Image className='mr-2' src={"/wall.svg"} width={16} height={16} alt='wall icon'/>
                             {workPeriodForWalls == "Between10And20" && "Murs: Entre 10 et 20 ans"}
                             {workPeriodForWalls == "Between20And30" && "Murs: Entre 20 et 30 ans"}
                             {workPeriodForWalls == "Between30And40" && "Murs: Entre 30 et 40 ans"}
                             {workPeriodForWalls == "Under10" && "Récent (moins de 10 ans)"}
                             </li>
                             }
-                            {glazingType == "Double vitrage" ? <li>Vitrage: Double vitragre</li> : <li>Vitrage: Simple vitrage</li>}
+                            {glazingType == "Double vitrage" ? <li className='flex items-center py-0.5'>
+                                <Image className='mr-2' src={"/window.svg"} width={16} height={16} alt='window icon'/>
+                                Vitrage: Double vitragre
+                                </li> : <li className='flex items-center py-0.5'>
+                                    <Image className='mr-2' src={"/window.svg"} width={16} height={16} alt='window icon'/>
+                                    Vitrage: Simple vitrage
+                                    </li>}
                         </ul>
                     </AccordionContent>
                 </AccordionItem>
@@ -88,14 +97,17 @@ function PropertyState() {
                     <AccordionTrigger><span className='flex'>Chauffage: <EnergyPerformanceBadge state='average' badgeValue='Moyen'/></span></AccordionTrigger>
                     <AccordionContent>
                         <ul>
-                            <li>
+                            <li className='flex items-center py-0.5'>
+                                <Image className='mr-2' src={"/heating.svg"} width={16} height={16} alt='heating icon'/>
                                 {selectedEnergyType == "Coal" && "Source principal: Charbon"}
                                 {selectedEnergyType == "Electricity" && "Source principal: Electricité"}
                                 {selectedEnergyType == "Fuel oil" && "Source principal: Fioul"}
                                 {selectedEnergyType == "Gas or propane" && "Source principal: Gaz/Propane"}
                                 {selectedEnergyType == "Wood" && "Source principal: Bois"}
                             </li>
-                            <li>
+                            <li className='flex items-center py-0.5'>
+                                <Image className='mr-2' src={"/water.svg"} width={16} height={16} alt='water icon'/>
+                                {hotWaterProductType == "Mon systeme de chauffage" && "Eau chaude sanitaire: Mon systeme de chauffage"}
                                 {hotWaterProductType == "Un chauffe-eau electrique" && "Eau chaude sanitaire: Chauffe-eau electrique"}
                                 {hotWaterProductType == "Un chauffe-eau au gaz" && "Eau chaude sanitaire: Chauffe-eau au gaz"}
                             </li>
@@ -106,7 +118,8 @@ function PropertyState() {
                     <AccordionTrigger><span className='flex'>Ventilation: <EnergyPerformanceBadge state='bad' badgeValue='Mauvais'/></span></AccordionTrigger>
                     <AccordionContent>
                         <ul>
-                            <li>
+                            <li className='flex items-center py-0.5'>
+                                <Image className='mr-2' src={"/ventilation.svg"} width={16} height={16} alt='ventilation icon'/>
                                 {ventilationType == "Ventilation naturelle" && "Installation: Ventilation naturelle"}
                                 {ventilationType == "Ventilation mécanique simple flux" && "Installation: Ventilation mécanique simple flux"}
                                 {ventilationType == "Ventilation mécanique double flux" && "Installation: Ventilation mécanique double flux"}

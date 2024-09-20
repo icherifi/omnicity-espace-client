@@ -10,13 +10,20 @@ interface SelectedAssetsType {
     price: number
 }
 
+interface CostEstimationType {
+    withAid: number,
+    withoutAid: number
+}
+
 interface DesignPageType {
     isDesignPageAssetsDisplayed: boolean,
     setIsDesignPageAssetsDisplayed: Dispatch<SetStateAction<boolean>>,
     currentDesignPageAssetsDisplayed: DesignPageAssetsType,
     setCurrentDesignPageAssetsDisplayed: Dispatch<SetStateAction<DesignPageAssetsType>>,
     selectedAssets: SelectedAssetsType[],
-    setSelectedAssets: Dispatch<SetStateAction<SelectedAssetsType[]>>
+    setSelectedAssets: Dispatch<SetStateAction<SelectedAssetsType[]>>,
+    costEstimation: CostEstimationType,
+    setCostEstimation: Dispatch<SetStateAction<CostEstimationType>>,
     resetDesignPage: () => void  // Fonction de reset
 }
 
@@ -24,7 +31,11 @@ interface DesignPageType {
 const initialState = {
     isDesignPageAssetsDisplayed: false,
     currentDesignPageAssetsDisplayed: "" as DesignPageAssetsType,
-    selectedAssets: [] as SelectedAssetsType[]
+    selectedAssets: [] as SelectedAssetsType[],
+    costEstimation: {
+        withAid: 0,
+        withoutAid: 0
+    } as CostEstimationType
 };
 
 export const DesignPageContext = createContext<DesignPageType | null>(null);
@@ -33,7 +44,7 @@ export default function DesignPageContextProvider({ children }: useCustomHook) {
     const [isDesignPageAssetsDisplayed, setIsDesignPageAssetsDisplayed] = useState(initialState.isDesignPageAssetsDisplayed)
     const [currentDesignPageAssetsDisplayed, setCurrentDesignPageAssetsDisplayed] = useState(initialState.currentDesignPageAssetsDisplayed)
     const [selectedAssets, setSelectedAssets] = useState(initialState.selectedAssets)
-    
+    const [costEstimation, setCostEstimation] = useState(initialState.costEstimation)
     // Fonction pour réinitialiser tous les états
     const resetDesignPage = () => {
         setIsDesignPageAssetsDisplayed(initialState.isDesignPageAssetsDisplayed)
@@ -47,6 +58,8 @@ export default function DesignPageContextProvider({ children }: useCustomHook) {
             setCurrentDesignPageAssetsDisplayed,
             selectedAssets,
             setSelectedAssets,
+            costEstimation,
+            setCostEstimation,
             resetDesignPage // Expose la fonction reset
         }}>
             {children}

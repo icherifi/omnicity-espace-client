@@ -2,6 +2,7 @@ import { Search, Settings2 } from "lucide-react";
 import { useUnity } from "./unityContext";
 import { Input } from "@/components/ui/input";
 import { useDesignPageContext } from "@/contexts/designPage.context";
+import { useDashboardContext } from "@/contexts/dashboard.context";
 
 const assetsData = require("./assets.json");
 
@@ -29,6 +30,7 @@ const Icon: React.FC<IconProps> = ({ src, alt, className }) => (
 const AssetCard: React.FC<AssetProps> = ({ image, title, price, unicityPath, room }) => {
   const { sendMessage } = useUnity();
   const { selectedAssets, setSelectedAssets } = useDesignPageContext()
+  const { costEstimation, setCostEstimation } = useDesignPageContext()
   return (
     <div>
       <div className="flex p-2 mt-6 rounded-md hover:border-sky-500 hover:border-solid bg-zinc-600 border-[3px] cursor-pointer"
@@ -36,14 +38,21 @@ const AssetCard: React.FC<AssetProps> = ({ image, title, price, unicityPath, roo
         //sendMessage("GameController", "UpdateMessage", "send");
         console.log("Clicked on" + room);
         const filteredAssets = selectedAssets.filter(asset => asset.roomType !== room);
+        const existingAsset = selectedAssets.find(asset => asset.roomType === room);
+        const updatedCostEstimation = {
+          withAid: costEstimation.withAid + price - (existingAsset ? existingAsset.price : 0),
+          withoutAid: costEstimation.withoutAid + price - (existingAsset ? existingAsset.price : 0)
+        };
 
         const newAsset = {
           title: title,
           roomType: room,
           price: price
         };
-      
+
         setSelectedAssets([...filteredAssets, newAsset]);
+
+        setCostEstimation(updatedCostEstimation);
         if (room === "salon")
           sendMessage("GameController", "ChangeStyleSalon", unicityPath);
         else if (room === "cuisine")
