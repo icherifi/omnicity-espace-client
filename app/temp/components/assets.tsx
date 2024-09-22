@@ -2,7 +2,6 @@ import { Search, Settings2 } from "lucide-react";
 import { useUnity } from "./unityContext";
 import { Input } from "@/components/ui/input";
 import { useDesignPageContext } from "@/contexts/designPage.context";
-import { useDashboardContext } from "@/contexts/dashboard.context";
 
 const assetsData = require("./assets.json");
 
@@ -35,8 +34,6 @@ const AssetCard: React.FC<AssetProps> = ({ image, title, price, unicityPath, roo
     <div>
       <div className="flex p-2 mt-6 rounded-md hover:border-sky-500 hover:border-solid bg-zinc-600 border-[3px] cursor-pointer"
       onClick={() => {
-        //sendMessage("GameController", "UpdateMessage", "send");
-        console.log("Clicked on" + room);
         const filteredAssets = selectedAssets.filter(asset => asset.roomType !== room);
         const existingAsset = selectedAssets.find(asset => asset.roomType === room);
         const updatedCostEstimation = {

@@ -15,6 +15,8 @@ interface CostEstimationType {
     withoutAid: number
 }
 
+type ModelType = "2D" | "3D" | "Virtuelle"
+
 interface DesignPageType {
     isDesignPageAssetsDisplayed: boolean,
     setIsDesignPageAssetsDisplayed: Dispatch<SetStateAction<boolean>>,
@@ -24,6 +26,8 @@ interface DesignPageType {
     setSelectedAssets: Dispatch<SetStateAction<SelectedAssetsType[]>>,
     costEstimation: CostEstimationType,
     setCostEstimation: Dispatch<SetStateAction<CostEstimationType>>,
+    selectedModelType: ModelType,
+    setSelectedModelType: Dispatch<SetStateAction<ModelType>>,
     resetDesignPage: () => void  // Fonction de reset
 }
 
@@ -35,7 +39,8 @@ const initialState = {
     costEstimation: {
         withAid: 0,
         withoutAid: 0
-    } as CostEstimationType
+    } as CostEstimationType,
+    selectedModelType: "3D" as ModelType
 };
 
 export const DesignPageContext = createContext<DesignPageType | null>(null);
@@ -45,6 +50,7 @@ export default function DesignPageContextProvider({ children }: useCustomHook) {
     const [currentDesignPageAssetsDisplayed, setCurrentDesignPageAssetsDisplayed] = useState(initialState.currentDesignPageAssetsDisplayed)
     const [selectedAssets, setSelectedAssets] = useState(initialState.selectedAssets)
     const [costEstimation, setCostEstimation] = useState(initialState.costEstimation)
+    const [selectedModelType, setSelectedModelType] = useState(initialState.selectedModelType)
     // Fonction pour réinitialiser tous les états
     const resetDesignPage = () => {
         setIsDesignPageAssetsDisplayed(initialState.isDesignPageAssetsDisplayed)
@@ -60,6 +66,8 @@ export default function DesignPageContextProvider({ children }: useCustomHook) {
             setSelectedAssets,
             costEstimation,
             setCostEstimation,
+            selectedModelType,
+            setSelectedModelType,
             resetDesignPage // Expose la fonction reset
         }}>
             {children}

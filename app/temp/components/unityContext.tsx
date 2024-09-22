@@ -1,12 +1,12 @@
-// UnityContext.js
+"use client"
 import React, { createContext, useContext } from 'react';
 import { useUnityContext } from "react-unity-webgl";
 
-type UnityContextType = any; // Replace 'any' with the appropriate type for your Unity context
+type UnityContextType = any;
 
 const UnityContext = createContext<UnityContextType | undefined>(undefined);
 
-export const UnityProvider = ({ children }: { children: React.ReactNode }) => {
+export const UnityContextProvider = ({ children }: { children: React.ReactNode }) => {
     const unityContext = useUnityContext({
         loaderUrl: "../UnityGame/Build/UnityGame.loader.js",
         dataUrl: "../UnityGame/Build/UnityGame.data",
@@ -21,4 +21,10 @@ export const UnityProvider = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-export const useUnity = () => useContext(UnityContext);
+export function useUnity () {
+    const context = useContext(UnityContext)
+    if (!context) {
+        throw Error ("useUnity must be used within UnityContextProvider")
+    }
+    return context
+}

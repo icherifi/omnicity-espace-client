@@ -37,34 +37,28 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import DesignNavbar from "@/components/DesignNavbar"
 import { useDesignPageContext } from "@/contexts/designPage.context"
-import { UnityProvider, useUnity } from "./components/unityContext"
-import Render from "./components/render"
 import EstimationCard from "./components/EstimationCard"
-
-const ButtonNew = () => {
-  const { sendMessage } = useUnity();
-  return (
-    <Button
-      className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-violet-500 text-white px-4 py-2"
-      onClick={() => {
-        sendMessage("GameController", "LoadPlanEvent", "send");
-      }}
-    >
-      Importer un plan
-    </Button>
-  );
-};
+import { Unity } from "react-unity-webgl";
+import { useUnity } from "./components/unityContext"
+import ModelTypeSelect from "./components/ModelTypeSelect"
 
 export default function Design () {
   const { setIsDesignPageAssetsDisplayed } = useDesignPageContext()
 
+  const { unityProvider, isLoaded, sendMessage } = useUnity()
+
+  React.useEffect(() => {
+    if (isLoaded) {
+      sendMessage("GameController", "LoadPlanEvent", "send");
+    }
+  }, [isLoaded, sendMessage]); 
+
   return (
-    <UnityProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40" onClick={() => {
         setIsDesignPageAssetsDisplayed(false)
       }}>
         <DesignNavbar />
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-28">
+        <div className="flex h-screen flex-col sm:gap-4 sm:py-4 sm:pl-28">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Sheet>
               <SheetTrigger asChild>
@@ -183,16 +177,17 @@ export default function Design () {
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-4">
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3">
-              <Render />
+          <main className="grid h-full flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid h-full auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3">
+              <div className="relative flex h-full w-full ml-0">
+                <Unity style={{flex: 1}} unityProvider={unityProvider} />
+                {isLoaded && <ModelTypeSelect />}
+              </div>
             </div>
 
             <EstimationCard />
           </main>
         </div>
-        <ButtonNew />
       </div>
-    </UnityProvider>
   )
 }
