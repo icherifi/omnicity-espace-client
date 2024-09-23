@@ -178,9 +178,9 @@ export default function Design () {
             </DropdownMenu>
           </header>
           <main className="grid h-full flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-4">
-            <div className="grid h-full auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3">
-              <div className="relative flex h-full w-full ml-0">
-                <Unity style={{flex: 1}} unityProvider={unityProvider} />
+            <div className="flex h-full  items-start gap-4 md:gap-8 lg:col-span-3">
+              <div className="relative flex flex-col items-center h-full w-full ml-0">
+                <Unity className="h-[600px] w-full xl:h-[700px]" unityProvider={unityProvider} />
                 {isLoaded && <ModelTypeSelect />}
               </div>
             </div>

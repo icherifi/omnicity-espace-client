@@ -1,6 +1,6 @@
 import React from "react";
-import { Unity, useUnityContext } from "react-unity-webgl";
-import { useUnity, UnityProvider  } from "./unityContext";
+import { Unity } from "react-unity-webgl";
+import { useUnity  } from "./unityContext";
 
 
 export default function Render() {
