@@ -22,42 +22,42 @@ function EnergyForm() {
     const {currentEnergyFormPage, setCurrentEnergyFormPage} = useEnergyFormContext()
   return (
     <DialogContent className="sm:max-w-[750px]">
-            <DialogHeader>
-                <DialogTitle>Formulaire energétique</DialogTitle>
-                <DialogDescription>
-                    Complétez ce formulaire pour gérer la partie éléctrique de votre projet.
-                </DialogDescription>
-            </DialogHeader>
+        <DialogHeader>
+            <DialogTitle>Formulaire energétique</DialogTitle>
+            <DialogDescription>
+                Complétez ce formulaire pour gérer la partie éléctrique de votre projet.
+            </DialogDescription>
+        </DialogHeader>
 
-            <div className="p-4 pb-0">
-                {currentEnergyFormPage == 1 && <Property />}
-                {currentEnergyFormPage == 2 && <InsulationWork />}
-                {currentEnergyFormPage == 3 && <Energy />}
-            </div>
+        <div className="p-4 pb-0">
+            {currentEnergyFormPage == 1 && <Property />}
+            {currentEnergyFormPage == 2 && <InsulationWork />}
+            {currentEnergyFormPage == 3 && <Energy />}
+        </div>
 
-            <DialogFooter>
-            {currentEnergyFormPage == 3 ? 
-                <Button onClick={() => {
-                    setIsEnergyFormDisplayed(false)
-                    setCurrentEnergyFormPage(1)
-                }}>Terminer</Button>
-                :
-                <Button onClick={() => {
-                    setCurrentEnergyFormPage(currentEnergyFormPage +1)
-                }}>Suivant</Button>
-            }
+        <DialogFooter>
+        {currentEnergyFormPage == 3 ? 
+            <Button onClick={() => {
+                setIsEnergyFormDisplayed(false)
+                setCurrentEnergyFormPage(1)
+            }}>Terminer</Button>
+            :
+            <Button onClick={() => {
+                setCurrentEnergyFormPage(currentEnergyFormPage +1)
+            }}>Suivant</Button>
+        }
 
-            {currentEnergyFormPage == 1 ? 
-                <Button variant="outline" onClick={() => {
-                    setIsEnergyFormDisplayed(false)
-                }}>Annuler</Button>
-                :
-                <Button onClick={() => {
-                    setCurrentEnergyFormPage(currentEnergyFormPage - 1)
-                }} variant="outline">Retour</Button>
-            }
-            </DialogFooter>
-        </DialogContent>  
+        {currentEnergyFormPage == 1 ? 
+            <Button variant="outline" onClick={() => {
+                setIsEnergyFormDisplayed(false)
+            }}>Annuler</Button>
+            :
+            <Button onClick={() => {
+                setCurrentEnergyFormPage(currentEnergyFormPage - 1)
+            }} variant="outline">Retour</Button>
+        }
+        </DialogFooter>
+    </DialogContent>  
   )
 }
 

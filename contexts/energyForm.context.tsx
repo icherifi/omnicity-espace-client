@@ -4,10 +4,13 @@ import { Dispatch, SetStateAction, createContext, useContext, useState } from "r
 
 type PropertyType = "House" | "Apartment" | "Co-ownership";
 type WorkPeriodSlices = "None" | "Under10" | "Between10And20" | "Between20And30" | "Between30And40";
-type GlazingType = "Bois / Bois métal" | "PVC" | "Aluminium";
+export type WindowMaterialType = "Bois / Bois metal" | "PVC" | "Aluminium";
 type EnergyType = "Electricity" | "Wood" | "Gas or propane" | "Fuel oil" | "Coal"
 type HeatingType = "Electric Transmitters" | "Heat pumps"
-
+export type GlazingType = "Simple vitrage" | "Double vitrage"
+export type HotWaterProductType = "Mon systeme de chauffage" | "Un chauffe-eau electrique" | "Un chauffe-eau au gaz"
+export type EnergyLabelSolutionsType = "Simplicity" | "Balanced" | "Efficient"
+export type VentilationType = "Ventilation naturelle" | "Ventilation mécanique simple flux" | "Ventilation mécanique double flux"
 interface EnergyFormType {
     isEnergyFormDisplayed: boolean,
     setIsEnergyFormDisplayed: Dispatch<SetStateAction<boolean>>,
@@ -31,18 +34,20 @@ interface EnergyFormType {
     setWorkPeriodForWalls: Dispatch<SetStateAction<WorkPeriodSlices>>,
     workPeriodForFloors: WorkPeriodSlices,
     setWorkPeriodForFloors: Dispatch<SetStateAction<WorkPeriodSlices>>,
-    windowMaterial: string,
-    setWindowMaterial: Dispatch<SetStateAction<string>>,
-    glazingType: string,
-    setGlazingType: Dispatch<SetStateAction<string>>,
+    windowMaterial: WindowMaterialType,
+    setWindowMaterial: Dispatch<SetStateAction<WindowMaterialType>>,
+    glazingType: GlazingType,
+    setGlazingType: Dispatch<SetStateAction<GlazingType>>,
     selectedEnergyType: EnergyType,
     setSelectedEnergyType: Dispatch<SetStateAction<EnergyType>>,
     selectedHeatingType: HeatingType,
     setSelectedHeatingType: Dispatch<SetStateAction<HeatingType>>,
-    hotWaterProductType: string,
-    setHotWaterProductType: Dispatch<SetStateAction<string>>,
-    ventilationType: string,
-    setVentilationType: Dispatch<SetStateAction<string>>,
+    hotWaterProductType: HotWaterProductType,
+    setHotWaterProductType: Dispatch<SetStateAction<HotWaterProductType>>,
+    ventilationType: VentilationType,
+    setVentilationType: Dispatch<SetStateAction<VentilationType>>,
+    energyLabelSolutionsType: EnergyLabelSolutionsType,
+    setEnergyLabelSolutionsType: Dispatch<SetStateAction<EnergyLabelSolutionsType>>
     resetEnergyForm: () => void  // Fonction de reset
 }
 
@@ -59,12 +64,13 @@ const initialState = {
     residentsNumber: 1,
     workPeriodForWalls: "None" as WorkPeriodSlices,
     workPeriodForFloors: "None" as WorkPeriodSlices,
-    windowMaterial: "",
-    glazingType: "Bois / Bois métal",
+    windowMaterial: "Wood / Wood metal" as WindowMaterialType,
+    glazingType: "Single glazing" as GlazingType,
     selectedEnergyType: "Electricity" as EnergyType,
     selectedHeatingType: "Heat pumps" as HeatingType,
-    hotWaterProductType: "Mon systeme de chauffage",
-    ventilationType: "Ventilation naturelle",
+    hotWaterProductType: "Mon systeme de chauffage" as HotWaterProductType,
+    ventilationType: "Ventilation naturelle" as VentilationType,
+    energyLabelSolutionsType: "Balanced" as EnergyLabelSolutionsType
 };
 
 export const EnergyFormContext = createContext<EnergyFormType | null>(null);
@@ -87,7 +93,7 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
     const [selectedHeatingType, setSelectedHeatingType] = useState(initialState.selectedHeatingType);
     const [hotWaterProductType, setHotWaterProductType] = useState(initialState.hotWaterProductType);
     const [ventilationType, setVentilationType] = useState(initialState.ventilationType);
-
+    const [energyLabelSolutionsType, setEnergyLabelSolutionsType] = useState<EnergyLabelSolutionsType>(initialState.energyLabelSolutionsType)
     // Fonction pour réinitialiser tous les états
     const resetEnergyForm = () => {
         setIsEnergyFormDisplayed(initialState.isEnergyFormDisplayed);
@@ -107,6 +113,7 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
         setSelectedHeatingType(initialState.selectedHeatingType);
         setHotWaterProductType(initialState.hotWaterProductType);
         setVentilationType(initialState.ventilationType)
+        setEnergyLabelSolutionsType(initialState.energyLabelSolutionsType)
     };
 
     return (
@@ -145,6 +152,8 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
             setHotWaterProductType,
             ventilationType,
             setVentilationType,
+            energyLabelSolutionsType,
+            setEnergyLabelSolutionsType,
             resetEnergyForm // Expose la fonction reset
         }}>
             {children}

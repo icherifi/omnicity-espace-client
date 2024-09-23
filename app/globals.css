@@ -81,6 +81,34 @@
     --status-inprogress: 255, 165, 0; /* Orange */
     --status-abandoned: 239, 68, 68;    /* Rouge */
   }
+
+  .bg-grade-a {
+    background-color: rgb(var(--grade-a));
+  }
+  
+  .bg-grade-b {
+    background-color: rgb(var(--grade-b));
+  }
+  
+  .bg-grade-c {
+    background-color: #BFD730;
+  }
+  
+  .bg-grade-d {
+    background-color: rgb(var(--grade-d));
+  }
+  
+  .bg-grade-e {
+    background-color: rgb(var(--grade-e));
+  }
+  
+  .bg-grade-f {
+    background-color: rgb(var(--grade-f));
+  }
+  
+  .bg-grade-g {
+    background-color: rgb(var(--grade-g));
+  }
 }
 
 

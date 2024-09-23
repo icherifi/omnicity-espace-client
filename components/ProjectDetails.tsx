@@ -1,3 +1,4 @@
+"use client"
 import {
   ChevronLeft,
   ChevronRight,
@@ -23,36 +24,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import * as React from "react"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination"
 import { Separator } from "@/components/ui/separator"
 import MarksUsed from "@/components/marksUsed"
 import EnergyRating from "@/components/energyRating"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useDashboardContext } from "@/contexts/dashboard.context"
 
-function ProjectDetails() {
-  return (
-    <ScrollArea>
-        <Card
-            className="overflow-hidden" x-chunk="dashboard-05-chunk-4"
-        >
+interface ProjectDetailsProps {
+    underXlScreenWidth?: boolean
+}
+
+function ProjectDetails(props: ProjectDetailsProps) {
+    const {currentProjectDisplayed} = useDashboardContext()
+    return (
+    <ScrollArea className={`${props.underXlScreenWidth ? "h-[550px] w-1/2" : "h-svh"}`}>
+        <Card>
             <CardHeader className="flex flex-row items-start bg-muted/50">
             <div className="grid gap-0.5">
                 <CardTitle className="group flex items-center gap-2 text-lg">
-                Projet #Oe31b70H
-                <Button
-                    size="icon"
-                    variant="outline"
-                    className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                >
-                    <Copy className="h-3 w-3" />
-                    <span className="sr-only">Copier l'ID du projet</span>
-                </Button>
+                Projet {currentProjectDisplayed.id}
                 </CardTitle>
-                <CardDescription>Date: 23 Novembre 2023</CardDescription>
+                <CardDescription>Date: {currentProjectDisplayed.date}</CardDescription>
             </div>
             <div className="ml-auto flex items-center gap-1">
                 <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -84,9 +76,9 @@ function ProjectDetails() {
                     <CardTitle>Notes énergétiques</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex justify-center items-center 1.5xl:flex-col 3xl:flex-row">
-                    <EnergyRating energyRatingValue="e" state="Actuel"/>
-                    <EnergyRating energyRatingValue="b" state="Visé"/>
+                    <div className="flex justify-center items-center lg:flex-col 3xl:flex-row">
+                    <EnergyRating energyRatingValue={currentProjectDisplayed.actualEnergyRating} state="Actuel" />
+                    <EnergyRating energyRatingValue={currentProjectDisplayed.targetedEnergyRating} state="Visé" />
                     </div>
                 </CardContent>
                 </Card>
@@ -98,32 +90,36 @@ function ProjectDetails() {
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Services et accessibilité</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                    <span>Ascenseur</span>
-                    <span>Gardien</span>
-                    <span>Digicode</span>
+                        {currentProjectDisplayed.features.servicesAndAccessibility.map((service, i) => (
+                            <span key={i}>{service}</span>
+                        ))}
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Extérieur</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                    <span>Balcon</span>
+                        {currentProjectDisplayed.features.outsite.map((outsideElement, i) => (
+                            <span key={i}>{outsideElement}</span>
+                        ))}
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Surfaces annexes</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                    <span>Parking</span>
-                    <span>Cave</span>
+                        {currentProjectDisplayed.features.additionalAres.map((additionalArea, i) => (
+                            <span key={i}>{additionalArea}</span>
+                        ))}
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
                     <div className="font-semibold">Hygiène</div>
                     <div className="grid gap-0.5 not-italic text-muted-foreground">
-                    <span>Salle de bain</span>
-                    <span>Toilettes</span>
+                        {currentProjectDisplayed.features.hygiene.map((hygieneElement, i) => (
+                            <span key={i}>{hygieneElement}</span>
+                        ))}
                     </div>
                 </div>
                 </div>
@@ -138,53 +134,34 @@ function ProjectDetails() {
                 </CardTitle>
                 </CardHeader>
                 <CardContent>
-                <p>QUARTIER GARE-JEAN-JAURÈS - VITRY SUR SEINE (94400)
-                Dans une copropriété sécurisé avec gardien et espace vert, studio comprenant : entrée, séjour donnant sur balcon, cuisine, et une salle de bains avec wc, et une cave. 10 min du métro Mairie d'Ivry et du RERC et proche de toutes commodites.
-
-                Référence agence : 563</p>
+                <p>{currentProjectDisplayed.stateOfPlay}</p>
                 </CardContent>
             </Card>
 
             <Separator className="my-4" />
-                <MarksUsed />
+                <MarksUsed marksUsedData={currentProjectDisplayed.marksMostUsed} />
             <Separator className="my-4" />
             
                 <div className="font-semibold pb-4">Estimation des coûts</div>
                 <ul className="grid gap-3">
                 <li className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Avant travaux</span>
-                    <span>178 000€</span>
+                    <span className="text-muted-foreground">Sans aides</span>
+                    <span>{currentProjectDisplayed.costEstimation.withoutAid.toLocaleString('fr-FR')}€</span>
                 </li>
                 <li className="flex items-center justify-between font-semibold">
-                    <span className="text-muted-foreground">Apres travaux</span>
-                    <span>213 000€</span>
+                    <span className="text-muted-foreground">Avec aides</span>
+                    <span>{currentProjectDisplayed.costEstimation.withAid.toLocaleString('fr-FR')}€</span>
                 </li>
                 </ul>
             </CardContent>
 
             <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
             <div className="text-xs text-muted-foreground">
-                Mis à jour le <time dateTime="2023-11-23">23 Novembre 2023</time>
+                Mis à jour le <time>{currentProjectDisplayed.lastUpdate}</time>
             </div>
-            <Pagination className="ml-auto mr-0 w-auto">
-                <PaginationContent>
-                <PaginationItem>
-                    <Button size="icon" variant="outline" className="h-6 w-6">
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    <span className="sr-only">Projet précédent</span>
-                    </Button>
-                </PaginationItem>
-                <PaginationItem>
-                    <Button size="icon" variant="outline" className="h-6 w-6">
-                    <ChevronRight className="h-3.5 w-3.5" />
-                    <span className="sr-only">Prochain Projet</span>
-                    </Button>
-                </PaginationItem>
-                </PaginationContent>
-            </Pagination>
             </CardFooter>
         </Card>
-        </ScrollArea>
+    </ScrollArea>
   )
 }
 
