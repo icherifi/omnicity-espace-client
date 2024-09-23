@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import { NavbarProps } from "@/types/dashboard.types" 
 import * as React from "react"
 
-function Navbar({ setContent }: NavbarProps) {
+function Navbar({ content, setContent }: NavbarProps) {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
     <div className="flex h-full max-h-screen flex-col gap-2">
@@ -33,7 +33,7 @@ function Navbar({ setContent }: NavbarProps) {
           <Link
             href="#"
             onClick={() => setContent("main")}
-            className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+            className={`${content == "main" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
           >
             <Home className="h-4 w-4" />
             Tableau de bord
@@ -41,7 +41,7 @@ function Navbar({ setContent }: NavbarProps) {
           <Link
             onClick={() => setContent("projects")}
             href="#"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            className={`${content == "projects" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
           >
             <FolderKanban className="h-4 w-4" />
             Projets
@@ -49,15 +49,15 @@ function Navbar({ setContent }: NavbarProps) {
           <Link
             onClick={() => setContent("import")}
             href="#"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            className={`${content == "import" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
           >
             <Import className="h-4 w-4" />
             Import
           </Link>
           <Link
-            onClick={() => setContent("design")}
-            href="/design"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            //onClick={() => setContent("design")}
+            href="/temp"
+            className={`${content == "design" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
           >
             <PencilRuler className="h-4 w-4" />
             Design
@@ -65,7 +65,7 @@ function Navbar({ setContent }: NavbarProps) {
           <Link
             onClick={() => setContent("form")}
             href="#"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            className={`${content == "form" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
           >
             <List className="h-4 w-4" />
             Formulaire

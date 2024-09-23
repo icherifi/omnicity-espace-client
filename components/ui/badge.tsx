@@ -20,8 +20,17 @@ const badgeVariants = cva(
         inprogress:
           "border-transparent bg-[rgb(var(--status-inprogress))] text-white hover:bg-[rgb(var(--status-inprogress),0.8)]",
         abandoned:
-          "border-transparent bg-[rgb(var(--status-abandoned))] text-white hover:bg-[rgb(var(--status-abandoned),0.8)]"
+          "border-transparent bg-[rgb(var(--status-abandoned))] text-white hover:bg-[rgb(var(--status-abandoned),0.8)]",
+        average:
+          "border-transparent bg-orange-100 text-orange-600 hover:bg-orange-200",
+        bad:
+          "border-transparent bg-red-100 text-red-600 hover:bg-red-200",
+        well:
+          "border-transparent bg-green-100 text-green-600 hover:bg-green-200",
+        verywell:
+          "border-transparent bg-green-200 text-green-700 hover:bg-green-300",
       },
+      
     },
     defaultVariants: {
       variant: "default",
