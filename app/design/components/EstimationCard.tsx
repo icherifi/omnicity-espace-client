@@ -20,8 +20,6 @@ AccordionItem,
 AccordionTrigger,
 } from "@/components/ui/accordion"
 import { useDesignPageContext } from "@/contexts/designPage.context";
-import { useState } from "react";
-import { useDashboardContext } from "@/contexts/dashboard.context";
 
 function EstimationCard() {
     const {selectedAssets} = useDesignPageContext()
@@ -52,14 +50,14 @@ function EstimationCard() {
                             <span className="font-semibold text-lg text-muted-foreground">Cuisine</span>
                             <span className="text-sm text-muted-foreground">Style élégante</span>
                         </dt>
-                        <dd>{selectedCuisine[0]?.price}</dd>
+                        <dd>{selectedCuisine[0]?.price.toLocaleString('fr-FR')}</dd>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                         <dt className="flex flex-col">
                             <span className="font-semibold text-lg text-muted-foreground">Salon</span>
                             <span className="text-sm text-muted-foreground">Style élégante</span>
                         </dt>
-                        <dd>{selectedSalon[0]?.price}</dd>
+                        <dd>{selectedSalon[0]?.price.toLocaleString('fr-FR')}</dd>
                         </div>
                     </dl>
                     </AccordionContent>
@@ -75,14 +73,14 @@ function EstimationCard() {
                             <span className="font-semibold text-lg text-muted-foreground">Cuisine</span>
                             <span className="text-sm text-muted-foreground">Style élégante</span>
                         </dt>
-                        <dd>{selectedCuisine[0]?.price}</dd>
+                        <dd>{selectedCuisine[0]?.price.toLocaleString('fr-FR')}</dd>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                         <dt className="flex flex-col">
                             <span className="font-semibold text-lg text-muted-foreground">Salon</span>
                             <span className="text-sm text-muted-foreground">Style élégante</span>
                         </dt>
-                        <dd>{selectedSalon[0]?.price}</dd>
+                        <dd>{selectedSalon[0]?.price.toLocaleString('fr-FR')}</dd>
                         </div>
                     </dl>
                     </AccordionContent>
@@ -98,14 +96,14 @@ function EstimationCard() {
                             <span className="font-semibold text-lg text-muted-foreground">Cuisine</span>
                             <span className="text-sm text-muted-foreground">Style élégante</span>
                         </dt>
-                        <dd>{selectedCuisine[0]?.price}</dd>
+                        <dd>{selectedCuisine[0]?.price.toLocaleString('fr-FR')}</dd>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                         <dt className="flex flex-col">
                             <span className="font-semibold text-lg text-muted-foreground">Salon</span>
                             <span className="text-sm text-muted-foreground">Style élégante</span>
                         </dt>
-                        <dd>{selectedSalon[0]?.price}</dd>
+                        <dd>{selectedSalon[0]?.price.toLocaleString('fr-FR')}</dd>
                         </div>
                     </dl>
                     </AccordionContent>

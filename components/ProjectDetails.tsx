@@ -35,7 +35,12 @@ interface ProjectDetailsProps {
 }
 
 function ProjectDetails(props: ProjectDetailsProps) {
-    const {currentProjectDisplayed} = useDashboardContext()
+    const { currentProjectDisplayed } = useDashboardContext()
+    
+    if (!currentProjectDisplayed?.id) {
+        return <p>Chargement du projet...</p> 
+    }
+
     return (
     <ScrollArea className={`${props.underXlScreenWidth ? "h-[550px] w-1/2" : "h-svh"}`}>
         <Card>
@@ -126,7 +131,6 @@ function ProjectDetails(props: ProjectDetailsProps) {
 
             </div>
             <Separator className="my-4" />
-
             <Card>
                 <CardHeader>
                 <CardTitle>
