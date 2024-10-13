@@ -24,7 +24,9 @@ import PropertyState from './EnergyForm/components/PropertyState'
 import EnergyLabelSolutions from './EnergyForm/components/EnergyLabelSolutions'
 import { useRouter } from 'next/navigation'
 
-function NewProjectForm() {
+function NewProjectForm(props: {
+    onProjectsPage?: boolean
+}) {
     const {isEnergyFormDisplayed, setIsEnergyFormDisplayed, setEnergyFormGotOpened, energyFormGotOpened} = useEnergyFormContext()
     const {currentEnergyFormPage, setCurrentEnergyFormPage} = useEnergyFormContext()
     const {projectAuthorName, setProjectAuthorName} = useNewProjectFormContext()
@@ -53,7 +55,9 @@ function NewProjectForm() {
             setEnergyFormGotOpened(false)
         }}>
             <DialogTrigger asChild>
-                <Button>Nouveau projet</Button>
+                {props.onProjectsPage ? <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Nouveau projet
+                  </span> : <Button>Nouveau projet</Button>}
             </DialogTrigger>
             
             {isEnergyFormDisplayed ? 
@@ -76,7 +80,7 @@ function NewProjectForm() {
             <DialogFooter>
             {currentEnergyFormPage == 5 ? 
                 <Button onClick={() => {
-                    router.push("/temp")
+                    router.push("/design")
                     //setCurrentEnergyFormPage(1)
                     //setIsEnergyFormDisplayed(false)
                 }}>Terminer</Button>

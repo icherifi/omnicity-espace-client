@@ -11,7 +11,6 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { Button } from '../ui/button'
-import { useNewProjectFormContext } from '@/contexts/newProjectForm.context'
 import Property from "@/components/EnergyForm/components/Property"
 import InsulationWork from "@/components/EnergyForm/components/InsulationWork"
 import Energy from "@/components/EnergyForm/components/Energy"
