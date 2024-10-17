@@ -10,6 +10,6 @@ export default function ProjectsDataTable(props: {
   const { projects } = useProjectsContext()
 
   return (
-      <DataTable columns={columns} data={projects} onlyCompleted={props.onlyCompleted} onlyInProgress={props.onlyInProgress}/>
+      <DataTable columns={columns} data={projects} onlyCompleted={props.onlyCompleted} onlyInProgress={props.onlyInProgress} />
   )
 }

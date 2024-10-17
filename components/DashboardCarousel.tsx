@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
 Carousel,
 CarouselContent,
@@ -17,7 +17,7 @@ CardTitle,
 } from "@/components/ui/card"
 import Image from 'next/image'
 import { Badge } from './ui/badge'
-import { ProjectType, useDashboardContext } from '@/contexts/dashboard.context'
+import { useDashboardContext } from '@/contexts/dashboard.context'
 import { useProjectsContext } from '@/contexts/projects.context'
 
 function DashboardCarousel() {
@@ -26,10 +26,10 @@ function DashboardCarousel() {
     const { projects } = useProjectsContext()
 
   return (
-    <Carousel className="xl:w-9/12 xl:justify-self-center 2xl:w-11/12">
+    <Carousel className="xl:w-9/12 xl:justify-self-center lg:basis-full 2xl:w-11/12 self-center">
         <CarouselContent className="-ml-1">
             {projects.map((project, i) => (
-            <CarouselItem key={i} className={`pl-1 2xl:basis-1/3  hover:cursor-pointer`} onClick={() => {
+            <CarouselItem key={i} className={`pl-1 2xl:basis-1/3 hover:cursor-pointer`} onClick={() => {
                 setCurrentProjectDisplayed(project)
             }}>
                 <div className="p-1">
@@ -38,7 +38,7 @@ function DashboardCarousel() {
                     <Carousel className="max-w-32 max-h-40" opts={{loop: true}}>
                         <CarouselContent>
                         {Array.from({ length: 3 }).map((_, index) => {
-                            const imageNumber = i * 3 + index + 1; // Par exemple: i=0 -> dalle1, dalle2, dalle3; i=1 -> dalle4, dalle5, dalle6, etc.
+                            const imageNumber = i * 3 + index + 1; 
                             return (
                             <CarouselItem key={index} className="pr-4">
                                 <Image src={`/dalle${imageNumber}.png`} alt="property image" width={250} height={250} />

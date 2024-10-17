@@ -112,7 +112,7 @@ export default function ProjectsPage() {
             </div>
             <TabsContent value="all">
               <Card x-chunk="dashboard-06-chunk-0">
-                <CardContent className="flex justify-around p-4">
+                <CardContent className="flex justify-around p-4 max-[1550px]:flex-col">
                   <div>
                     <CardHeader>
                       <CardTitle>Projets</CardTitle>
