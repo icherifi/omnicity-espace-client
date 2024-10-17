@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { ProjectType, useDashboardContext } from "@/contexts/dashboard.context"
 
 interface DataTableProps<TData, TValue> {
@@ -60,8 +60,9 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const isHiddenOn2XL = (header.column.columnDef.meta as any)?.responsiveHidden;
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={isHiddenOn2XL ? 'hidden min-[1750px]:table-cell' : ''}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -85,11 +86,14 @@ export function DataTable<TData, TValue>({
                     setCurrentProjectDisplayed(row.original as ProjectType)
                   }}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell) => {
+                  const isHiddenOn2XL = (cell.column.columnDef.meta as any)?.responsiveHidden;
+                  return (
+                    <TableCell key={cell.id} className={isHiddenOn2XL ? 'hidden min-[1750px]:table-cell' : ''}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
-                  ))}
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (

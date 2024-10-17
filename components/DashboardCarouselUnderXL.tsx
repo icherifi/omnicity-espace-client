@@ -27,7 +27,7 @@ function DashboardCarouselUnderXL() {
     const { projects } = useProjectsContext()
 
   return (
-    <Carousel className="w-9/12 justify-self-center mt-8" opts={{loop: true}}>
+    <Carousel className="w-9/12 self-center mt-8" opts={{loop: true}}>
         <CarouselContent className="-ml-1">
             {projects.map((project, i) => (
             <CarouselItem key={i} className="pl-1 2xl:basis-1/3 hover:cursor-pointer" onClick={() => {

@@ -57,8 +57,9 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const isHiddenOn2XL = (header.column.columnDef.meta as any)?.responsiveHidden;
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={isHiddenOn2XL ? 'hidden 2xl:table-cell' : ''}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -82,11 +83,17 @@ export function DataTable<TData, TValue>({
                   }}
                   className={`hover:cursor-pointer`}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell, i) => {
+                  const isHiddenOn2XL = (cell.column.columnDef.meta as any)?.responsiveHidden;
+                  return (
+                  <TableCell
+                    key={cell.id}
+                    className={isHiddenOn2XL ? 'hidden 2xl:table-cell' : ''}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                  )
+                  })}
                 </TableRow>
               ))
             ) : (

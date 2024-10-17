@@ -32,7 +32,7 @@ export const columns: ColumnDef<ProjectType>[] = [
     cell: ({ row }) => (
         <Badge
         variant={row.original.status} 
-        className="mt-4 mb-4 text-black"
+        className="mt-4 mb-4 text-black text-center"
         >
         {row.original.status === "completed" ? "Terminé" : "En cours..."}
         </Badge>
@@ -51,6 +51,7 @@ export const columns: ColumnDef<ProjectType>[] = [
       cell: ({ row }) => (
         <span>{row.original.authorName}</span>
       ),
+      meta: { responsiveHidden: true }
     },
     {
         accessorKey: "date",
@@ -58,6 +59,7 @@ export const columns: ColumnDef<ProjectType>[] = [
         cell: ({ row }) => (
           <span>{row.original.date}</span>
         ),
+        meta: { responsiveHidden: true }
     },
     {
         id: "actions",

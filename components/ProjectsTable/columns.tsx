@@ -20,10 +20,12 @@ export const columns: ColumnDef<ProjectType>[] = [
     {
       accessorKey: "id_bouquet",
       header: "ID bouquet",
+      meta: { responsiveHidden: true }
     },
     {
       accessorKey: "id_design",
       header: "ID design",
+      meta: { responsiveHidden: true } 
     },
     {
       accessorFn: (row) => (row.costEstimation.withAid + row.costEstimation.withoutAid).toLocaleString('fr-FR'),
@@ -45,7 +47,7 @@ export const columns: ColumnDef<ProjectType>[] = [
       cell: ({ row }) => (
         <Badge
           variant={row.original.status} 
-          className="mt-4 mb-4 text-black"
+          className="mt-4 mb-4 text-black text-center"
         >
           {row.original.status === "completed" ? "Terminé" : "En cours..."}
         </Badge>
