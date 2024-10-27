@@ -7,7 +7,9 @@ import NewProjectFormContextProvider from "@/contexts/newProjectForm.context";
 import EnergyFormContextProvider from "@/contexts/energyForm.context";
 import DashboardContextProvider from "@/contexts/dashboard.context";
 import DesignPageContextProvider from "@/contexts/designPage.context";
-import { UnityContextProvider } from "./temp/components/unityContext";
+import { UnityContextProvider } from "./design/components/unityContext";
+import ProjectsContextProvider from "@/contexts/projects.context";
+import { headers } from "next/headers";  // Import the headers module
 
 export interface useCustomHook {
   children: React.ReactNode
@@ -27,7 +29,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const currentPath = headers().get("x-nextjs-rewrite-path") || headers().get("x-next-url") || "/";
+
   return (
+    <ProjectsContextProvider>
     <NewProjectFormContextProvider>
     <EnergyFormContextProvider>
     <DashboardContextProvider>
@@ -35,11 +40,12 @@ export default function RootLayout({
     <UnityContextProvider>
     <html lang="en">
       <body
-        className={cn(
-          "overflow-scroll min-h-screen bg-background font-sans antialiased md:overflow-hidden",
-          fontSans.variable
-        )}
-      >
+          className={cn(
+            currentPath === "/" ? "overflow-hidden" : "",
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
         <Providers>
         {children}
         </Providers>
@@ -50,5 +56,6 @@ export default function RootLayout({
     </DashboardContextProvider>
     </EnergyFormContextProvider>
     </NewProjectFormContextProvider>
+    </ProjectsContextProvider>
   )
 }

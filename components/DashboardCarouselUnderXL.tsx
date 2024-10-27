@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
 Carousel,
 CarouselContent,
@@ -15,16 +15,19 @@ CardFooter,
 CardHeader,
 CardTitle,
 } from "@/components/ui/card"
-import { projects } from "@/components/ProjectsTable"
 import Image from 'next/image'
 import { Badge } from './ui/badge'
-import { useDashboardContext } from '@/contexts/dashboard.context'
+import { ProjectType, useDashboardContext } from '@/contexts/dashboard.context'
+import { useProjectsContext } from '@/contexts/projects.context'
 
 
 function DashboardCarouselUnderXL() {
     const {currentProjectDisplayed, setCurrentProjectDisplayed} = useDashboardContext()
+
+    const { projects } = useProjectsContext()
+
   return (
-    <Carousel className="w-9/12 justify-self-center mt-8" opts={{loop: true}}>
+    <Carousel className="w-9/12 self-center mt-8" opts={{loop: true}}>
         <CarouselContent className="-ml-1">
             {projects.map((project, i) => (
             <CarouselItem key={i} className="pl-1 2xl:basis-1/3 hover:cursor-pointer" onClick={() => {
@@ -49,15 +52,17 @@ function DashboardCarouselUnderXL() {
                     </Carousel>
 
                     <CardTitle className="text-center mt-8">
-                        <p>{project.name}</p>
+                        {project.name}
                     </CardTitle>
                     <CardDescription className="text-center mt-4">
-                        <p className="font-semibold mt-4">{project.features.roomsNumber} pièce{project.features.roomsNumber > 1 && "s"} &bull;
-                           {` `} {project.features.size} &bull;
-                           {` `} {project.features.floorsNumber} étages</p>
+                        <span className="font-semibold mt-4">{project.features.roomsNumber} pièce{project.features.roomsNumber > 1 && "s"} &bull;
+                        {` `} {project.features.size} &bull;
+                        {` `} {project.features.floorsNumber} étages</span>
+                    </CardDescription>
+                    <CardFooter className='flex flex-col p-0 pb-4'>
                         <Badge variant={project.status} className="mt-4 mb-4 text-black">{project.status == "completed" ? "Terminé" : "En cours..."}</Badge>
                         <p className="text-xs text-muted-foreground">Dernière modification: <br></br> {project.lastUpdate}</p>
-                    </CardDescription>
+                    </CardFooter>
                     </CardContent>
                     </Card>
                 </div>

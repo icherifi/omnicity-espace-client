@@ -30,15 +30,18 @@ import EnergyRating from "@/components/energyRating"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useDashboardContext } from "@/contexts/dashboard.context"
 
-interface ProjectDetailsProps {
-    underXlScreenWidth?: boolean
-}
+function ProjectDetails() {
+    const { currentProjectDisplayed } = useDashboardContext()
+    
+    if (!currentProjectDisplayed?.id) {
+        return <p>Chargement du projet...</p> 
+    }
 
-function ProjectDetails(props: ProjectDetailsProps) {
-    const {currentProjectDisplayed} = useDashboardContext()
     return (
-    <ScrollArea className={`${props.underXlScreenWidth ? "h-[550px] w-1/2" : "h-svh"}`}>
-        <Card>
+    <ScrollArea className="h-[60%]">
+        <Card
+            className="overflow-hidden mb-16" x-chunk="dashboard-05-chunk-4"
+        >
             <CardHeader className="flex flex-row items-start bg-muted/50">
             <div className="grid gap-0.5">
                 <CardTitle className="group flex items-center gap-2 text-lg">
@@ -49,7 +52,7 @@ function ProjectDetails(props: ProjectDetailsProps) {
             <div className="ml-auto flex items-center gap-1">
                 <Button size="sm" variant="outline" className="h-8 gap-1">
                 <File className="h-3.5 w-3.5" />
-                <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
+                <span className="xl:whitespace-nowrap max-[1500px]:hidden">
                     Exporter devis
                 </span>
                 </Button>
@@ -61,6 +64,7 @@ function ProjectDetails(props: ProjectDetailsProps) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="min-[1500px]:hidden">Exporter</DropdownMenuItem>
                     <DropdownMenuItem>Voir</DropdownMenuItem>
                     <DropdownMenuItem>Modifier</DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -76,7 +80,7 @@ function ProjectDetails(props: ProjectDetailsProps) {
                     <CardTitle>Notes énergétiques</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex justify-center items-center lg:flex-col 3xl:flex-row">
+                    <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                     <EnergyRating energyRatingValue={currentProjectDisplayed.actualEnergyRating} state="Actuel" />
                     <EnergyRating energyRatingValue={currentProjectDisplayed.targetedEnergyRating} state="Visé" />
                     </div>
@@ -126,23 +130,20 @@ function ProjectDetails(props: ProjectDetailsProps) {
 
             </div>
             <Separator className="my-4" />
-
-            <Card>
+                <Card>
                 <CardHeader>
                 <CardTitle>
                     Etat des lieux
                 </CardTitle>
                 </CardHeader>
                 <CardContent>
-                <p>{currentProjectDisplayed.stateOfPlay}</p>
+                <p>QUARTIER GARE-JEAN-JAURÈS - VITRY SUR SEINE (94400). Studio dans une copropriété sécurisée avec gardien et espaces verts, à proximité des commodités.</p>
                 </CardContent>
-            </Card>
-
+                </Card>
             <Separator className="my-4" />
                 <MarksUsed marksUsedData={currentProjectDisplayed.marksMostUsed} />
             <Separator className="my-4" />
-            
-                <div className="font-semibold pb-4">Estimation des coûts</div>
+            <div className="font-semibold pb-4">Estimation des coûts</div>
                 <ul className="grid gap-3">
                 <li className="flex items-center justify-between">
                     <span className="text-muted-foreground">Sans aides</span>
@@ -152,7 +153,7 @@ function ProjectDetails(props: ProjectDetailsProps) {
                     <span className="text-muted-foreground">Avec aides</span>
                     <span>{currentProjectDisplayed.costEstimation.withAid.toLocaleString('fr-FR')}€</span>
                 </li>
-                </ul>
+            </ul>
             </CardContent>
 
             <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">

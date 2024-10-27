@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useState } from 'react'
 import {
 Carousel,
 CarouselContent,
@@ -15,19 +15,21 @@ CardFooter,
 CardHeader,
 CardTitle,
 } from "@/components/ui/card"
-import { projects } from "@/components/ProjectsTable"
 import Image from 'next/image'
 import { Badge } from './ui/badge'
 import { useDashboardContext } from '@/contexts/dashboard.context'
-
+import { useProjectsContext } from '@/contexts/projects.context'
 
 function DashboardCarousel() {
     const {currentProjectDisplayed, setCurrentProjectDisplayed} = useDashboardContext()
+
+    const { projects } = useProjectsContext()
+
   return (
-    <Carousel className="xl:w-9/12 xl:justify-self-center 2xl:w-11/12">
+    <Carousel className="xl:w-9/12 xl:justify-self-center lg:basis-full 2xl:w-11/12 self-center">
         <CarouselContent className="-ml-1">
             {projects.map((project, i) => (
-            <CarouselItem key={i} className={`pl-1 2xl:basis-1/3  hover:cursor-pointer`} onClick={() => {
+            <CarouselItem key={i} className={`pl-1 2xl:basis-1/3 hover:cursor-pointer`} onClick={() => {
                 setCurrentProjectDisplayed(project)
             }}>
                 <div className="p-1">
@@ -36,7 +38,7 @@ function DashboardCarousel() {
                     <Carousel className="max-w-32 max-h-40" opts={{loop: true}}>
                         <CarouselContent>
                         {Array.from({ length: 3 }).map((_, index) => {
-                            const imageNumber = i * 3 + index + 1; // Par exemple: i=0 -> dalle1, dalle2, dalle3; i=1 -> dalle4, dalle5, dalle6, etc.
+                            const imageNumber = i * 3 + index + 1; 
                             return (
                             <CarouselItem key={index} className="pr-4">
                                 <Image src={`/dalle${imageNumber}.png`} alt="property image" width={250} height={250} />
@@ -49,16 +51,18 @@ function DashboardCarousel() {
                     </Carousel>
 
                     <CardTitle className="text-center mt-8">
-                        <p>{project.name}</p>
+                        {project.name}
                     </CardTitle>
                     <CardDescription className="text-center mt-4">
-                        <p className="font-semibold mt-4">{project.features.roomsNumber} pièce{project.features.roomsNumber > 1 && "s"} &bull;
-                           {` `} {project.features.size} &bull;
-                           {` `} {project.features.floorsNumber} étages</p>
-                        <Badge variant={project.status} className="mt-4 mb-4 text-black">{project.status == "completed" ? "Terminé" : "En cours..."}</Badge>
-                        <p className="text-xs text-muted-foreground">Dernière modification: <br></br> {project.lastUpdate}</p>
+                        <span className="font-semibold mt-4">{project.features.roomsNumber} pièce{project.features.roomsNumber > 1 && "s"} &bull;
+                        {` `} {project.features.size} &bull;
+                        {` `} {project.features.floorsNumber} étages</span>
                     </CardDescription>
                     </CardContent>
+                    <CardFooter className='flex flex-col p-0 pb-4'>
+                        <Badge variant={project.status} className="mt-4 mb-4 text-black">{project.status == "completed" ? "Terminé" : "En cours..."}</Badge>
+                        <p className="text-xs text-muted-foreground">Dernière modification: <br></br> {project.lastUpdate}</p>
+                    </CardFooter>
                     </Card>
                 </div>
             </CarouselItem>

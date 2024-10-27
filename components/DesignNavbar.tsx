@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 import { Separator } from './ui/separator'
 import { useDesignPageContext } from '@/contexts/designPage.context'
-import Cards from '@/app/temp/components/assets'
+import Cards from '@/app/design/components/assets'
 
 function DesignNavbar() {
   const {isDesignPageAssetsDisplayed, setIsDesignPageAssetsDisplayed} = useDesignPageContext()

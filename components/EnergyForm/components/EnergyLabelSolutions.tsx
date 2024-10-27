@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Separator } from '@/components/ui/separator'
-import { useDashboardContext } from '@/contexts/dashboard.context'
 import { useDesignPageContext } from '@/contexts/designPage.context'
 
 function EnergyLabelTypeCard (props: {

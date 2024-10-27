@@ -30,60 +30,56 @@ function Navbar({ content, setContent }: NavbarProps) {
       </div>
       <div className="flex-1">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-          <Link
-            href="#"
+          <div
             onClick={() => setContent("main")}
-            className={`${content == "main" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
+            className={`${content == "main" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer"}`}
           >
             <Home className="h-4 w-4" />
             Tableau de bord
-          </Link>
-          <Link
+          </div>
+          <div
             onClick={() => setContent("projects")}
-            href="#"
-            className={`${content == "projects" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
+            className={`${content == "projects" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer"}`}
           >
             <FolderKanban className="h-4 w-4" />
             Projets
-          </Link>
-          <Link
+          </div>
+          <div
             onClick={() => setContent("import")}
-            href="#"
-            className={`${content == "import" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
+            className={`${content == "import" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer"}`}
           >
             <Import className="h-4 w-4" />
             Import
-          </Link>
+          </div>
           <Link
             //onClick={() => setContent("design")}
-            href="/temp"
-            className={`${content == "design" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
+            href="/design"
+            className={`${content == "design" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer"}`}
           >
             <PencilRuler className="h-4 w-4" />
             Design
           </Link>
-          <Link
+          <div
             onClick={() => setContent("form")}
-            href="#"
-            className={`${content == "form" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"}`}
+            className={`${content == "form" ? "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary" : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:cursor-pointer"}`}
           >
             <List className="h-4 w-4" />
             Formulaire
-          </Link>
+          </div>
         </nav>
       </div>
 
       <div className="flex-col mt-auto mb-4">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
           <Link
-            href="#"
+            href="/help"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
             <LifeBuoy className="h-4 w-4" />
             Aide
           </Link>
           <Link
-            href="#"
+            href="/settings"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >
             <Settings className="h-4 w-4" />
