@@ -35,13 +35,14 @@ export interface ProjectType {
   name: string;
   address: string;
   date: string;
+  created_at?: string;
   actualEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
   targetedEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
   features: ProjectFeaturesType;
   stateOfPlay: string;
   marksMostUsed: MarksMostUsedObjectType[];
   costEstimation: CostEstimationType;
-  status: "inprogress" | "completed";
+  state: "inprogress" | "completed";
   lastUpdate?: string;
   id_bouquet: string;
   id_design: string;
@@ -91,7 +92,7 @@ export default function DashboardContextProvider({ children }: useCustomHook) {
         withAid: 178000,
         withoutAid: 213000,
       },
-      status: "inprogress",
+      state: "inprogress",
       lastUpdate: "17 September 2024",
       id_bouquet: "#Oe31b70k",
       id_design: "#Zk41b70H",

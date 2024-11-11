@@ -1,15 +1,20 @@
-"use client"
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
-import { useProjectsContext } from "@/contexts/projects.context"
+"use client";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import { useProjectsContext } from "@/contexts/projects.context";
 
 export default function ProjectsDataTable(props: {
-    onlyInProgress?: boolean,
-    onlyCompleted?: boolean
+  onlyInProgress?: boolean;
+  onlyCompleted?: boolean;
 }) {
-  const { projects } = useProjectsContext()
-
+  const { projects } = useProjectsContext();
+  console.log(projects);
   return (
-      <DataTable columns={columns} data={projects} onlyCompleted={props.onlyCompleted} onlyInProgress={props.onlyInProgress} />
-  )
+    <DataTable
+      columns={columns}
+      data={projects}
+      onlyCompleted={props.onlyCompleted}
+      onlyInProgress={props.onlyInProgress}
+    />
+  );
 }

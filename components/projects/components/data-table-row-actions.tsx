@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { Row } from "@tanstack/react-table"
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { Row } from "@tanstack/react-table";
+import { useState } from "react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,16 +12,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
+} from "@/components/ui/dropdown-menu";
+import { deleteProject } from "@/utils/handleProjectDetails";
+import { useProjectsContext } from "@/contexts/projects.context";
 
 interface DataTableRowActionsProps<TData> {
-  row: Row<TData>
+  row: Row<TData>;
 }
 
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { refreshProjects } = useProjectsContext();
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this project?")) {
+      setIsDeleting(true);
+      const success = await deleteProject(row.id);
+      if (success) {
+        refreshProjects();
+      }
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -38,10 +52,10 @@ export function DataTableRowActions<TData>({
         <DropdownMenuItem>Voir</DropdownMenuItem>
         <DropdownMenuItem>Modifier</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDelete} disabled={isDeleting}>
           Supprimer
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
