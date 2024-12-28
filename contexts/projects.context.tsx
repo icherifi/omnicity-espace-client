@@ -1,5 +1,6 @@
 "use client";
 import { useCustomHook } from "@/app/layout";
+import { handleProjectDetail } from "@/utils/handleProjectDetails";
 import {
   Dispatch,
   SetStateAction,
@@ -59,29 +60,12 @@ export const ProjectsContext = createContext<ProjectsContextType | null>(null);
 export default function ProjectsContextProvider({ children }: useCustomHook) {
   const [projects, setProjects] = useState<ProjectType[]>([]);
 
-  const fetchProjects = async () => {
-    try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`;
-      console.log("Fetching projects from:", apiUrl);
-      const response = await fetch(apiUrl, {
-        method: "GET",
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setProjects(data);
-    } catch (error) {
-      console.error("Failed to fetch projects:", error);
-    }
-  };
-
   const refreshProjects = () => {
-    fetchProjects();
+    handleProjectDetail(setProjects);
   };
 
   useEffect(() => {
-    fetchProjects();
+    handleProjectDetail(setProjects);
   }, []);
 
   return (

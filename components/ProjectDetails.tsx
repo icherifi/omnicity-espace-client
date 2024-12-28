@@ -47,7 +47,15 @@ function ProjectDetails() {
               Projet {currentProjectDisplayed.id}
             </CardTitle>
             <CardDescription>
-              Date: {currentProjectDisplayed.date}
+              {currentProjectDisplayed.created_at &&
+                new Date(currentProjectDisplayed.created_at).toLocaleDateString(
+                  "fr-FR",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )}
             </CardDescription>
           </div>
           <div className="ml-auto flex items-center gap-1">

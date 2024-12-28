@@ -15,11 +15,15 @@ export const getUserId = async (): Promise<string | null> => {
   return data?.user?.id || null;
 };
 
-export const getAuthToken = async (): Promise<string | null> => {
+export const getToken = async (): Promise<string | null> => {
   const { data, error } = await createClient().auth.getSession();
   if (error) {
-    console.error("Error getting session:", error);
+    console.error("Error getting token:", error);
     return null;
   }
-  return data?.session?.access_token || null;
+  if (!data?.session?.access_token) {
+    console.error("No access token found");
+    return null;
+  }
+  return data.session.access_token;
 };

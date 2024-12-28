@@ -14,25 +14,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteProject } from "@/utils/handleProjectDetails";
-import { useProjectsContext } from "@/contexts/projects.context";
+import { ProjectType, useProjectsContext } from "@/contexts/projects.context";
+import { getToken } from "@/utils/supabase/client";
 
 interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
+  row: Row<ProjectType>;
 }
 
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const [isDeleting, setIsDeleting] = useState(false);
   const { refreshProjects } = useProjectsContext();
   const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this project?")) {
-      setIsDeleting(true);
-      const success = await deleteProject(row.id);
+      const token = await getToken();
+      if (!token) {
+        console.error("You are not authenticated");
+        return;
+      }
+      const success = await deleteProject(row.original.id, token);
       if (success) {
         refreshProjects();
       }
-      setIsDeleting(false);
     }
   };
 
@@ -52,9 +55,7 @@ export function DataTableRowActions<TData>({
         <DropdownMenuItem>Voir</DropdownMenuItem>
         <DropdownMenuItem>Modifier</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleDelete} disabled={isDeleting}>
-          Supprimer
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDelete}>Supprimer</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -22,8 +22,15 @@ import Energy from "@/components/EnergyForm/components/Energy";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
 import PropertyState from "./EnergyForm/components/PropertyState";
 import EnergyLabelSolutions from "./EnergyForm/components/EnergyLabelSolutions";
-import { useRouter } from "next/navigation";
-import { handleImageChange } from "@/utils/handleImages";
+import {
+  handleImageChange,
+  handleNewProject,
+  saveIziResponseToBackend,
+} from "@/utils/handleProjectDetails";
+import { getToken } from "@/utils/supabase/client";
+import { useProjectsContext } from "@/contexts/projects.context";
+import { handleIziSubmit } from "@/utils/handleIzi";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 function NewProjectForm(props: { onProjectsPage?: boolean }) {
   const {
@@ -42,9 +49,14 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
     useNewProjectFormContext();
   const { projectGeneralInformation, setProjectGeneralInformation } =
     useNewProjectFormContext();
+  const { iziResponse, setIziResponse } = useEnergyFormContext();
   const { resetProjectForm } = useNewProjectFormContext();
   const { resetEnergyForm } = useEnergyFormContext();
-  const router = useRouter();
+  const { refreshProjects } = useProjectsContext();
+  const { getEnergyFormState } = useEnergyFormContext();
+  const { getFormattedEnergyFormState } = useEnergyFormContext();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [energyFormCompleted, setEnergyFormCompleted] = useState(false); // State to track if energy form is completed
 
   function handleGeneralInformationInputChange(
     e: React.ChangeEvent<HTMLInputElement>
@@ -64,30 +76,31 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
       name: projectName,
       address: projectAddress,
       description: projectDescription,
+      id_bouquet: iziResponse?.sessionId || null,
     };
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(projectData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const token = await getToken();
+      if (!token) {
+        console.error("You are not authenticated");
+        return;
       }
 
-      const data = await response.json();
-      console.log("Project created successfully:", data);
+      const data: { message: string; data: { id: number }[] } =
+        await handleNewProject(projectData, token);
+      const projectId = data.data[0].id;
+
+      if (selectedImage) {
+        await handleImageChange(selectedImage, token, projectId);
+      }
+      saveIziResponseToBackend(iziResponse, projectId, token);
       // Reset the form after successful submission
+      refreshProjects();
       resetProjectForm();
       resetEnergyForm();
       setEnergyFormGotOpened(false);
+      setEnergyFormCompleted(true); // Set energy form as completed
+      setCurrentEnergyFormPage(1); // Go back to the first page of the form
     } catch (error) {
       console.error("Failed to create project:", error);
     }
@@ -139,16 +152,23 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
             {currentEnergyFormPage == 5 ? (
               <Button
                 onClick={() => {
-                  router.push("/design");
-                  //setCurrentEnergyFormPage(1)
-                  //setIsEnergyFormDisplayed(false)
+                  setCurrentEnergyFormPage(1);
+                  setIsEnergyFormDisplayed(false);
+                  setEnergyFormCompleted(true); // Set energy form as completed
                 }}
               >
                 Terminer
               </Button>
             ) : (
               <Button
-                onClick={() => {
+                onClick={async () => {
+                  if (currentEnergyFormPage == 3) {
+                    const iziResponse = await handleIziSubmit(
+                      getFormattedEnergyFormState()
+                    );
+                    setIziResponse(iziResponse);
+                    console.log("IZI Response:", iziResponse);
+                  }
                   setCurrentEnergyFormPage(currentEnergyFormPage + 1);
                 }}
               >
@@ -338,6 +358,12 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
                     </div>
                   </>
                 )}
+                {energyFormCompleted && (
+                  <div className="flex items-center space-x-2">
+                    <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                    <span>Validé</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -349,7 +375,10 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
                 type="file"
                 accept="image/*"
                 className="col-span-3"
-                onChange={handleImageChange}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setSelectedImage(file);
+                }}
               />
             </div>
           </div>
