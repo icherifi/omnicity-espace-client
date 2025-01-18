@@ -21,9 +21,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DateRangePicker from "@/components/DateRangePicker";
-import ProjectsDataTable from "./components/projectsDataTable";
-import NewProjectForm from "../NewProjectForm";
+import DateRangePicker from "@/components/omnicity/table/DateRangePicker";
+import ProjectsDataTable from "../omnicity/table/projectsDataTable";
+import NewProjectForm from "../form/NewProjectForm";
 
 export default function ProjectsPage() {
   return (

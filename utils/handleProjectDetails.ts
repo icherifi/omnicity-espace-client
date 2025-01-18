@@ -197,21 +197,28 @@ export const handleProjectDetail = async (
     }
     const data = await response.json();
     const projectsWithEnergyDetails = await Promise.all(
-      data.map(async (project: ProjectType) => {
+      data.map(async (project: any) => {
         const energyDetails = await getProjectEnergyDetails(project.id);
-        console.log("Energy details for project", energyDetails);
-
         return {
           ...project,
+          stateOfPlay: project.description,
           costEstimation: energyDetails[0]
             ? {
-                withAid: energyDetails[0].izi_response.bouquets[0].resteACharge,
+                withAid: energyDetails[0].izi_response.bouquets[1].resteACharge,
                 withoutAid: energyDetails[0].izi_response.bouquets[1].coutTotal,
               }
             : undefined,
+          targetedEnergyRating: energyDetails[0]
+            ? energyDetails[0].izi_response.bouquets[1].etiquette
+            : undefined,
+          actualEnergyRating: energyDetails[0]
+            ? energyDetails[0].izi_response.etiquetteInitial
+            : undefined,
+          iziResponse: energyDetails[0]?.izi_response,
         };
       })
     );
+    console.log("Projects with energy details", projectsWithEnergyDetails);
     setProjects(projectsWithEnergyDetails);
   } catch (error) {
     console.error("Failed to fetch projects:", error);

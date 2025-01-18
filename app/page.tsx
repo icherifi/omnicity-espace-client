@@ -2,15 +2,14 @@
 import * as React from "react";
 import { Progress } from "@/components/ui/progress";
 import Navbar from "@/components/Navbar";
-import MainHeader from "@/components/omnicity/MainHeader";
+import MainHeader from "@/components/MainHeader";
 import MainComponent from "@/app/home/MainComponent";
 import { ComponentsMap } from "@/types/dashboard.types";
 import Plan from "@/components/scans/Plan";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import ProjectsPage from "@/components/projects/Projects";
-import FormPage from "@/components/form/formPage";
-import { cn } from "@/lib/utils";
+import FormPage from "@/components/proto-form/formPage";
 
 const componentsMap: ComponentsMap = {
   main: <MainComponent />,

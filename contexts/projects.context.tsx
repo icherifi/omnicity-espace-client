@@ -1,6 +1,7 @@
 "use client";
 import { useCustomHook } from "@/app/layout";
 import { handleProjectDetail } from "@/utils/handleProjectDetails";
+import { getToken } from "@/utils/supabase/client";
 import {
   Dispatch,
   SetStateAction,
@@ -34,7 +35,7 @@ export interface ProjectType {
   id: string;
   name: string;
   address: string;
-  date: string;
+  created_at?: string;
   actualEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
   targetedEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
   features: ProjectFeaturesType;
@@ -47,6 +48,7 @@ export interface ProjectType {
   id_design: string;
   authorName: string;
   image?: string;
+  iziResponse?: any;
 }
 
 interface ProjectsContextType {

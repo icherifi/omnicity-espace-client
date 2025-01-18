@@ -8,47 +8,46 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useProjectsContext } from "./projects.context";
+import { ProjectType, useProjectsContext } from "./projects.context";
 
-interface ProjectFeaturesType {
-  servicesAndAccessibility: string[];
-  outsite: string[];
-  additionalAres: string[];
-  hygiene: string[];
-  size: string;
-  roomsNumber: number;
-  floorsNumber: number;
-}
+// interface ProjectFeaturesType {
+//   servicesAndAccessibility: string[];
+//   outsite: string[];
+//   additionalAres: string[];
+//   hygiene: string[];
+//   size: string;
+//   roomsNumber: number;
+//   floorsNumber: number;
+// }
 
-export interface MarksMostUsedObjectType {
-  mark: string;
-  percentage: number;
-}
+// export interface MarksMostUsedObjectType {
+//   mark: string;
+//   percentage: number;
+// }
 
-interface CostEstimationType {
-  withAid: number;
-  withoutAid: number;
-}
+// interface CostEstimationType {
+//   withAid: number;
+//   withoutAid: number;
+// }
 
-export interface ProjectType {
-  id: string;
-  name: string;
-  address: string;
-  date: string;
-  created_at?: string;
-  actualEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
-  targetedEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
-  features: ProjectFeaturesType;
-  stateOfPlay: string;
-  marksMostUsed: MarksMostUsedObjectType[];
-  costEstimation: CostEstimationType;
-  state: "inprogress" | "completed";
-  lastUpdate?: string;
-  id_bouquet: string;
-  id_design: string;
-  authorName: string;
-  image?: string;
-}
+// export interface ProjectType {
+//   id: string;
+//   name: string;
+//   address: string;
+//   date: string;
+//   actualEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
+//   targetedEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
+//   features: ProjectFeaturesType;
+//   stateOfPlay: string;
+//   marksMostUsed: MarksMostUsedObjectType[];
+//   costEstimation: CostEstimationType;
+//   state: "inprogress" | "completed";
+//   lastUpdate?: string;
+//   id_bouquet: string;
+//   id_design: string;
+//   authorName: string;
+//   image?: string;
+// }
 
 interface DashboardContextType {
   currentProjectDisplayed: ProjectType;
@@ -66,7 +65,7 @@ export default function DashboardContextProvider({ children }: useCustomHook) {
     useState<ProjectType>({
       id: "#Oe31b70H",
       name: "T211 VITRY",
-      date: "23 Juin 2024",
+      created_at: "23 Juin 2024",
       address: "337 Centre Cial V Deux, 94400 Vitry-sur-Seine",
       actualEnergyRating: "e",
       targetedEnergyRating: "b",

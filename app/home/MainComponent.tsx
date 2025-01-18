@@ -7,11 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import NewProjectForm from "@/components/NewProjectForm";
-import ProjectDetails from "@/components/ProjectDetails";
+import NewProjectForm from "@/components/form/NewProjectForm";
+import ProjectDetails from "@/components/details/ProjectDetails";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import DashboardScrollCarousel from "@/components/DashboardScrollCarousel";
-import ProjectsTable from "@/components/ProjectsTable/projectsTable";
+import ProjectsDataTable from "@/components/omnicity/table/projectsDataTable";
+import DashboardScrollCarousel from "@/components/omnicity/carousel/DashboardScrollCarousel";
 
 export default function MainComponent() {
   return (
@@ -63,8 +63,7 @@ export default function MainComponent() {
             </div>
 
             <DashboardScrollCarousel />
-
-            <ProjectsTable />
+            <ProjectsDataTable />
           </div>
           <ProjectDetails />
         </main>
