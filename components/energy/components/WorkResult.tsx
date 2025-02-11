@@ -1,0 +1,51 @@
+import React, { useState } from "react";
+import ToggleButton from "@/components/omnicity/buttons/toggle";
+import FuturStateDetails from "@/components/details/component/FuturStateDetails";
+import CurrentStateDetails from "@/components/details/component/CurrentStateDetails";
+
+export interface WorkResultProps {
+  bouquet: {
+    etiquette: string;
+    pourcentageGainCEP: number;
+    EGES: number;
+    confort: number;
+    valeurVerte: number;
+  };
+  initialState: {
+    CEP: number;
+    etiquetteInitial: string;
+  };
+}
+
+export function WorkResult({ bouquet, initialState }: WorkResultProps) {
+  const [selected, setSelected] = useState<"avant" | "apres">("apres");
+
+  return (
+    <div className="flex flex-col w-1/3 p-4 mb-4">
+      <h3 className="font-bold text-lg self-center">Résultat des travaux</h3>
+
+      <div className="flex rounded-full bg-blue-100 p-1 my-2 self-center">
+        <ToggleButton
+          isSelected={selected === "avant"}
+          onClick={() => setSelected("avant")}
+        >
+          Avant
+        </ToggleButton>
+        <ToggleButton
+          isSelected={selected === "apres"}
+          onClick={() => setSelected("apres")}
+        >
+          Après
+        </ToggleButton>
+      </div>
+
+      {selected === "apres" ? (
+        <FuturStateDetails bouquet={bouquet} initialState={initialState} />
+      ) : (
+        <CurrentStateDetails initialState={initialState} bouquet={bouquet} />
+      )}
+    </div>
+  );
+}
+
+export default WorkResult;
