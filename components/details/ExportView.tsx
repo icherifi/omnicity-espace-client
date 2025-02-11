@@ -29,7 +29,7 @@ export const exportToPDF = async () => {
   }
 };
 
-function ExportView({ onClose }) {
+function ExportView({ onClose }: { onClose: () => void }) {
   const { currentProjectDisplayed } = useDashboardContext();
 
   return (

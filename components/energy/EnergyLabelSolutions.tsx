@@ -73,7 +73,7 @@ export function EnergyLabelSolutions() {
 
   useEffect(() => {
     if (iziResponse && energyLabelSolutionsType) {
-      const selectedBouquet = iziResponse.bouquets.find((bouquet) => {
+      const selectedBouquet = iziResponse.bouquets.find((bouquet: any) => {
         if (energyLabelSolutionsType === "Simplicity")
           return bouquet.etiquette === "E";
         if (energyLabelSolutionsType === "Balanced")
@@ -131,7 +131,7 @@ export function EnergyLabelSolutions() {
         <EnergyLabelTypeCard
           energyLabelSolutionsType={"Simplicity"}
           bouquet={iziResponse.bouquets.find(
-            (bouquet) => bouquet.etiquette === "E"
+            (bouquet: any) => bouquet.etiquette === "E"
           )}
           initialState={iziResponse}
         />
@@ -140,7 +140,7 @@ export function EnergyLabelSolutions() {
         <EnergyLabelTypeCard
           energyLabelSolutionsType={"Balanced"}
           bouquet={iziResponse.bouquets.find(
-            (bouquet) => bouquet.etiquette === "D"
+            (bouquet: any) => bouquet.etiquette === "D"
           )}
           initialState={iziResponse}
         />
@@ -149,7 +149,7 @@ export function EnergyLabelSolutions() {
         <EnergyLabelTypeCard
           energyLabelSolutionsType={"Efficient"}
           bouquet={iziResponse.bouquets.find(
-            (bouquet) => bouquet.etiquette === "A"
+            (bouquet: any) => bouquet.etiquette === "A"
           )}
           initialState={iziResponse}
         />

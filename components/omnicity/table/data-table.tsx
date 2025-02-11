@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { ProjectType, useDashboardContext } from "@/contexts/dashboard.context";
+import { useDashboardContext } from "@/contexts/dashboard.context";
+import { ProjectType } from "@/contexts/projects.context";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

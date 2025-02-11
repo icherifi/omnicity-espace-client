@@ -1,6 +1,13 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
@@ -9,14 +16,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import { MarksMostUsedObjectType } from "@/contexts/dashboard.context"
+} from "@/components/ui/chart";
+import { MarksMostUsedObjectType } from "@/contexts/projects.context";
 
 const chartConfig = {
   desktop: {
@@ -26,13 +33,13 @@ const chartConfig = {
   label: {
     color: "hsl(var(--background))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 interface MarksUsedProps {
-  marksUsedData: MarksMostUsedObjectType[]
+  marksUsedData: MarksMostUsedObjectType[];
 }
 
-export default function MarksUsed (props: MarksUsedProps) {
+export default function MarksUsed(props: MarksUsedProps) {
   return (
     <Card>
       <CardHeader>
@@ -85,5 +92,5 @@ export default function MarksUsed (props: MarksUsedProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

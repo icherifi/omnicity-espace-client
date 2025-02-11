@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { ProjectType } from "@/contexts/dashboard.context";
+import { ProjectType } from "@/contexts/projects.context";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { DataTableRowActions } from "./data-table-row-actions";

@@ -33,7 +33,7 @@ export default function FormPage() {
       setIsDataLoaded(true);
 
       setIsLoadingSummary(true);
-      const summary = await getOpenAISummary(data[0]);
+      const summary = (await getOpenAISummary(data[0])) || "";
       setAiSummary(summary);
       setIsLoadingSummary(false);
     } catch (error) {
