@@ -1,6 +1,6 @@
 "use client";
 import { Label } from "@/components/ui/label";
-import React, { ChangeEvent, useState } from "react";
+import React from "react";
 import {
   Select,
   SelectContent,
@@ -30,39 +30,43 @@ function InsulationWork() {
         <div className="flex items-center justify-around space-x-2">
           <div
             onClick={() => {
-              setWorkPeriodForWalls("None");
+              setWorkPeriodForWalls("Pas de travaux");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForWalls == "None" && "bg-black"
-            }`}
-          >
-            <p
-              className={`${workPeriodForWalls == "None" && "text-white"}`}
-            >{`Non`}</p>
-          </div>
-          <div
-            onClick={() => {
-              setWorkPeriodForWalls("Under10");
-            }}
-            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForWalls == "Under10" && "bg-black"
-            }`}
-          >
-            <p
-              className={`${workPeriodForWalls == "Under10" && "text-white"}`}
-            >{`<10 ans`}</p>
-          </div>
-          <div
-            onClick={() => {
-              setWorkPeriodForWalls("Between10And20");
-            }}
-            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForWalls == "Between10And20" && "bg-black"
+              workPeriodForWalls == "Pas de travaux" && "bg-black"
             }`}
           >
             <p
               className={`${
-                workPeriodForWalls == "Between10And20" && "text-white"
+                workPeriodForWalls == "Pas de travaux" && "text-white"
+              }`}
+            >{`Non`}</p>
+          </div>
+          <div
+            onClick={() => {
+              setWorkPeriodForWalls("Il y a moins de 10 ans");
+            }}
+            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
+              workPeriodForWalls == "Il y a moins de 10 ans" && "bg-black"
+            }`}
+          >
+            <p
+              className={`${
+                workPeriodForWalls == "Il y a moins de 10 ans" && "text-white"
+              }`}
+            >{`<10 ans`}</p>
+          </div>
+          <div
+            onClick={() => {
+              setWorkPeriodForWalls("Entre 10 et 20 ans");
+            }}
+            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
+              workPeriodForWalls == "Entre 10 et 20 ans" && "bg-black"
+            }`}
+          >
+            <p
+              className={`${
+                workPeriodForWalls == "Entre 10 et 20 ans" && "text-white"
               }`}
             >
               10ans-20ans
@@ -70,15 +74,15 @@ function InsulationWork() {
           </div>
           <div
             onClick={() => {
-              setWorkPeriodForWalls("Between20And30");
+              setWorkPeriodForWalls("Entre 20 et 30 ans");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForWalls == "Between20And30" && "bg-black"
+              workPeriodForWalls == "Entre 20 et 30 ans" && "bg-black"
             }`}
           >
             <p
               className={`${
-                workPeriodForWalls == "Between20And30" && "text-white"
+                workPeriodForWalls == "Entre 20 et 30 ans" && "text-white"
               }`}
             >
               20ans-30ans
@@ -86,18 +90,18 @@ function InsulationWork() {
           </div>
           <div
             onClick={() => {
-              setWorkPeriodForWalls("Between30And40");
+              setWorkPeriodForWalls("Je ne sais pas");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForWalls == "Between30And40" && "bg-black"
+              workPeriodForWalls == "Je ne sais pas" && "bg-black"
             }`}
           >
             <p
               className={`${
-                workPeriodForWalls == "Between30And40" && "text-white"
+                workPeriodForWalls == "Je ne sais pas" && "text-white"
               }`}
             >
-              30ans-40ans
+              Je ne sais pas
             </p>
           </div>
         </div>
@@ -110,39 +114,43 @@ function InsulationWork() {
         <div className="flex items-center justify-around space-x-2">
           <div
             onClick={() => {
-              setWorkPeriodForFloors("None");
+              setWorkPeriodForFloors("Pas de travaux");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForFloors == "None" && "bg-black"
-            }`}
-          >
-            <p
-              className={`${workPeriodForFloors == "None" && "text-white"}`}
-            >{`Non`}</p>
-          </div>
-          <div
-            onClick={() => {
-              setWorkPeriodForFloors("Under10");
-            }}
-            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForFloors == "Under10" && "bg-black"
-            }`}
-          >
-            <p
-              className={`${workPeriodForFloors == "Under10" && "text-white"}`}
-            >{`<10 ans`}</p>
-          </div>
-          <div
-            onClick={() => {
-              setWorkPeriodForFloors("Between10And20");
-            }}
-            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForFloors == "Between10And20" && "bg-black"
+              workPeriodForFloors == "Pas de travaux" && "bg-black"
             }`}
           >
             <p
               className={`${
-                workPeriodForFloors == "Between10And20" && "text-white"
+                workPeriodForFloors == "Pas de travaux" && "text-white"
+              }`}
+            >{`Non`}</p>
+          </div>
+          <div
+            onClick={() => {
+              setWorkPeriodForFloors("Il y a moins de 10 ans");
+            }}
+            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
+              workPeriodForFloors == "Il y a moins de 10 ans" && "bg-black"
+            }`}
+          >
+            <p
+              className={`${
+                workPeriodForFloors == "Il y a moins de 10 ans" && "text-white"
+              }`}
+            >{`<10 ans`}</p>
+          </div>
+          <div
+            onClick={() => {
+              setWorkPeriodForFloors("Entre 10 et 20 ans");
+            }}
+            className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
+              workPeriodForFloors == "Entre 10 et 20 ans" && "bg-black"
+            }`}
+          >
+            <p
+              className={`${
+                workPeriodForFloors == "Entre 10 et 20 ans" && "text-white"
               }`}
             >
               10ans-20ans
@@ -150,15 +158,15 @@ function InsulationWork() {
           </div>
           <div
             onClick={() => {
-              setWorkPeriodForFloors("Between20And30");
+              setWorkPeriodForFloors("Entre 20 et 30 ans");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForFloors == "Between20And30" && "bg-black"
+              workPeriodForFloors == "Entre 20 et 30 ans" && "bg-black"
             }`}
           >
             <p
               className={`${
-                workPeriodForFloors == "Between20And30" && "text-white"
+                workPeriodForFloors == "Entre 20 et 30 ans" && "text-white"
               }`}
             >
               20ans-30ans
@@ -166,18 +174,18 @@ function InsulationWork() {
           </div>
           <div
             onClick={() => {
-              setWorkPeriodForFloors("Between30And40");
+              setWorkPeriodForWalls("Je ne sais pas");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              workPeriodForFloors == "Between30And40" && "bg-black"
+              workPeriodForFloors == "Je ne sais pas" && "bg-black"
             }`}
           >
             <p
               className={`${
-                workPeriodForFloors == "Between30And40" && "text-white"
+                workPeriodForFloors == "Je ne sais pas" && "text-white"
               }`}
             >
-              30ans-40ans
+              Je ne sais pas
             </p>
           </div>
         </div>

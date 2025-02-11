@@ -10,18 +10,18 @@ import {
 
 type PropertyType = "House" | "Apartment" | "Co-ownership";
 type WorkPeriodSlices =
-  | "None"
-  | "Under10"
-  | "Between10And20"
-  | "Between20And30"
-  | "Between30And40";
+  | "Il y a moins de 10 ans"
+  | "Entre 10 et 20 ans"
+  | "Entre 20 et 30 ans"
+  | "Pas de travaux"
+  | "Je ne sais pas";
 export type WindowMaterialType = "Bois / Bois metal" | "PVC" | "Aluminium";
 type EnergyType =
-  | "Electricity"
-  | "Wood"
-  | "Gas or propane"
-  | "Fuel oil"
-  | "Coal";
+  | "Electricité"
+  | "Bois"
+  | "Gaz ou propane"
+  | "Fioul"
+  | "Charbon";
 type HeatingType = "Electric Transmitters" | "Heat pumps";
 export type GlazingType =
   | "Simple vitrage"
@@ -103,8 +103,8 @@ const initialState = {
   livingArea: "50",
   averageAnnualIncome: 5000000,
   residentsNumber: 1,
-  workPeriodForWalls: "None" as WorkPeriodSlices,
-  workPeriodForFloors: "None" as WorkPeriodSlices,
+  workPeriodForWalls: "Je ne sais pas" as WorkPeriodSlices,
+  workPeriodForFloors: "Je ne sais pas" as WorkPeriodSlices,
   windowMaterial: "Aluminium" as WindowMaterialType,
   glazingType: "Double vitrage ancien (plus de 25 ans)" as GlazingType,
   selectedEnergyType: "Electricité" as EnergyType,
@@ -221,7 +221,9 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
       "Le nombre de niveaux habités :": ["1"], // This is a placeholder, replace with actual value if available
       "La maison est-elle mitoyenne ?": ["Non"], // This is a placeholder, replace with actual value if available
       "Avez-vous déjà effectué des travaux d'isolation de vos murs ?": [
-        workPeriodForWalls === "None" ? "Je ne sais pas" : workPeriodForWalls,
+        workPeriodForWalls === "Pas de travaux"
+          ? "Je ne sais pas"
+          : workPeriodForWalls,
       ],
       "Le type de toiture :": ["Toit terrasse"], // This is a placeholder, replace with actual value if available
       "Avez-vous déjà effectué des travaux d'isolation de votre toiture ?": [
@@ -230,7 +232,7 @@ export default function EnergyFormContextProvider({ children }: useCustomHook) {
       "Quel est votre type de planchers bas ?": ["Terre plein"], // This is a placeholder, replace with actual value if available
       "Avez-vous déjà effectué des travaux d'isolation de vos planchers bas ?":
         [
-          workPeriodForFloors === "None"
+          workPeriodForFloors === "Pas de travaux"
             ? "Je ne sais pas"
             : workPeriodForFloors,
         ],

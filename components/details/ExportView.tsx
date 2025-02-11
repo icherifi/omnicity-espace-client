@@ -4,8 +4,10 @@ import html2canvas from "html2canvas";
 import { useDashboardContext } from "@/contexts/dashboard.context";
 import { StateOfPlay } from "./component/StateOfPlay";
 import PropertyState from "../energy/components/PropertyState";
-import EnergyLabelSolutions from "../energy/EnergyLabelSolutions";
-import WorkResult from "../energy/components/WorkResult";
+import FuturStateDetails from "./component/FuturStateDetails";
+import CurrentStateDetails from "./component/CurrentStateDetails";
+import WorkCost from "../energy/components/WorkCost";
+import { Card, CardHeader, CardTitle } from "../ui/card";
 
 export const exportToPDF = async () => {
   const input = document.getElementById("export-view");
@@ -33,10 +35,7 @@ function ExportView({ onClose }) {
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div className="w-[210mm] h-full overflow-auto">
-        <div
-          id="export-view"
-          className="w-[210mm] h-[296mm] bg-white p-5 relative"
-        >
+        <div id="export-view" className="w-[210mm] bg-white p-5 relative">
           <div className="absolute top-0 left-0 w-full h-10 bg-gray-500 bg-opacity-50 flex justify-end items-center opacity-0 hover:opacity-100 transition-opacity">
             <button onClick={onClose} className="mr-4">
               Close
@@ -45,18 +44,37 @@ function ExportView({ onClose }) {
               Export to PDF
             </button>
           </div>
-          <h1>Project Details</h1>
-          <p>Details for project {currentProjectDisplayed.id}</p>
+          <p>Projet : {currentProjectDisplayed.id}</p>
           <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
-          <PropertyState />
-          {currentProjectDisplayed.iziResponse && (
-            <WorkResult
-              bouquet={currentProjectDisplayed.iziResponse.bouquets.find(
-                (bouquet) => bouquet.etiquette === "E"
-              )}
-              initialState={currentProjectDisplayed.iziResponse}
-            />
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle> Condition actuelle de votre habitation</CardTitle>
+            </CardHeader>
+            <PropertyState />
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Estimations energie</CardTitle>
+            </CardHeader>
+            {currentProjectDisplayed.iziResponse && (
+              <div className="flex flex-col p-4">
+                <div className="flex flex-row justify-center p-4 space-x-10">
+                  <CurrentStateDetails
+                    bouquet={currentProjectDisplayed.iziResponse.bouquets[1]}
+                    initialState={currentProjectDisplayed.iziResponse}
+                  />
+                  <FuturStateDetails
+                    bouquet={currentProjectDisplayed.iziResponse.bouquets[1]}
+                    initialState={currentProjectDisplayed.iziResponse}
+                  />
+                </div>
+                <WorkCost
+                  bouquet={currentProjectDisplayed.iziResponse.bouquets[1]}
+                  inPdf={true}
+                />
+              </div>
+            )}
+          </Card>
         </div>
       </div>
     </div>
