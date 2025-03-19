@@ -139,9 +139,9 @@ export function EnergyLabelSolutions() {
       {energyLabelSolutionsType == "Balanced" && iziResponse && (
         <EnergyLabelTypeCard
           energyLabelSolutionsType={"Balanced"}
-          bouquet={iziResponse.bouquets.find(
-            (bouquet: any) => bouquet.etiquette === "D"
-          )}
+          bouquet={iziResponse.bouquets
+            .filter((bouquet: any) => bouquet !== null) // On enlève les valeurs nulles
+            .find((bouquet: any) => bouquet.etiquette === "D")}
           initialState={iziResponse}
         />
       )}

@@ -5,8 +5,6 @@ import { ProjectType } from "@/contexts/projects.context";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { useEffect, useState } from "react";
-import { getProjectImages } from "@/utils/handleProjectDetails";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 
 // This type is used to define the shape of our data.
@@ -16,29 +14,13 @@ export const columns: ColumnDef<ProjectType>[] = [
     accessorKey: "image",
     header: "Image",
     cell: ({ row }) => {
-      const [imageUrl, setImageUrl] = useState("/placeholder.svg");
-
-      useEffect(() => {
-        const fetchImage = async () => {
-          try {
-            const images = await getProjectImages(row.original.id);
-            console.log("images", images);
-            if (images.length > 0) {
-              const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/project-images/${row.original.id}/${images[0].name}`;
-              console.log("imageUrl", imageUrl);
-              setImageUrl(imageUrl);
-            }
-          } catch (error) {
-            console.error("Error fetching images:", error);
-          }
-        };
-
-        fetchImage();
-      }, [row.original.id]);
-
       return (
         <Image
-          src={imageUrl}
+          src={
+            process.env.NEXT_PUBLIC_SUPABASE_URL +
+            "/storage/v1/object/public/" +
+            row.original.imageFullPath! || "/placeholder.svg"
+          }
           height={64}
           width={64}
           alt="Property picture"
@@ -75,7 +57,9 @@ export const columns: ColumnDef<ProjectType>[] = [
     header: "Cout total",
     cell: ({ row }) => (
       <span>
-        {row.original.costEstimation?.withoutAid?.toLocaleString("fr-FR")}€
+        {row.original.costEstimation?.withoutAid
+          ? `${row.original.costEstimation?.withoutAid?.toLocaleString("fr-FR")}€`
+          : "N/A"}
       </span>
     ),
   },

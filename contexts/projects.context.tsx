@@ -1,7 +1,6 @@
 "use client";
 import { useCustomHook } from "@/app/layout";
 import { handleProjectDetail } from "@/utils/handleProjectDetails";
-import { getToken } from "@/utils/supabase/client";
 import {
   Dispatch,
   SetStateAction,
@@ -49,6 +48,7 @@ export interface ProjectType {
   authorName: string;
   image?: string;
   iziResponse?: any;
+  imageFullPath?: string;
 }
 
 interface ProjectsContextType {

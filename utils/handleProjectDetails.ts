@@ -28,35 +28,6 @@ export const deleteProject = async (
   }
 };
 
-export const getProjectImages = async (projectId: string) => {
-  const token = await getToken();
-  if (!token) {
-    console.error("You are not authenticated");
-    return [];
-  }
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/images`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching project images:", error);
-    return [];
-  }
-};
-
 export const getScans = async (projectId: string): Promise<any[] | null> => {
   const token = await getToken();
   if (!token) {
@@ -85,16 +56,19 @@ export const getScans = async (projectId: string): Promise<any[] | null> => {
   }
 };
 
-export const handleImageChange = (
+export const handleImageChange = async (
   file: File,
   token: string,
   projectId: number
-) => {
-  if (file) {
+): Promise<string | null> => {
+  try {
+    if (!file) return null;
+
     const formData = new FormData();
     formData.append("image", file);
     const imageId = Math.random().toString(36).substring(2, 15);
-    return fetch(
+
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/images/${imageId}`,
       {
         method: "POST",
@@ -103,16 +77,48 @@ export const handleImageChange = (
         },
         body: formData,
       }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Image uploaded successfully:", data);
-        return data;
-      })
-      .catch((error) => {
-        console.error("Error uploading image:", error);
-        throw error;
-      });
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const imageUrl = data?.fullPath;
+
+    console.log("Image uploaded successfully:", imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    return null;
+  }
+};
+
+export const updateProjectImage = async (
+  projectId: number,
+  imageFullPath: string,
+  token: string
+) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/imageFullPath`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ imageFullPath: imageFullPath }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    console.log("Project image updated successfully");
+  } catch (error) {
+    console.error("Error updating project image:", error);
   }
 };
 
@@ -184,7 +190,7 @@ export const handleProjectDetail = async (
   }
   try {
     const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`;
-    console.log("Fetching projects from:", apiUrl);
+
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {

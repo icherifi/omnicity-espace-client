@@ -25,6 +25,7 @@ function Property() {
   const { averageAnnualIncome, setAverageAnnualIncome } =
     useEnergyFormContext();
   const { residentsNumber, setResidentsNumber } = useEnergyFormContext();
+  
   return (
     <div className="flex flex-col items-center justify-center space-x-2">
       <div className="flex items-center justify-around space-x-2">

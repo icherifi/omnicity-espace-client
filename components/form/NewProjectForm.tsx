@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -14,7 +14,6 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import DatePicker from "../ui/DatePicker";
 import { useNewProjectFormContext } from "@/contexts/newProjectForm.context";
 import Property from "@/components/energy/components/Property";
 import InsulationWork from "@/components/energy/components/InsulationWork";
@@ -26,12 +25,12 @@ import {
   handleImageChange,
   handleNewProject,
   saveIziResponseToBackend,
+  updateProjectImage,
 } from "@/utils/handleProjectDetails";
 import { getToken } from "@/utils/supabase/client";
 import { useProjectsContext } from "@/contexts/projects.context";
 import { handleIziSubmit } from "@/utils/handleIzi";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-
 function NewProjectForm(props: { onProjectsPage?: boolean }) {
   const {
     isEnergyFormDisplayed,
@@ -53,7 +52,6 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
   const { resetProjectForm } = useNewProjectFormContext();
   const { resetEnergyForm } = useEnergyFormContext();
   const { refreshProjects } = useProjectsContext();
-  const { getEnergyFormState } = useEnergyFormContext();
   const { getFormattedEnergyFormState } = useEnergyFormContext();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [energyFormCompleted, setEnergyFormCompleted] = useState(false); // State to track if energy form is completed
@@ -77,30 +75,45 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
       address: projectAddress,
       description: projectDescription,
       id_bouquet: iziResponse?.sessionId || null,
+      state: "inprogress",
+      features: {
+        size: projectGeneralInformation.size,
+        roomsNumber: projectGeneralInformation.roomsNumber,
+        floorsNumber: projectGeneralInformation.floorsNumber,
+      },
     };
-
+  
     try {
       const token = await getToken();
       if (!token) {
         console.error("You are not authenticated");
         return;
       }
-
-      const data: { message: string; data: { id: number }[] } =
-        await handleNewProject(projectData, token);
+  
+      const data = await handleNewProject(projectData, token);
       const projectId = data.data[0].id;
-
+  
+      let imageFullPath: string | null = null;
+  
       if (selectedImage) {
-        await handleImageChange(selectedImage, token, projectId);
+        imageFullPath = await handleImageChange(selectedImage, token, projectId);
       }
+  
+      if (imageFullPath) {
+        await updateProjectImage(projectId, imageFullPath, token);
+      }
+  
       saveIziResponseToBackend(iziResponse, projectId, token);
-      // Reset the form after successful submission
+  
+      // Reset du formulaire
       refreshProjects();
       resetProjectForm();
       resetEnergyForm();
       setEnergyFormGotOpened(false);
-      setEnergyFormCompleted(true); // Set energy form as completed
-      setCurrentEnergyFormPage(1); // Go back to the first page of the form
+      setEnergyFormCompleted(false);
+      setCurrentEnergyFormPage(1);
+      setIsEnergyFormDisplayed(false);
+  
     } catch (error) {
       console.error("Failed to create project:", error);
     }
@@ -150,15 +163,15 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
 
           <DialogFooter>
             {currentEnergyFormPage == 5 ? (
-              <Button
-                onClick={() => {
-                  setCurrentEnergyFormPage(1);
-                  setIsEnergyFormDisplayed(false);
-                  setEnergyFormCompleted(true); // Set energy form as completed
-                }}
-              >
-                Terminer
-              </Button>
+                <Button
+                  onClick={() => {
+                    setCurrentEnergyFormPage(1);
+                    setIsEnergyFormDisplayed(false);
+                    setEnergyFormCompleted(true); // Set energy form as completed
+                  }}
+                >
+                  Terminer
+                </Button>
             ) : (
               <Button
                 onClick={async () => {
@@ -259,13 +272,6 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
                   setProjectDescription(e.currentTarget.value);
                 }}
               />
-            </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date" className="text-right">
-                Date
-              </Label>
-              <DatePicker />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
@@ -383,7 +389,9 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleSubmit}>Créer le projet</Button>
+            <DialogClose asChild>
+              <Button onClick={handleSubmit}>Créer le projet</Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       )}

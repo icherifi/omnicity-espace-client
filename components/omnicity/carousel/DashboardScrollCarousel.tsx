@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import { useProjectsContext } from "@/contexts/projects.context";
 import { useDashboardContext } from "@/contexts/dashboard.context";
 import {
@@ -69,8 +69,8 @@ function DashboardScrollCarousel() {
     <div
       ref={scrollContainerRef}
       className="w-full overflow-x-auto rounded-lg border border-gray-200
-                 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200
-                 hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+      scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200
+      hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
     >
       <div className="flex space-x-4 p-4" style={{ width: "max-content" }}>
         {projects.map((project, i) => (
@@ -84,7 +84,7 @@ function DashboardScrollCarousel() {
             <div className="p-1">
               <Card
                 className={`${
-                  currentProjectDisplayed.id == project.id
+                  currentProjectDisplayed?.id === project.id
                     ? "border-violet-500 border-2"
                     : ""
                 }`}
@@ -97,7 +97,11 @@ function DashboardScrollCarousel() {
                         return (
                           <CarouselItem key={index} className="pr-4">
                             <Image
-                              src={`/dalle${imageNumber}.png`}
+                              src={
+                                process.env.NEXT_PUBLIC_SUPABASE_URL +
+                                "/storage/v1/object/public/" +
+                                project.imageFullPath! || "/placeholder.svg"
+                              }
                               alt="property image"
                               width={250}
                               height={250}
@@ -117,7 +121,7 @@ function DashboardScrollCarousel() {
                     <span className="font-semibold mt-4">
                       {project.features?.roomsNumber} pièce
                       {project.features?.roomsNumber > 1 && "s"} &bull;
-                      {` `} {project.features?.size} &bull;
+                      {` `} {project.features?.size}m² &bull;
                       {` `} {project.features?.floorsNumber} étages
                     </span>
                   </CardDescription>
