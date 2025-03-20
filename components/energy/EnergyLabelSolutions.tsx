@@ -1,26 +1,62 @@
+import React, { useEffect, useMemo, useState } from "react";
 import {
   EnergyLabelSolutionsType,
   useEnergyFormContext,
 } from "@/contexts/energyForm.context";
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { useDesignPageContext } from "@/contexts/designPage.context";
+import { Card, CardContent } from "@/components/ui/card";
+
 import WorkResult from "./components/WorkResult";
 import WorkCost from "./components/WorkCost";
+
+function getBouquetByStrategy(
+  bouquets: any[],
+  strategy: EnergyLabelSolutionsType
+): any | null {
+  if (!bouquets?.length) return null;
+
+  const validBouquets = bouquets.filter(Boolean);
+  if (!validBouquets.length) return null;
+
+  const sortedByLabelAsc = [...validBouquets].sort((a, b) =>
+    a.etiquette.localeCompare(b.etiquette)
+  );
+
+  switch (strategy) {
+    case "Simplicity":
+      return sortedByLabelAsc[sortedByLabelAsc.length - 1] || null;
+
+    case "Balanced":
+  
+      if (sortedByLabelAsc.length > 1) {
+        return sortedByLabelAsc[1];
+      }
+
+      return sortedByLabelAsc[0] || null;
+
+    case "Efficient":
+      return sortedByLabelAsc[0] || null;
+
+    default:
+      return null;
+  }
+}
 
 export function EnergyLabelTypeCard(props: {
   energyLabelSolutionsType: EnergyLabelSolutionsType;
   bouquet: any;
   initialState: any;
 }) {
+  const { energyLabelSolutionsType, bouquet, initialState } = props;
+
   return (
     <Card className="mt-8 w-full">
       <CardContent className="p-0 flex justify-between">
         <div className="flex flex-col w-1/4 bg-violet-500 p-4 rounded-tl-sm rounded-bl-sm">
           <h1 className="text-4xl font-bold text-white">
-            {props.energyLabelSolutionsType == "Simplicity" && "Simplicité"}
-            {props.energyLabelSolutionsType == "Balanced" && "Equilibrée"}
-            {props.energyLabelSolutionsType == "Efficient" && "Performante"}
+            {energyLabelSolutionsType === "Simplicity" && "Simplicité"}
+            {energyLabelSolutionsType === "Balanced" && "Équilibrée"}
+            {energyLabelSolutionsType === "Efficient" && "Performante"}
           </h1>
           <p className="font-semibold text-md mt-4 text-white">
             Travaux à réaliser
@@ -32,34 +68,32 @@ export function EnergyLabelTypeCard(props: {
                 <span className="text-2xl font-bold text-violet-500">1</span>
               </div>
               <h3 className="ml-2 text-white font-semibold text-md">
-                {props.bouquet.renovationMurs && "Isolation des murs"}
-                {props.bouquet.renoComblesAmenages &&
-                  "Isolation des combles aménagés"}
-                {props.bouquet.renoIsolationToitureTerrasse &&
+                {bouquet?.renovationMurs && "Isolation des murs"}
+                {bouquet?.renoComblesAmenages && "Isolation des combles aménagés"}
+                {bouquet?.renoIsolationToitureTerrasse &&
                   "Isolation de la toiture terrasse"}
-                {props.bouquet.appareilChauffage1 &&
-                  props.bouquet.appareilChauffage1}
+                {bouquet?.appareilChauffage1 && bouquet?.appareilChauffage1}
               </h3>
             </div>
             <ul className="list-disc pl-6 text-white">
-              {props.bouquet.renovationMurs && (
+              {bouquet?.renovationMurs && (
                 <li>Isolation des murs par l’extérieur</li>
               )}
-              {props.bouquet.renoComblesAmenages && (
+              {bouquet?.renoComblesAmenages && (
                 <li>Isolation des combles aménagés</li>
               )}
-              {props.bouquet.renoIsolationToitureTerrasse && (
+              {bouquet?.renoIsolationToitureTerrasse && (
                 <li>Isolation de la toiture terrasse</li>
               )}
-              {props.bouquet.appareilChauffage1 && (
-                <li>{props.bouquet.appareilChauffage1}</li>
+              {bouquet?.appareilChauffage1 && (
+                <li>{bouquet?.appareilChauffage1}</li>
               )}
             </ul>
           </div>
         </div>
 
-        <WorkResult bouquet={props.bouquet} initialState={props.initialState} />
-        <WorkCost bouquet={props.bouquet} />
+        <WorkResult bouquet={bouquet} initialState={initialState} />
+        <WorkCost bouquet={bouquet} />
       </CardContent>
     </Card>
   );
@@ -69,27 +103,21 @@ export function EnergyLabelSolutions() {
   const { iziResponse } = useEnergyFormContext();
   const { setCostEstimation } = useDesignPageContext();
   const [energyLabelSolutionsType, setEnergyLabelSolutionsType] =
-    useState<EnergyLabelSolutionsType | null>("Balanced");
+    useState<EnergyLabelSolutionsType>("Balanced");
+
+  const selectedBouquet = useMemo(() => {
+    if (!iziResponse || !energyLabelSolutionsType) return null;
+    return getBouquetByStrategy(iziResponse.bouquets, energyLabelSolutionsType);
+  }, [iziResponse, energyLabelSolutionsType]);
 
   useEffect(() => {
-    if (iziResponse && energyLabelSolutionsType) {
-      const selectedBouquet = iziResponse.bouquets.find((bouquet: any) => {
-        if (energyLabelSolutionsType === "Simplicity")
-          return bouquet.etiquette === "E";
-        if (energyLabelSolutionsType === "Balanced")
-          return bouquet.etiquette === "D";
-        if (energyLabelSolutionsType === "Efficient")
-          return bouquet.etiquette === "A";
+    if (selectedBouquet) {
+      setCostEstimation({
+        withAid: Math.floor(selectedBouquet.resteACharge),
+        withoutAid: Math.floor(selectedBouquet.coutTotal),
       });
-
-      if (selectedBouquet) {
-        setCostEstimation({
-          withAid: Math.floor(selectedBouquet.resteACharge),
-          withoutAid: Math.floor(selectedBouquet.coutTotal),
-        });
-      }
     }
-  }, [energyLabelSolutionsType, iziResponse]);
+  }, [selectedBouquet, setCostEstimation]);
 
   return (
     <div className="flex flex-col items-center">
@@ -100,8 +128,9 @@ export function EnergyLabelSolutions() {
         <div
           onClick={() => setEnergyLabelSolutionsType("Simplicity")}
           className={`flex flex-col items-center border-solid border-2 bg-slate-200 rounded-lg p-4 ${
-            energyLabelSolutionsType == "Simplicity" &&
-            "bg-white border-2 border-violet-500"
+            energyLabelSolutionsType === "Simplicity"
+              ? "bg-white border-2 border-violet-500"
+              : ""
           } hover:cursor-pointer`}
         >
           <p className="font-semibold text-lg">Simplicité</p>
@@ -110,49 +139,40 @@ export function EnergyLabelSolutions() {
         <div
           onClick={() => setEnergyLabelSolutionsType("Balanced")}
           className={`flex flex-col items-center border-solid border-2 bg-slate-200 rounded-lg p-4 ${
-            energyLabelSolutionsType == "Balanced" &&
-            "bg-white border-2 border-violet-500"
+            energyLabelSolutionsType === "Balanced"
+              ? "bg-white border-2 border-violet-500"
+              : ""
           } hover:cursor-pointer`}
         >
-          <p className="font-semibold text-lg">Equilibrée</p>
+          <p className="font-semibold text-lg">Équilibrée</p>
         </div>
 
         <div
           onClick={() => setEnergyLabelSolutionsType("Efficient")}
           className={`flex flex-col items-center border-solid border-2 bg-slate-200 rounded-lg p-4 ${
-            energyLabelSolutionsType == "Efficient" &&
-            "bg-white border-2 border-violet-500"
+            energyLabelSolutionsType === "Efficient"
+              ? "bg-white border-2 border-violet-500"
+              : ""
           } hover:cursor-pointer`}
         >
           <p className="font-semibold text-lg">Performante</p>
         </div>
       </div>
-      {energyLabelSolutionsType == "Simplicity" && iziResponse && (
+
+      {selectedBouquet ? (
         <EnergyLabelTypeCard
-          energyLabelSolutionsType={"Simplicity"}
-          bouquet={iziResponse.bouquets.find(
-            (bouquet: any) => bouquet.etiquette === "E"
-          )}
+          energyLabelSolutionsType={energyLabelSolutionsType}
+          bouquet={selectedBouquet}
           initialState={iziResponse}
         />
-      )}
-      {energyLabelSolutionsType == "Balanced" && iziResponse && (
-        <EnergyLabelTypeCard
-          energyLabelSolutionsType={"Balanced"}
-          bouquet={iziResponse.bouquets
-            .filter((bouquet: any) => bouquet !== null) // On enlève les valeurs nulles
-            .find((bouquet: any) => bouquet.etiquette === "D")}
-          initialState={iziResponse}
-        />
-      )}
-      {energyLabelSolutionsType == "Efficient" && iziResponse && (
-        <EnergyLabelTypeCard
-          energyLabelSolutionsType={"Efficient"}
-          bouquet={iziResponse.bouquets.find(
-            (bouquet: any) => bouquet.etiquette === "A"
-          )}
-          initialState={iziResponse}
-        />
+      ) : (
+        <p className="mt-4 text-red-500 font-semibold">
+          Aucun bouquet ne correspond à la stratégie "
+          {energyLabelSolutionsType === "Simplicity" && "Simplicité"}
+          {energyLabelSolutionsType === "Balanced" && "Équilibrée"}
+          {energyLabelSolutionsType === "Efficient" && "Performante"}
+          ". 
+        </p>
       )}
     </div>
   );
