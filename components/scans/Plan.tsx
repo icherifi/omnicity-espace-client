@@ -20,9 +20,9 @@ export default function Plan() {
     useDashboardContext();
   const [scansAvailable, setScansAvailable] = useState(true);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchAndDraw = async () => {
-      const available = await draw(currentProjectDisplayed.id); // Call draw when the component mounts
+      const available = await draw(currentProjectDisplayed!.id); // Call draw when the component mounts
       setScansAvailable(available);
     };
     fetchAndDraw();
@@ -31,7 +31,7 @@ export default function Plan() {
   useEffect(() => {
     const fetchAndDraw = async () => {
       setCurrentProjectDisplayed(currentProjectDisplayed);
-      const available = await draw(currentProjectDisplayed.id); // Call draw when the component mounts
+      const available = await draw(currentProjectDisplayed!.id); // Call draw when the component mounts
       setScansAvailable(available);
     };
     fetchAndDraw();
@@ -61,7 +61,7 @@ export default function Plan() {
       <div className="mt-4">
         <select
           onChange={handlePlanChange}
-          value={currentProjectDisplayed.name}
+          value={currentProjectDisplayed!.name}
           className="p-2 border rounded"
         >
           {projects.map((project) => (

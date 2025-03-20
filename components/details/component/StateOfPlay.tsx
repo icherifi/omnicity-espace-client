@@ -10,7 +10,7 @@ export const StateOfPlay: React.FC<{
         <CardTitle>Etat des lieux</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>{currentProjectDisplayed.stateOfPlay}</p>
+        <p>{currentProjectDisplayed!.stateOfPlay}</p>
       </CardContent>
     </Card>
   );

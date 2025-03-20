@@ -93,7 +93,7 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={
                     currentProjectDisplayed && 
-                    (row.original as { id: string }).id === currentProjectDisplayed.id
+                    (row.original as { id: string }).id === currentProjectDisplayed!.id
                       ? "selected"
                       : undefined
                   }
