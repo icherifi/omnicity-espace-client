@@ -1,6 +1,6 @@
 "use client";
 import { useCustomHook } from "@/app/layout";
-import { handleProjectDetail } from "@/utils/handleProjectDetails";
+import { fetchProjects } from "@/utils/handleProjectDetails";
 import {
   Dispatch,
   SetStateAction,
@@ -63,11 +63,11 @@ export default function ProjectsContextProvider({ children }: useCustomHook) {
   const [projects, setProjects] = useState<ProjectType[]>([]);
 
   const refreshProjects = () => {
-    handleProjectDetail(setProjects);
+    fetchProjects(setProjects);
   };
 
   useEffect(() => {
-    handleProjectDetail(setProjects);
+    fetchProjects(setProjects);
   }, []);
 
   return (

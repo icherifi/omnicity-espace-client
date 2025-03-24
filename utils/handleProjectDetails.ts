@@ -6,7 +6,6 @@ export const deleteProject = async (
   projectId: string,
   token: string
 ): Promise<boolean> => {
-  console.log("token", token);
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
@@ -180,82 +179,29 @@ export async function saveIziResponseToBackend(
   }
 }
 
-export const handleProjectDetail = async (
-  setProjects: Dispatch<SetStateAction<ProjectType[]>>
-) => {
+export const fetchProjects = async (setProjects: Dispatch<SetStateAction<any[]>>) => {
   const token = await getToken();
   if (!token) {
     console.error("You are not authenticated");
     return;
   }
-  try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`;
 
-    const response = await fetch(apiUrl, {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    const projectsWithEnergyDetails = await Promise.all(
-      data.map(async (project: any) => {
-        const energyDetails = await getProjectEnergyDetails(project.id);
-        return {
-          ...project,
-          stateOfPlay: project.description,
-          costEstimation: energyDetails[0]
-            ? {
-                withAid: energyDetails[0].izi_response.bouquets[1].resteACharge,
-                withoutAid: energyDetails[0].izi_response.bouquets[1].coutTotal,
-              }
-            : undefined,
-          targetedEnergyRating: energyDetails[0]
-            ? energyDetails[0].izi_response.bouquets[1].etiquette
-            : undefined,
-          actualEnergyRating: energyDetails[0]
-            ? energyDetails[0].izi_response.etiquetteInitial
-            : undefined,
-          iziResponse: energyDetails[0]?.izi_response,
-        };
-      })
-    );
-    console.log("Projects with energy details", projectsWithEnergyDetails);
-    setProjects(projectsWithEnergyDetails);
+
+    const allProjects = await response.json();
+    setProjects(allProjects);
   } catch (error) {
     console.error("Failed to fetch projects:", error);
-  }
-};
-
-export const getProjectEnergyDetails = async (projectId: string) => {
-  const token = await getToken();
-  if (!token) {
-    console.error("You are not authenticated");
-    return null;
-  }
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching project energy details:", error);
-    return null;
   }
 };
