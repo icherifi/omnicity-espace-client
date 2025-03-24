@@ -41,7 +41,7 @@ export default function RootLayout({
           <DashboardContextProvider>
             <DesignPageContextProvider>
               <UnityContextProvider>
-                <html lang="en">
+                <html lang="fr">
                   <body
                     className={cn(
                       "min-h-screen bg-background font-sans antialiased",

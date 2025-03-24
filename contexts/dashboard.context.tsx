@@ -39,7 +39,7 @@ export default function DashboardContextProvider({ children }: useCustomHook) {
       value={{
         currentProjectDisplayed: currentProjectDisplayed!,
         setCurrentProjectDisplayed: setCurrentProjectDisplayed!,
-        resetDashboard, // Expose la fonction reset
+        resetDashboard,
       }}
     >
       {children}

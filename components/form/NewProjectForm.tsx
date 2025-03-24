@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -15,12 +16,6 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { useNewProjectFormContext } from "@/contexts/newProjectForm.context";
-import Property from "@/components/energy/components/Property";
-import InsulationWork from "@/components/energy/components/InsulationWork";
-import Energy from "@/components/energy/components/Energy";
-import { useEnergyFormContext } from "@/contexts/energyForm.context";
-import PropertyState from "@/components//energy/components/PropertyState";
-import EnergyLabelSolutions from "@/components/energy/EnergyLabelSolutions";
 import {
   handleImageChange,
   handleNewProject,
@@ -29,17 +24,12 @@ import {
 } from "@/utils/handleProjectDetails";
 import { getToken } from "@/utils/supabase/client";
 import { useProjectsContext } from "@/contexts/projects.context";
-import { handleIziSubmit } from "@/utils/handleIzi";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { useEnergyFormContext } from "@/contexts/energyForm.context";
+import EnergyForm from "../energy/EnergyForm";
+import EnergyLabelSolutions from "../energy/EnergyLabelSolutions";
+
 function NewProjectForm(props: { onProjectsPage?: boolean }) {
-  const {
-    isEnergyFormDisplayed,
-    setIsEnergyFormDisplayed,
-    setEnergyFormGotOpened,
-    energyFormGotOpened,
-  } = useEnergyFormContext();
-  const { currentEnergyFormPage, setCurrentEnergyFormPage } =
-    useEnergyFormContext();
   const { projectAuthorName, setProjectAuthorName } =
     useNewProjectFormContext();
   const { projectName, setProjectName } = useNewProjectFormContext();
@@ -48,20 +38,25 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
     useNewProjectFormContext();
   const { projectGeneralInformation, setProjectGeneralInformation } =
     useNewProjectFormContext();
-  const { iziResponse, setIziResponse } = useEnergyFormContext();
   const { resetProjectForm } = useNewProjectFormContext();
-  const { resetEnergyForm } = useEnergyFormContext();
   const { refreshProjects } = useProjectsContext();
-  const { getFormattedEnergyFormState } = useEnergyFormContext();
+  const {
+    isEnergyFormDisplayed,
+    setIsEnergyFormDisplayed,
+    setEnergyFormGotOpened,
+    energyFormGotOpened,
+    sessionId,
+    energyFormCompleted,
+    setEnergyFormCompleted,
+    isEnergyLabelSolutionsDisplayed  } = useEnergyFormContext();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [energyFormCompleted, setEnergyFormCompleted] = useState(false); // State to track if energy form is completed
+
 
   function handleGeneralInformationInputChange(
     e: React.ChangeEvent<HTMLInputElement>
   ) {
     const { id, value } = e.currentTarget;
 
-    // Met à jour seulement la clé qui correspond à l'ID de l'input
     setProjectGeneralInformation((prevState) => ({
       ...prevState,
       [id]: value,
@@ -74,7 +69,7 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
       name: projectName,
       address: projectAddress,
       description: projectDescription,
-      id_bouquet: iziResponse?.sessionId || null,
+      id_bouquet: sessionId ? sessionId : null,
       state: "inprogress",
       features: {
         size: projectGeneralInformation.size,
@@ -102,18 +97,20 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
       if (imageFullPath) {
         await updateProjectImage(projectId, imageFullPath, token);
       }
+
+      if (energyFormCompleted) {
+        const quizResults = localStorage.getItem("quizResults");
+        const quizResultsData = JSON.parse(quizResults || "{}");
+
+        saveIziResponseToBackend(quizResultsData, projectId, token);
+      }
   
-      saveIziResponseToBackend(iziResponse, projectId, token);
-  
-      // Reset du formulaire
       refreshProjects();
       resetProjectForm();
-      resetEnergyForm();
       setEnergyFormGotOpened(false);
-      setEnergyFormCompleted(false);
-      setCurrentEnergyFormPage(1);
       setIsEnergyFormDisplayed(false);
-  
+      setEnergyFormCompleted(false);
+      localStorage.removeItem("quizResults");
     } catch (error) {
       console.error("Failed to create project:", error);
     }
@@ -123,7 +120,9 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
     <Dialog
       onOpenChange={() => {
         resetProjectForm();
-        resetEnergyForm();
+        //resetEnergyForm();
+        setIsEnergyFormDisplayed(false);
+        setEnergyFormCompleted(false);
         setEnergyFormGotOpened(false);
       }}
     >
@@ -139,11 +138,8 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
 
       {isEnergyFormDisplayed ? (
         <DialogContent
-          className={`${
-            currentEnergyFormPage == 5
-              ? "sm:max-w-[1050px]"
-              : "sm:max-w-[750px]"
-          }`}
+          className={`${isEnergyLabelSolutionsDisplayed ? "sm:max-w-[950px]" : "sm:max-w-[750px]"} max-h-[85vh] overflow-y-auto`}
+          noClose={true}
         >
           <DialogHeader>
             <DialogTitle>Formulaire energétique</DialogTitle>
@@ -153,62 +149,7 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="p-4 pb-0">
-            {currentEnergyFormPage == 1 && <Property />}
-            {currentEnergyFormPage == 2 && <InsulationWork />}
-            {currentEnergyFormPage == 3 && <Energy />}
-            {currentEnergyFormPage == 4 && <PropertyState />}
-            {currentEnergyFormPage == 5 && <EnergyLabelSolutions />}
-          </div>
-
-          <DialogFooter>
-            {currentEnergyFormPage == 5 ? (
-                <Button
-                  onClick={() => {
-                    setCurrentEnergyFormPage(1);
-                    setIsEnergyFormDisplayed(false);
-                    setEnergyFormCompleted(true); // Set energy form as completed
-                  }}
-                >
-                  Terminer
-                </Button>
-            ) : (
-              <Button
-                onClick={async () => {
-                  if (currentEnergyFormPage == 3) {
-                    const iziResponse = await handleIziSubmit(
-                      getFormattedEnergyFormState()
-                    );
-                    setIziResponse(iziResponse);
-                    console.log("IZI Response:", iziResponse);
-                  }
-                  setCurrentEnergyFormPage(currentEnergyFormPage + 1);
-                }}
-              >
-                Suivant
-              </Button>
-            )}
-
-            {currentEnergyFormPage == 1 ? (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsEnergyFormDisplayed(false);
-                }}
-              >
-                Annuler
-              </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  setCurrentEnergyFormPage(currentEnergyFormPage - 1);
-                }}
-                variant="outline"
-              >
-                Retour
-              </Button>
-            )}
-          </DialogFooter>
+          {isEnergyLabelSolutionsDisplayed ? <EnergyLabelSolutions /> : <EnergyForm />}
         </DialogContent>
       ) : (
         <DialogContent className="sm:max-w-[750px]">
@@ -332,6 +273,7 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
                       onClick={() => {
                         setIsEnergyFormDisplayed(false);
                         setEnergyFormGotOpened(false);
+                        setEnergyFormCompleted(false);
                       }}
                     >
                       <p>Annuler</p>

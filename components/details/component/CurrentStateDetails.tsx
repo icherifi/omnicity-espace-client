@@ -1,26 +1,26 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import EnergyTag from "@/components/ui/EnergyTag";
-import { WorkResultProps } from "@/components/energy/components/WorkResult";
+import { WorkResultProps } from "@/types/project.types";
 
-const CurrentStateDetails = ({ initialState }: WorkResultProps) => {
+const CurrentStateDetails = ({ initialState }: Omit<WorkResultProps, 'bouquet'>) => {
   return (
     <div className="space-y-1 mt-4 pl-6">
       <p className="text-lg font-semibold leading-none">
         Étiquette énergétique initiale
       </p>
       <div className="flex items-center">
-        <EnergyTag label={initialState.etiquetteInitial} />
+        <EnergyTag label={initialState.etiquetteEnergetiqueInitial} />
         <ul className="pt-2 pl-10 list-disc">
-          <li>181 à 250 kWh/m²/an</li>
-          <li>31 à 50 kgCO2/m²/an</li>
+          <li>{initialState.CEP} kWh/m²/an</li>
+          <li>{initialState.EGES} kgCO2/m²/an</li>
         </ul>
       </div>
       <Separator className="my-6 pl-6" />
       <div className="space-y-1 pl-6">
         <p className="text-lg font-semibold leading-none">Confort</p>
         <div className="flex" style={{ marginTop: "1rem" }}>
-          <p>Confort moyen</p>
+          <p>{initialState.confort === 2 ? "Confort bien" : "Confort moyen"}</p>
         </div>
       </div>
     </div>

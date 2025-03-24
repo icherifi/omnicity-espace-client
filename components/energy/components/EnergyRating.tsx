@@ -68,7 +68,6 @@ export default function EnergyRating(props: EnergyRatingProps) {
   const id = "pie-interactive";
   const [activeMonth, setActiveMonth] = React.useState(`${props.energyRatingValue}`);
 
-  // Utilise useEffect pour mettre à jour activeMonth quand la prop energyRatingValue change
   React.useEffect(() => {
     setActiveMonth(props.energyRatingValue || "a");
   }, [props.energyRatingValue]);
