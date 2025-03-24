@@ -92,8 +92,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={
-                    (row.original as { id: string }).id ==
-                      currentProjectDisplayed.id && "selected"
+                    currentProjectDisplayed && 
+                    (row.original as { id: string }).id === currentProjectDisplayed!.id
+                      ? "selected"
+                      : undefined
                   }
                   className="hover:cursor-pointer"
                   onClick={() => {

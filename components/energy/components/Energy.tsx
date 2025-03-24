@@ -10,9 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  HotWaterProductType,
   useEnergyFormContext,
-  VentilationType,
+  VentilationType
 } from "@/contexts/energyForm.context";
 
 type EnergyType =
@@ -105,34 +104,34 @@ function Energy() {
         <div className="flex items-center justify-around space-x-2">
           <div
             onClick={() => {
-              setSelectedHeatingType("Heat pumps");
+              setSelectedHeatingType("Pompe à chaleur");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              selectedHeatingType == "Heat pumps" && "bg-black"
+              selectedHeatingType == "Pompe à chaleur" && "bg-black"
             }`}
           >
             <p
               className={`${
-                selectedHeatingType == "Heat pumps" && "text-white"
+                selectedHeatingType == "Pompe à chaleur" && "text-white"
               }`}
             >
-              Pompes à chaleur à air/eau
+              Pompe à chaleur
             </p>
           </div>
           <div
             onClick={() => {
-              setSelectedHeatingType("Electric Transmitters");
+              setSelectedHeatingType("Convecteurs électriques");
             }}
             className={`flex flex-col items-center border-solid border-2 rounded-lg p-4 hover:cursor-pointer ${
-              selectedHeatingType == "Electric Transmitters" && "bg-black"
+              selectedHeatingType == "Convecteurs électriques" && "bg-black"
             }`}
           >
             <p
               className={`${
-                selectedHeatingType == "Electric Transmitters" && "text-white"
+                selectedHeatingType == "Convecteurs électriques" && "text-white"
               }`}
             >
-              Emetteurs électriques
+              Convecteurs électriques
             </p>
           </div>
         </div>

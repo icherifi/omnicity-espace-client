@@ -22,13 +22,14 @@ type EnergyType =
   | "Gaz ou propane"
   | "Fioul"
   | "Charbon";
-type HeatingType = "Electric Transmitters" | "Heat pumps";
-export type GlazingType =
+  type HeatingType =
+  | "Convecteurs électriques"
+  | "Pompe à chaleur";
+  export type GlazingType =
   | "Simple vitrage"
   | "Double vitrage ancien (plus de 25 ans)";
-export type HotWaterProductType =
-  | "Mon systeme de chauffage"
-  | "Un chauffe-eau electrique"
+  type HotWaterProductType =
+  | "Ballon électrique"
   | "Un chauffe-eau au gaz";
 export type EnergyLabelSolutionsType = "Simplicity" | "Balanced" | "Efficient";
 export type VentilationType =

@@ -28,25 +28,25 @@ export default function ImportPage() {
             <div className="p-4 bg-white shadow-md rounded-md mt-2 w-full">
               <h2 className="text-lg font-bold">Caractéristiques</h2>
               <ul>
-                <li>Taille : {currentProjectDisplayed.features.size}</li>
-                <li>Nb de pièces : {currentProjectDisplayed.features.roomsNumber}</li>
-                <li>Nb d'étages : {currentProjectDisplayed.features.floorsNumber}</li>
+                <li>Taille : {currentProjectDisplayed!.features.size}</li>
+                <li>Nb de pièces : {currentProjectDisplayed!.features.roomsNumber}</li>
+                <li>Nb d'étages : {currentProjectDisplayed!.features.floorsNumber}</li>
               </ul>
             </div>
             <div className="p-4 bg-white shadow-md rounded-md mt-2 w-full">
               <h2 className="text-lg font-bold">Caractéristiques</h2>
               <ul>
-                <li>Taille : {currentProjectDisplayed.features.size}</li>
-                <li>Nb de pièces : {currentProjectDisplayed.features.roomsNumber}</li>
-                <li>Nb d'étages : {currentProjectDisplayed.features.floorsNumber}</li>
+                <li>Taille : {currentProjectDisplayed!.features.size}</li>
+                <li>Nb de pièces : {currentProjectDisplayed!.features.roomsNumber}</li>
+                <li>Nb d'étages : {currentProjectDisplayed!.features.floorsNumber}</li>
               </ul>
             </div>
             <div className="p-4 bg-white shadow-md rounded-md mt-2 w-full">
               <h2 className="text-lg font-bold">Caractéristiques</h2>
               <ul>
-                <li>Taille : {currentProjectDisplayed.features.size}</li>
-                <li>Nb de pièces : {currentProjectDisplayed.features.roomsNumber}</li>
-                <li>Nb d'étages : {currentProjectDisplayed.features.floorsNumber}</li>
+                <li>Taille : {currentProjectDisplayed!.features.size}</li>
+                <li>Nb de pièces : {currentProjectDisplayed!.features.roomsNumber}</li>
+                <li>Nb d'étages : {currentProjectDisplayed!.features.floorsNumber}</li>
               </ul>
             </div>
           </CardContent>
@@ -104,7 +104,7 @@ export default function ImportPage() {
               setCurrentProjectDisplayed(project)
             }} className={`md:basis-1/2 lg:basis-1/3 hover:cursor-pointer`}>
               <div className="p-1">
-                <Card className={`${currentProjectDisplayed.id == project.id && "border-2 border-violet-500"}`}>
+                <Card className={`${currentProjectDisplayed!.id == project.id && "border-2 border-violet-500"}`}>
                   <CardContent className="flex flex-col items-center p-6">
                     <Image src={`/dalle${index+1}.png`} width={300} height={300} alt="3d model" />
                     <h1 className="text-2xl font-semibold mt-2">{project.name}</h1>

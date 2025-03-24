@@ -16,7 +16,7 @@ function PropertyState() {
   let { iziResponse } = useEnergyFormContext();
   if (!iziResponse) {
     const { currentProjectDisplayed } = useDashboardContext();
-    iziResponse = currentProjectDisplayed.iziResponse;
+    iziResponse = currentProjectDisplayed!.iziResponse;
   }
   if (!iziResponse) {
     return <div>Remplicez le formulaire energie</div>;

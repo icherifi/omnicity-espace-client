@@ -44,8 +44,10 @@ function ExportView({ onClose }: { onClose: () => void }) {
               Export to PDF
             </button>
           </div>
-          <p>Projet : {currentProjectDisplayed.id}</p>
-          <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
+          <p>Projet : {currentProjectDisplayed?.id}</p>
+          {currentProjectDisplayed && (
+            <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
+          )}
           <Card>
             <CardHeader>
               <CardTitle> Condition actuelle de votre habitation</CardTitle>
@@ -56,20 +58,20 @@ function ExportView({ onClose }: { onClose: () => void }) {
             <CardHeader>
               <CardTitle>Estimations energie</CardTitle>
             </CardHeader>
-            {currentProjectDisplayed.iziResponse && (
+            {currentProjectDisplayed?.iziResponse && (
               <div className="flex flex-col p-4">
                 <div className="flex flex-row justify-center p-4 space-x-10">
                   <CurrentStateDetails
-                    bouquet={currentProjectDisplayed.iziResponse.bouquets[1]}
-                    initialState={currentProjectDisplayed.iziResponse}
+                    bouquet={currentProjectDisplayed!.iziResponse.bouquets[1]}
+                    initialState={currentProjectDisplayed!.iziResponse}
                   />
                   <FuturStateDetails
-                    bouquet={currentProjectDisplayed.iziResponse.bouquets[1]}
-                    initialState={currentProjectDisplayed.iziResponse}
+                    bouquet={currentProjectDisplayed!.iziResponse.bouquets[1]}
+                    initialState={currentProjectDisplayed!.iziResponse}
                   />
                 </div>
                 <WorkCost
-                  bouquet={currentProjectDisplayed.iziResponse.bouquets[1]}
+                  bouquet={currentProjectDisplayed!.iziResponse.bouquets[1]}
                   inPdf={true}
                 />
               </div>

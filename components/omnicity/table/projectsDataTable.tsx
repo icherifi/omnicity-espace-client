@@ -8,7 +8,7 @@ export default function ProjectsDataTable(props: {
   onlyCompleted?: boolean;
 }) {
   const { projects } = useProjectsContext();
-  console.log(projects);
+
   return (
     <DataTable
       columns={columns}

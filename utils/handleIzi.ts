@@ -1,6 +1,9 @@
 "use server";
+
 export async function handleIziSubmit(responses: any) {
   const requestBody = JSON.stringify(responses);
+  console.log("Request body:", requestBody);
+  
   try {
     const response = await fetch(
       "https://api.irenov.izi-by-edf.fr/api/session",

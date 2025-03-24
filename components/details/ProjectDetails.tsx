@@ -40,11 +40,11 @@ function ProjectDetails() {
         <CardHeader className="flex flex-row items-start bg-muted/50">
           <div className="grid gap-0.5">
             <CardTitle className="group flex items-center gap-2 text-lg">
-              Projet {currentProjectDisplayed.id}
+              Projet {currentProjectDisplayed!.id}
             </CardTitle>
             <CardDescription>
-              {currentProjectDisplayed.created_at &&
-                new Date(currentProjectDisplayed.created_at).toLocaleDateString(
+              {currentProjectDisplayed!.created_at &&
+                new Date(currentProjectDisplayed!.created_at).toLocaleDateString(
                   "fr-FR",
                   {
                     year: "numeric",
@@ -92,13 +92,13 @@ function ProjectDetails() {
                 <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed.actualEnergyRating
+                      currentProjectDisplayed!.actualEnergyRating
                     }
                     state="Actuel"
                   />
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed.targetedEnergyRating
+                      currentProjectDisplayed!.targetedEnergyRating
                     }
                     state="Visé"
                   />
@@ -120,7 +120,7 @@ function ProjectDetails() {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Sans aides</span>
               <span>
-                {currentProjectDisplayed.costEstimation?.withoutAid.toLocaleString(
+                {currentProjectDisplayed!.costEstimation?.withoutAid.toLocaleString(
                   "fr-FR"
                 )}
                 €
@@ -129,7 +129,7 @@ function ProjectDetails() {
             <li className="flex items-center justify-between font-semibold">
               <span className="text-muted-foreground">Avec aides</span>
               <span>
-                {currentProjectDisplayed.costEstimation?.withAid.toLocaleString(
+                {currentProjectDisplayed!.costEstimation?.withAid.toLocaleString(
                   "fr-FR"
                 )}
                 €
@@ -140,7 +140,7 @@ function ProjectDetails() {
 
         <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
           <div className="text-xs text-muted-foreground">
-            Mis à jour le <time>{currentProjectDisplayed.lastUpdate}</time>
+            Mis à jour le <time>{currentProjectDisplayed!.lastUpdate}</time>
           </div>
         </CardFooter>
       </Card>
