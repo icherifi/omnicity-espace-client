@@ -1,13 +1,13 @@
 import { getToken } from "./supabase/client";
 
-export async function saveEnergyMix(sessionId: string, strategy: string, bouquet: any) {
+export async function saveEnergyChoice(sessionId: string, strategy: string, bouquet: any) {
     const token = await getToken();
     if (!token) {
       console.error("Utilisateur non authentifié");
       return null;
     }
   
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy-mix/save-energy-mix`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/choice`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import WorkResult from "./components/WorkResult";
 import WorkCost from "./components/WorkCost";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
-import { saveEnergyMix } from "@/utils/handleEnergyMixData";
+import { saveEnergyChoice } from "@/utils/handleEnergyChoiceData";
 
 type EnergyLabelSolutionsType = "Simplicity" | "Balanced" | "Efficient";
 
@@ -138,7 +138,7 @@ export function EnergyLabelSolutions() {
         return;
       }
   
-      await saveEnergyMix(sessionId, energyLabelSolutionsType, selectedBouquet);
+      await saveEnergyChoice(sessionId, energyLabelSolutionsType, selectedBouquet);
   
       setIsEnergyLabelSolutionsDisplayed(false);
       setEnergyFormCompleted(true);

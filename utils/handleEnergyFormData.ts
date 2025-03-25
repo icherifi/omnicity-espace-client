@@ -7,7 +7,7 @@ export async function createSession() {
         return null;
     }
 
-    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy-form/create-session`, {
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/form/session`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -25,7 +25,7 @@ export async function sendStepAnswer(stepId: string, answer: any) {
         return null;
     }
 
-    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy-form/send-step-answer`, {
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/form/step-answer`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -46,7 +46,7 @@ export async function getQuizSummary(sessionId: string) {
         return null;
     }
 
-    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy-form/get-quiz-summary/${sessionId}`, {
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/form/quiz-summary/${sessionId}`, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ export async function handleQuizResults(responses: any) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy-form/get-quiz-results`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/form/quiz-results`,
         {
           method: "POST",
           headers: {
@@ -91,7 +91,7 @@ export async function getQrPotentialNextQuestions(stepId: string) {
       return null;
   }
 
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy-form/get-qr-potential-next-questions/${stepId}`, {
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/form/qr-potential-next-questions/${stepId}`, {
       headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
