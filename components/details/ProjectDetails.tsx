@@ -26,17 +26,74 @@ import ExportView from "./ExportView";
 import { StateOfPlay } from "./component/StateOfPlay";
 
 function ProjectDetails() {
-  let { currentProjectDisplayed } = useDashboardContext();
+  const { currentProjectDisplayed } = useDashboardContext();
   const [showDetail, setShowDetail] = React.useState(false);
 
   if (!currentProjectDisplayed?.id) {
-    return <p>Chargement du projet...</p>;
+    return <p>Chargement du projet...</p>;  
+  }
+
+  if(!currentProjectDisplayed.iziResponse) {
+    return (
+      <ScrollArea>
+        <Card className="overflow-hidden mb-16">
+          <CardHeader className="flex flex-row items-start bg-muted/50">
+            <div className="grid gap-0.5">
+              <CardTitle className="group flex items-center gap-2 text-lg">
+                Projet {currentProjectDisplayed!.id}
+              </CardTitle>
+              <CardDescription>
+                {currentProjectDisplayed!.created_at &&
+                  new Date(currentProjectDisplayed!.created_at).toLocaleDateString(
+                    "fr-FR",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
+              </CardDescription>
+            </div>
+            <div className="ml-auto flex items-center gap-1">
+              <Button size="sm" variant="outline" className="h-8 gap-1">
+                <File className="h-3.5 w-3.5" />
+                <span className="xl:whitespace-nowrap max-[1500px]:hidden">
+                  Exporter devis
+                </span>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="outline" className="h-8 w-8">
+                    <MoreVertical className="h-3.5 w-3.5" />
+                    <span className="sr-only">Plus</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="min-[1500px]:hidden">
+                    Exporter
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowDetail(true)}>
+                    Voir
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>Modifier</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Supprimer</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 text-sm">
+            <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
+          </CardContent>
+        </Card>
+      </ScrollArea>
+    );
   }
 
   return (
-    <ScrollArea className="h-[60%]">
+    <ScrollArea>
       {showDetail && <ExportView onClose={() => setShowDetail(false)} />}
-      <Card className="overflow-hidden mb-16" x-chunk="dashboard-05-chunk-4">
+      <Card className="overflow-hidden mb-16">
         <CardHeader className="flex flex-row items-start bg-muted/50">
           <div className="grid gap-0.5">
             <CardTitle className="group flex items-center gap-2 text-lg">
@@ -92,13 +149,13 @@ function ProjectDetails() {
                 <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed!.actualEnergyRating
+                      currentProjectDisplayed!.actualEnergyRating?.toLocaleLowerCase()! as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Actuel"
                   />
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed!.targetedEnergyRating
+                      currentProjectDisplayed!.targetedEnergyRating?.toLocaleLowerCase()! as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Visé"
                   />
@@ -110,8 +167,8 @@ function ProjectDetails() {
 
           <Separator className="my-4" />
           <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
-          <Card>
-            <PropertyState />
+          <Card className="mt-4">
+            <PropertyState project={currentProjectDisplayed} />
           </Card>
           <Separator className="my-4" />
 
@@ -137,12 +194,6 @@ function ProjectDetails() {
             </li>
           </ul>
         </CardContent>
-
-        <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
-          <div className="text-xs text-muted-foreground">
-            Mis à jour le <time>{currentProjectDisplayed!.lastUpdate}</time>
-          </div>
-        </CardFooter>
       </Card>
     </ScrollArea>
   );

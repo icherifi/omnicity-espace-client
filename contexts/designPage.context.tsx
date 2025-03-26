@@ -2,7 +2,7 @@
 import { useCustomHook } from "@/app/layout";
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react";
 
-type DesignPageAssetsType = "chambre" | "cuisine" | "salle de bain" | "salon" | "entrée" | "buandrie" | "luminaires" | "plantes" | "collections" | ""
+export type DesignPageAssetsType = "chambre" | "cuisine" | "salle de bain" | "salon" | "entrée" | "buandrie" | "luminaires" | "plantes" | "collections" | ""
 
 interface SelectedAssetsType {
     title: string,

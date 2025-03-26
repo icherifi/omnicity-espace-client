@@ -2,20 +2,7 @@ import React, { useState } from "react";
 import ToggleButton from "@/components/omnicity/buttons/toggle";
 import FuturStateDetails from "@/components/details/component/FuturStateDetails";
 import CurrentStateDetails from "@/components/details/component/CurrentStateDetails";
-
-export interface WorkResultProps {
-  bouquet: {
-    etiquette: string;
-    pourcentageGainCEP: number;
-    EGES: number;
-    confort: number;
-    valeurVerte: number;
-  };
-  initialState: {
-    CEP: number;
-    etiquetteInitial: string;
-  };
-}
+import { WorkResultProps } from "@/types/project.types";
 
 export function WorkResult({ bouquet, initialState }: WorkResultProps) {
   const [selected, setSelected] = useState<"avant" | "apres">("apres");
@@ -40,9 +27,14 @@ export function WorkResult({ bouquet, initialState }: WorkResultProps) {
       </div>
 
       {selected === "apres" ? (
-        <FuturStateDetails bouquet={bouquet} initialState={initialState} />
+        <FuturStateDetails 
+          bouquet={bouquet} 
+          initialState={initialState} 
+        />
       ) : (
-        <CurrentStateDetails initialState={initialState} bouquet={bouquet} />
+        <CurrentStateDetails 
+          initialState={initialState} 
+        />
       )}
     </div>
   );

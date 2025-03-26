@@ -98,9 +98,11 @@ function DashboardScrollCarousel() {
                           <CarouselItem key={index} className="pr-4">
                             <Image
                               src={
-                                process.env.NEXT_PUBLIC_SUPABASE_URL +
-                                "/storage/v1/object/public/" +
-                                project.imageFullPath! || "/placeholder.svg"
+                                project.imageFullPath
+                                  ? process.env.NEXT_PUBLIC_SUPABASE_URL +
+                                    "/storage/v1/object/public/" +
+                                    project.imageFullPath
+                                  : "/placeholderpng.png"
                               }
                               alt="property image"
                               width={250}
@@ -133,9 +135,6 @@ function DashboardScrollCarousel() {
                   >
                     {project.state == "completed" ? "Terminé" : "En cours..."}
                   </Badge>
-                  <p className="text-xs text-muted-foreground">
-                    Dernière modification: <br></br> {project.lastUpdate}
-                  </p>
                 </CardFooter>
               </Card>
             </div>

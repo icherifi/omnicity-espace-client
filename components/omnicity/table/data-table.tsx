@@ -36,9 +36,9 @@ export function DataTable<TData, TValue>({
   onlyInProgress,
 }: DataTableProps<TData, TValue>) {
   const [pageSize, setPageSize] = useState<PaginationState>({
-    pageSize: 5,
+    pageSize: 3,
     pageIndex: 0,
-  }); // Limite à 5 lignes par page
+  }); 
 
   const table = useReactTable({
     data,

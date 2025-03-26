@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  EnergyLabelSolutionsType,
-  useEnergyFormContext,
-} from "@/contexts/energyForm.context";
 import { useDesignPageContext } from "@/contexts/designPage.context";
 import { Card, CardContent } from "@/components/ui/card";
 
 import WorkResult from "./components/WorkResult";
 import WorkCost from "./components/WorkCost";
+import { useEnergyFormContext } from "@/contexts/energyForm.context";
+import { saveEnergyChoice } from "@/utils/handleEnergyChoiceData";
+
+type EnergyLabelSolutionsType = "Simplicity" | "Balanced" | "Efficient";
 
 function getBouquetByStrategy(
   bouquets: any[],
@@ -77,7 +77,7 @@ export function EnergyLabelTypeCard(props: {
             </div>
             <ul className="list-disc pl-6 text-white">
               {bouquet?.renovationMurs && (
-                <li>Isolation des murs par l’extérieur</li>
+                <li>Isolation des murs par l'extérieur</li>
               )}
               {bouquet?.renoComblesAmenages && (
                 <li>Isolation des combles aménagés</li>
@@ -100,24 +100,53 @@ export function EnergyLabelTypeCard(props: {
 }
 
 export function EnergyLabelSolutions() {
-  const { iziResponse } = useEnergyFormContext();
+  const quizResults = localStorage.getItem("quizResults");
+  const quizResultsData = JSON.parse(quizResults || "{}");
   const { setCostEstimation } = useDesignPageContext();
+  const { setIsEnergyLabelSolutionsDisplayed, setEnergyFormCompleted, setIsEnergyFormDisplayed, sessionId } = useEnergyFormContext();
   const [energyLabelSolutionsType, setEnergyLabelSolutionsType] =
     useState<EnergyLabelSolutionsType>("Balanced");
 
   const selectedBouquet = useMemo(() => {
-    if (!iziResponse || !energyLabelSolutionsType) return null;
-    return getBouquetByStrategy(iziResponse.bouquets, energyLabelSolutionsType);
-  }, [iziResponse, energyLabelSolutionsType]);
+    if (!quizResultsData || !energyLabelSolutionsType) return null;
+    return getBouquetByStrategy(quizResultsData.bouquets, energyLabelSolutionsType);
+  }, [quizResultsData, energyLabelSolutionsType]);
 
   useEffect(() => {
-    if (selectedBouquet) {
-      setCostEstimation({
-        withAid: Math.floor(selectedBouquet.resteACharge),
-        withoutAid: Math.floor(selectedBouquet.coutTotal),
-      });
+    if (!selectedBouquet) return;
+  
+    const newEstimation = {
+      withAid: Math.floor(selectedBouquet.resteACharge),
+      withoutAid: Math.floor(selectedBouquet.coutTotal),
+    };
+  
+    setCostEstimation(prev => {
+      if (
+        prev.withAid === newEstimation.withAid &&
+        prev.withoutAid === newEstimation.withoutAid
+      ) {
+        return prev;
+      }
+      return newEstimation;
+    });
+  }, [selectedBouquet, setCostEstimation]);;
+
+  const handleFinish = async () => {
+    try {
+      if (!sessionId || !selectedBouquet) {
+        console.error("Session ou bouquet manquant");
+        return;
+      }
+  
+      await saveEnergyChoice(sessionId, energyLabelSolutionsType, selectedBouquet);
+  
+      setIsEnergyLabelSolutionsDisplayed(false);
+      setEnergyFormCompleted(true);
+      setIsEnergyFormDisplayed(false);
+    } catch (err) {
+      console.error("Erreur enregistrement bouquet:", err);
     }
-  }, [selectedBouquet, setCostEstimation]);
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -160,11 +189,19 @@ export function EnergyLabelSolutions() {
       </div>
 
       {selectedBouquet ? (
-        <EnergyLabelTypeCard
-          energyLabelSolutionsType={energyLabelSolutionsType}
-          bouquet={selectedBouquet}
-          initialState={iziResponse}
-        />
+        <>
+          <EnergyLabelTypeCard
+            energyLabelSolutionsType={energyLabelSolutionsType}
+            bouquet={selectedBouquet}
+            initialState={quizResultsData}
+          />
+          <button 
+            onClick={handleFinish}
+            className="mt-4 px-6 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 font-semibold"
+          >
+            Terminer
+          </button>
+        </>
       ) : (
         <p className="mt-4 text-red-500 font-semibold">
           Aucun bouquet ne correspond à la stratégie "
