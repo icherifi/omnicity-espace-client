@@ -23,7 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardContext } from "@/contexts/dashboard.context";
 import PropertyState from "@/components/energy//components/PropertyState";
 import ExportView from "./ExportView";
-import { StateOfPlay } from "./component/StateOfPlay";
+import { StateOfPlay } from "./components/StateOfPlay";
 
 function ProjectDetails() {
   const { currentProjectDisplayed } = useDashboardContext();
