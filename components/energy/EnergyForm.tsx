@@ -5,7 +5,6 @@ import { createSession, sendStepAnswer, getQuizSummary, handleQuizResults } from
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
 import { CheckCircle, X } from 'lucide-react';
 import Image from "next/image";
-import { Progress } from "@/components/ui/progress";
 
 export default function EnergyForm() {
   const [loading, setLoading] = useState(true);
@@ -189,6 +188,7 @@ export default function EnergyForm() {
           setIsEnergyFormDisplayed(false)
           setEnergyFormCompleted(false)
           setEnergyFormGotOpened(false)
+          setPostalCode("")
         }} className="text-primary font-medium hover:text-primary/80 flex items-center">
           <X className="h-5 w-5 mr-1" /> Quitter
         </button>

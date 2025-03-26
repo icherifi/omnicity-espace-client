@@ -57,7 +57,7 @@ function ProjectDetails() {
             <div className="ml-auto flex items-center gap-1">
               <Button size="sm" variant="outline" className="h-8 gap-1">
                 <File className="h-3.5 w-3.5" />
-                <span className="xl:whitespace-nowrap max-[1500px]:hidden">
+                <span onClick={() => setShowDetail(true)} className="xl:whitespace-nowrap max-[1500px]:hidden">
                   Exporter devis
                 </span>
               </Button>
@@ -69,7 +69,7 @@ function ProjectDetails() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="min-[1500px]:hidden">
+                  <DropdownMenuItem onClick={() => setShowDetail(true)} className="min-[1500px]:hidden">
                     Exporter
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setShowDetail(true)}>
@@ -114,7 +114,7 @@ function ProjectDetails() {
           <div className="ml-auto flex items-center gap-1">
             <Button size="sm" variant="outline" className="h-8 gap-1">
               <File className="h-3.5 w-3.5" />
-              <span className="xl:whitespace-nowrap max-[1500px]:hidden">
+              <span onClick={() => setShowDetail(true)} className="xl:whitespace-nowrap max-[1500px]:hidden">
                 Exporter devis
               </span>
             </Button>
@@ -126,7 +126,7 @@ function ProjectDetails() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem className="min-[1500px]:hidden">
+                <DropdownMenuItem onClick={() => setShowDetail(true)} className="min-[1500px]:hidden">
                   Exporter
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setShowDetail(true)}>

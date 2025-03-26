@@ -10,45 +10,81 @@ import {
   useState,
 } from "react";
 
-interface ProjectFeaturesType {
-  servicesAndAccessibility: string[];
-  outsite: string[];
-  additionalAres: string[];
-  hygiene: string[];
-  size: string;
-  roomsNumber: number;
-  floorsNumber: number;
-}
-
 export interface MarksMostUsedObjectType {
   mark: string;
   percentage: number;
 }
 
-interface CostEstimationType {
-  withAid: number;
-  withoutAid: number;
-}
-
 export interface ProjectType {
-  id: string;
+  id: number;
   name: string;
   address: string;
   created_at?: string;
-  actualEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
-  targetedEnergyRating: "a" | "b" | "c" | "d" | "e" | "f" | "g";
-  features: ProjectFeaturesType;
+  actualEnergyRating: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+  targetedEnergyRating: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+  features: {
+    size: string;
+    roomsNumber: string;
+    floorsNumber: string;
+  };
   stateOfPlay: string;
-  marksMostUsed: MarksMostUsedObjectType[];
-  costEstimation: CostEstimationType;
+  costEstimation: {
+    withAid: number;
+    withoutAid: number;
+  };
   state: "inprogress" | "completed";
-  lastUpdate?: string;
   id_bouquet: string;
-  id_design: string;
+  id_design: string | null;
+  created_by: string;
+  description: string;
   authorName: string;
-  image?: string;
-  iziResponse?: any;
   imageFullPath?: string;
+  iziResponse?: {
+    CEP: number;
+    EGES: number;
+    confort: number;
+    inputQr: any;
+    bouquets: any[];
+    sessionId: string;
+    etiquetteInitial: string;
+    etiquetteEGESInitial: string;
+    performanceEnergetique: {
+      murs: any;
+      toiture: any;
+      vitrages: any;
+      chauffage: any;
+      plancherBas: any;
+      ventilation: any;
+      plancherHaut: any;
+    };
+    etiquetteEnergetiqueInitial: string;
+  };
+  choice?: {
+    confort: number;
+    coutTotal: number;
+    etiquette: string;
+    detailsPrix: any[];
+    valeurVerte: number;
+    montantAides: number;
+    resteACharge: number;
+    etiquetteEGES: string;
+    renoMenuiserie: boolean;
+    renovationMurs: boolean;
+    categoriesAides: string;
+    renoComblesPerdus: boolean;
+    renoPorteFenetres: boolean;
+    appareilChauffage1: string;
+    appareilChauffage2: string;
+    pourcentageGainCEP: number;
+    renoComblesAmenages: boolean;
+    etiquetteEnergetique: string;
+    renoPlancherBasSousSol: boolean;
+    typeVentilationExterieur: string;
+    renoPlancherBasTerrePlein: boolean;
+    renoIsolationToitureTerrasse: boolean;
+    renoPlancherBasVideSanitaire: boolean;
+    remplacementEauChaudeSanitaire: null;
+  };
 }
 
 interface ProjectsContextType {

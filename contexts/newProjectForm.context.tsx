@@ -36,7 +36,6 @@ export const NewProjectFormContext = createContext<NewProjectFormType | null>(
   null
 );
 
-// Valeurs initiales du formulaire
 const initialState = {
   projectAuthorName: "",
   projectName: "",
@@ -69,7 +68,6 @@ export default function NewProjectFormContextProvider({
   const [projectGeneralInformation, setProjectGeneralInformation] =
     useState<GeneralInformationType>(initialState.projectGeneralInformation);
 
-  // Fonction pour réinitialiser tous les états
   const resetProjectForm = () => {
     setProjectAuthorName(initialState.projectAuthorName);
     setProjectName(initialState.projectName);

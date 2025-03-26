@@ -32,7 +32,7 @@ export function DataTableRowActions<TData>({
         console.error("You are not authenticated");
         return;
       }
-      const success = await deleteProject(row.original.id, token);
+      const success = await deleteProject(row.original.id.toString(), token);
       if (success) {
         refreshProjects();
       }

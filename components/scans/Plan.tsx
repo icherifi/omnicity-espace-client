@@ -22,7 +22,7 @@ export default function Plan() {
 
   useEffect(() => { 
     const fetchAndDraw = async () => {
-      const available = await draw(currentProjectDisplayed!.id); // Call draw when the component mounts
+      const available = await draw(currentProjectDisplayed!.id.toString()); // Call draw when the component mounts
       setScansAvailable(available);
     };
     fetchAndDraw();
@@ -31,7 +31,7 @@ export default function Plan() {
   useEffect(() => {
     const fetchAndDraw = async () => {
       setCurrentProjectDisplayed(currentProjectDisplayed);
-      const available = await draw(currentProjectDisplayed!.id); // Call draw when the component mounts
+      const available = await draw(currentProjectDisplayed!.id.toString()); // Call draw when the component mounts
       setScansAvailable(available);
     };
     fetchAndDraw();
