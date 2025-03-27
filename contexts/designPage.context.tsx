@@ -28,10 +28,9 @@ interface DesignPageType {
     setCostEstimation: Dispatch<SetStateAction<CostEstimationType>>,
     selectedModelType: ModelType,
     setSelectedModelType: Dispatch<SetStateAction<ModelType>>,
-    resetDesignPage: () => void  // Fonction de reset
+    resetDesignPage: () => void 
 }
 
-// Définir l'état initial
 const initialState = {
     isDesignPageAssetsDisplayed: false,
     currentDesignPageAssetsDisplayed: "" as DesignPageAssetsType,
@@ -51,7 +50,7 @@ export default function DesignPageContextProvider({ children }: useCustomHook) {
     const [selectedAssets, setSelectedAssets] = useState(initialState.selectedAssets)
     const [costEstimation, setCostEstimation] = useState(initialState.costEstimation)
     const [selectedModelType, setSelectedModelType] = useState(initialState.selectedModelType)
-    // Fonction pour réinitialiser tous les états
+
     const resetDesignPage = () => {
         setIsDesignPageAssetsDisplayed(initialState.isDesignPageAssetsDisplayed)
     };
@@ -68,7 +67,7 @@ export default function DesignPageContextProvider({ children }: useCustomHook) {
             setCostEstimation,
             selectedModelType,
             setSelectedModelType,
-            resetDesignPage // Expose la fonction reset
+            resetDesignPage
         }}>
             {children}
         </DesignPageContext.Provider>

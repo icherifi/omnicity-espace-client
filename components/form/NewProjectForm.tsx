@@ -162,6 +162,21 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="imageUpload" className="text-right">
+                Importer une image
+              </Label>
+              <Input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                className="col-span-3"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setSelectedImage(file);
+                }}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="authorName" className="text-right">
                 Nom de l'auteur
               </Label>
@@ -313,21 +328,6 @@ function NewProjectForm(props: { onProjectsPage?: boolean }) {
                   </div>
                 )}
               </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="imageUpload" className="text-right">
-                Importer une image
-              </Label>
-              <Input
-                id="imageUpload"
-                type="file"
-                accept="image/*"
-                className="col-span-3"
-                onChange={(e) => {
-                  const file = e.target.files?.[0] || null;
-                  setSelectedImage(file);
-                }}
-              />
             </div>
           </div>
           <DialogFooter>

@@ -1,122 +1,173 @@
-export default ExportView;
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useDashboardContext } from "@/contexts/dashboard.context";
-import { StateOfPlay } from "./component/StateOfPlay";
-import PropertyState from "../energy/components/PropertyState";
-import FuturStateDetails from "./component/FuturStateDetails";
-import CurrentStateDetails from "./component/CurrentStateDetails";
-import WorkCost from "../energy/components/WorkCost";
-import { Card, CardHeader, CardTitle } from "../ui/card";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+
+const getEnergyLabelColor = (label: string) => {
+  const colors = {
+    'A': 'bg-[#319834]',
+    'B': 'bg-[#33cc31]',
+    'C': 'bg-[#fff200]',
+    'D': 'bg-[#ff9a35]',
+    'E': 'bg-[#ff5a35]',
+    'F': 'bg-[#fe0000]',
+    'G': 'bg-[#960032]'
+  };
+  return colors[label as keyof typeof colors] || 'bg-gray-500';
+};
 
 export const exportToPDF = async () => {
-  const input = document.getElementById("export-view");
-  if (input) {
-    const canvas = await html2canvas(input, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("download.pdf");
-  } else {
-    console.error("Element with id 'export-view' not found.");
+  try {
+    const contentToExport = document.getElementById("export-view-content");
+    
+    if (!contentToExport) {
+      console.error("Élément non trouvé");
+      return;
+    }
+
+    const images = contentToExport.getElementsByTagName('img');
+    await Promise.all(Array.from(images).map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    }));
+
+    const container = document.createElement('div');
+    // Ajustement pour prendre la largeur du contenu
+    container.style.width = contentToExport.scrollWidth + 'px';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    
+    const contentClone = contentToExport.cloneNode(true) as HTMLElement;
+    container.appendChild(contentClone);
+    document.body.appendChild(container);
+
+    try {
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+        compress: true
+      });
+
+      const options = {
+        scale: 1,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        // windowWidth: 900, // Supprimé pour laisser la largeur s'adapter
+        backgroundColor: '#ffffff',
+        imageTimeout: 15000,
+        onclone: (clonedDoc: Document) => {
+          const images = clonedDoc.getElementsByTagName('img');
+          Array.from(images).forEach(img => {
+            img.crossOrigin = "anonymous";
+            if (img.complete) {
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              canvas.width = img.width;
+              canvas.height = img.height;
+              ctx?.drawImage(img, 0, 0);
+              img.src = canvas.toDataURL();
+            }
+          });
+        }
+      };
+
+      const canvas = await html2canvas(container, options);
+      
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 5;
+
+      const imgWidth = pageWidth - (2 * margin);
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      if (imgHeight > pageHeight - (2 * margin)) {
+        const ratio = (pageHeight - (2 * margin)) / imgHeight;
+        const newImgWidth = imgWidth * ratio;
+        const horizontalMargin = (pageWidth - newImgWidth) / 2;
+        
+        pdf.addImage(
+          canvas.toDataURL('image/jpeg', 1.0),
+          'JPEG',
+          horizontalMargin,
+          margin,
+          newImgWidth,
+          pageHeight - (2 * margin)
+        );
+      } else {
+        const verticalMargin = (pageHeight - imgHeight) / 2;
+        pdf.addImage(
+          canvas.toDataURL('image/jpeg', 1.0),
+          'JPEG',
+          margin,
+          verticalMargin,
+          imgWidth,
+          imgHeight
+        );
+      }
+
+      pdf.save("bilan-energetique-omnicity.pdf");
+    } finally {
+      document.body.removeChild(container);
+    }
+
+  } catch (error) {
+    console.error("Erreur lors de l'export PDF:", error);
+    alert("Une erreur est survenue lors de l'export du PDF. Veuillez réessayer.");
   }
 };
 
+// Déplacer les composants d'icônes dans des fichiers séparés
+import { IsolationIcons } from './components/icons/IsolationIcons';
+import { ChauffageIcons } from './components/icons/ChauffageIcons';
+import { VentilationIcon } from './components/icons/VentilationIcon';
+
+// Composants séparés
+import { DocumentHeader } from './components/DocumentHeader';
+import { PropertyFeatures } from './components/PropertyFeatures';
+import { CurrentCondition } from './components/CurrentCondition';
+import { BuildingDetails } from './components/BuildingDetails';
+import { WorkSolutions } from './components/WorkSolutions';
+import { ExportHeader } from './components/ExportHeader';
 function ExportView({ onClose }: { onClose: () => void }) {
   const { currentProjectDisplayed } = useDashboardContext();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await exportToPDF();
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center p-8">
-      <div className="w-[210mm] h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
-        <div className="sticky top-0 w-full h-12 bg-gray-100 flex justify-end items-center px-4 border-b z-10">
-          <button 
-            onClick={onClose}
-            className="mr-4 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            Fermer
-          </button>
-          <button 
-            onClick={exportToPDF}
-            className="px-4 py-2 bg-violet-500 text-white rounded-md hover:bg-violet-600 transition-colors"
-          >
-            Exporter en PDF
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-[1000px] h-[90vh] bg-white rounded-xl shadow-xl overflow-hidden">
+        <ExportHeader onClose={onClose} onExport={handleExport} isExporting={isExporting} />
 
-        <div className="overflow-y-auto h-[calc(90vh-48px)]">
-          <div id="export-view" className="w-full bg-white p-8">
-            <div className="space-y-6">
-              <div className="border-b pb-6">
-                <h1 className="text-3xl font-bold mb-3">{currentProjectDisplayed?.name}</h1>
-                <p className="text-gray-700 text-lg mb-2">{currentProjectDisplayed?.address}</p>
-                <div className="flex space-x-4 text-sm text-gray-500">
-                  <p>Créé par: {currentProjectDisplayed?.authorName}</p>
-                  <p>Date de création: {new Date(currentProjectDisplayed?.created_at!).toLocaleDateString('fr-FR')}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-6">
-                <div className="border p-4 rounded-lg bg-gray-50">
-                  <p className="font-semibold text-gray-700 mb-1">Surface</p>
-                  <p className="text-xl">{currentProjectDisplayed?.features.size} m²</p>
-                </div>
-                <div className="border p-4 rounded-lg bg-gray-50">
-                  <p className="font-semibold text-gray-700 mb-1">Nombre de pièces</p>
-                  <p className="text-xl">{currentProjectDisplayed?.features.roomsNumber}</p>
-                </div>
-                <div className="border p-4 rounded-lg bg-gray-50">
-                  <p className="font-semibold text-gray-700 mb-1">Nombre d'étages</p>
-                  <p className="text-xl">{currentProjectDisplayed?.features.floorsNumber}</p>
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold mb-2">État des lieux</h2>
-                <p>{currentProjectDisplayed?.stateOfPlay}</p>
-              </div>
+        <div className="overflow-y-auto h-[calc(90vh-64px)]">
+          <div id="export-view-content" className="w-full bg-white print:p-0">
+            <DocumentHeader currentProjectDisplayed={currentProjectDisplayed!} />
+            
+            <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
+              <PropertyFeatures currentProjectDisplayed={currentProjectDisplayed!} />
+              <CurrentCondition currentProjectDisplayed={currentProjectDisplayed!} />
+              <BuildingDetails currentProjectDisplayed={currentProjectDisplayed!} />
+              <WorkSolutions currentProjectDisplayed={currentProjectDisplayed!} />
             </div>
-
-            {currentProjectDisplayed && (
-              <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
-            )}
-            <Card>
-              <CardHeader>
-                <CardTitle> Condition actuelle de votre habitation</CardTitle>
-              </CardHeader>
-              <PropertyState project={currentProjectDisplayed!} />
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Estimations energie</CardTitle>
-              </CardHeader>
-              {currentProjectDisplayed?.iziResponse && (
-                <div className="flex flex-col p-4">
-                  <div className="flex flex-row justify-center p-4 space-x-10">
-                    <CurrentStateDetails
-                      initialState={currentProjectDisplayed.iziResponse}
-                    />
-                    <FuturStateDetails
-                      bouquet={currentProjectDisplayed.iziResponse.bouquets[2]!}
-                      initialState={currentProjectDisplayed.iziResponse}
-                    />
-                  </div>
-                  <WorkCost
-                    bouquet={currentProjectDisplayed.iziResponse.bouquets[2]!}
-                    inPdf={true}
-                  />
-                </div>
-              )}
-            </Card>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default ExportView;

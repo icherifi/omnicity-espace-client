@@ -122,7 +122,7 @@ function DashboardScrollCarousel() {
                   <CardDescription className="text-center mt-4">
                     <span className="font-semibold mt-4">
                       {project.features?.roomsNumber} pièce
-                      {project.features?.roomsNumber > 1 && "s"} &bull;
+                      {Number(project.features?.roomsNumber) > 1 && "s"} &bull;
                       {` `} {project.features?.size}m² &bull;
                       {` `} {project.features?.floorsNumber} étages
                     </span>

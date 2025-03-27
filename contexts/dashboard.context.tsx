@@ -13,7 +13,7 @@ import { ProjectType, useProjectsContext } from "./projects.context";
 interface DashboardContextType {
   currentProjectDisplayed: ProjectType | null;
   setCurrentProjectDisplayed: Dispatch<SetStateAction<ProjectType | null>>;
-  resetDashboard: () => void; // Fonction de reset
+  resetDashboard: () => void;
 }
 
 export const DashboardContext = createContext<DashboardContextType | null>(

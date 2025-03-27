@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -10,8 +10,8 @@ import EnergyPerformanceBadge from "@/components/energy/components/EnergyPerform
 import Image from "next/image";
 import { ProjectType } from "@/contexts/projects.context";
 
-async function PropertyState(props: { project: ProjectType }) {
-  if (!props.project) {
+function PropertyState({ project }: { project: ProjectType }) {
+  if (!project) {
     return <div>Chargement du projet...</div>;
   }
 
@@ -19,7 +19,7 @@ async function PropertyState(props: { project: ProjectType }) {
     <div className="flex flex-col items-center justify-center space-x-2">
       <div className="flex items-center p-4 pt-0">
         <EnergyRating
-          energyRatingValue={props.project.actualEnergyRating?.toLowerCase() as "a" | "b" | "c" | "d" | "e" | "f" | "g"}
+          energyRatingValue={project.actualEnergyRating?.toLowerCase() as "a" | "b" | "c" | "d" | "e" | "f" | "g"}
         />
 
         <div className="flex justify-between items-center space-x-4 rounded-md border p-4">
@@ -29,8 +29,8 @@ async function PropertyState(props: { project: ProjectType }) {
             </p>
 
             <ul className="pt-2 pl-6 list-disc">
-              <li>{props.project.iziResponse?.CEP} kWh/m²/an</li>
-              <li>{props.project.iziResponse?.EGES} kgCO2/m²/an</li>
+              <li>{project.iziResponse?.CEP} kWh/m²/an</li>
+              <li>{project.iziResponse?.EGES} kgCO2/m²/an</li>
             </ul>
           </div>
         </div>
@@ -47,14 +47,14 @@ async function PropertyState(props: { project: ProjectType }) {
                 Isolation & menuiserie:{" "}
                 <EnergyPerformanceBadge
                   state={
-                      props.project.iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Note
+                      project.iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Note
                   }
                 />
               </span>{" "}
             </AccordionTrigger>
             <AccordionContent>
               <ul>
-                {props.project.iziResponse?.performanceEnergetique?.murs?.EtatInitial && (
+                {project.iziResponse?.performanceEnergetique?.murs?.EtatInitial && (
                   <li className="flex items-center py-0.5">
                     <Image
                       className="mr-2"
@@ -63,7 +63,7 @@ async function PropertyState(props: { project: ProjectType }) {
                       height={16}
                       alt="wall icon"
                     />
-                    {props.project.iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Label}
+                    {project.iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Label}
                   </li>
                 )}
 
@@ -76,7 +76,7 @@ async function PropertyState(props: { project: ProjectType }) {
                     alt="window icon"
                   />
                   {
-                    props.project.iziResponse?.performanceEnergetique?.vitrages?.EtatInitial
+                    project.iziResponse?.performanceEnergetique?.vitrages?.EtatInitial
                       ?.Label
                   }
                 </li>
@@ -93,14 +93,14 @@ async function PropertyState(props: { project: ProjectType }) {
                       ["ApCh1", "ApCh2", "ECS"]
                         .map(
                           (key) =>
-                            props.project.iziResponse?.performanceEnergetique?.chauffage
+                            project.iziResponse?.performanceEnergetique?.chauffage
                               ?.EtatInitial?.[key]?.Note
                         )
                         .filter((note) => note !== null)
                         .reduce((acc, note) => acc + (note || 0), 0) /
                         ["ApCh1", "ApCh2", "ECS"].filter(
                           (key) =>
-                            props.project.iziResponse?.performanceEnergetique?.chauffage
+                            project.iziResponse?.performanceEnergetique?.chauffage
                               ?.EtatInitial?.[key]?.Note !== null
                         ).length
                     ) as 1 | 2 | 3
@@ -110,7 +110,7 @@ async function PropertyState(props: { project: ProjectType }) {
             </AccordionTrigger>
             <AccordionContent>
               <ul>
-                {props.project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
+                {project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
                   ?.ApCh1 && (
                   <li className="flex items-center py-0.5">
                     <Image
@@ -121,12 +121,12 @@ async function PropertyState(props: { project: ProjectType }) {
                       alt="heating icon"
                     />
                     {
-                      props.project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
+                      project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
                         ?.ApCh1?.Label
                     }
                   </li>
                 )}
-                {props.project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
+                {project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
                   ?.ECS && (
                   <li className="flex items-center py-0.5">
                     <Image
@@ -137,7 +137,7 @@ async function PropertyState(props: { project: ProjectType }) {
                       alt="water icon"
                     />
                     {
-                      props.project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
+                      project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
                         ?.ECS?.Label
                     }
                   </li>
@@ -151,7 +151,7 @@ async function PropertyState(props: { project: ProjectType }) {
                 Ventilation:{" "}
                 <EnergyPerformanceBadge
                   state={
-                    props.project.iziResponse?.performanceEnergetique?.ventilation?.EtatInitial
+                    project.iziResponse?.performanceEnergetique?.ventilation?.EtatInitial
                       ?.Note
                   }
                 />
@@ -168,7 +168,7 @@ async function PropertyState(props: { project: ProjectType }) {
                     alt="ventilation icon"
                   />
                   {
-                    props.project.iziResponse?.performanceEnergetique?.ventilation?.EtatInitial
+                    project.iziResponse?.performanceEnergetique?.ventilation?.EtatInitial
                       ?.Label
                   }
                 </li>

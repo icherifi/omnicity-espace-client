@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ToggleButton from "@/components/omnicity/buttons/toggle";
-import FuturStateDetails from "@/components/details/component/FuturStateDetails";
-import CurrentStateDetails from "@/components/details/component/CurrentStateDetails";
+import FuturStateDetails from "@/components/details/components/FuturStateDetails";
+import CurrentStateDetails from "@/components/details/components/CurrentStateDetails";
 import { WorkResultProps } from "@/types/project.types";
 
 export function WorkResult({ bouquet, initialState }: WorkResultProps) {
