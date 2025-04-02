@@ -18,13 +18,13 @@ import { useEnergyFormContext } from "@/contexts/energyForm.context";
 function NewProjectDialog(props: { onProjectsPage?: boolean }) {
   const [hasDpe, setHasDpe] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const {
-    setIsEnergyFormDisplayed,
-    setEnergyFormCompleted,
-    setEnergyFormGotOpened,
+  const { 
+    setIsEnergyFormDisplayed, 
+    setEnergyFormCompleted, 
+    setEnergyFormGotOpened, 
     isEnergyLabelSolutionsDisplayed,
     isEnergyFormDisplayed,
-    energyFormCompleted,
+    energyFormCompleted
   } = useEnergyFormContext();
   const { resetProjectStandardForm } = useNewProjectStandardFormContext();
 
@@ -56,8 +56,7 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
   };
 
   const getDialogDescription = () => {
-    if (hasDpe === null)
-      return "Avez-vous un Diagnostic de Performance Énergétique (DPE) pour votre logement ?";
+    if (hasDpe === null) return "Avez-vous un Diagnostic de Performance Énergétique (DPE) pour votre logement ?";
     if (isEnergyFormDisplayed) {
       if (energyFormCompleted) return "Votre projet est prêt à être créé.";
       return "Complétez ce formulaire pour gérer la partie électrique de votre projet.";
@@ -66,7 +65,7 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
   };
 
   return (
-    <Dialog
+    <Dialog 
       onOpenChange={() => {
         setHasDpe(null);
         resetProjectStandardForm();
@@ -86,54 +85,40 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
         )}
       </DialogTrigger>
 
-      <DialogContent
-        className={`${
-          isEnergyLabelSolutionsDisplayed ? "sm:max-w-fit" : "sm:max-w-[750px]"
-        } max-h-[85vh] overflow-y-auto`}
-      >
+      <DialogContent className={`${isEnergyLabelSolutionsDisplayed ? "sm:max-w-fit" : "sm:max-w-[750px]"} max-h-[85vh] overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
-          <DialogDescription>{getDialogDescription()}</DialogDescription>
+          <DialogDescription>
+            {getDialogDescription()}
+          </DialogDescription>
         </DialogHeader>
 
         {hasDpe !== null && (
           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-            <div
+            <div 
               className="bg-primary h-2.5 rounded-full transition-all duration-300"
-              style={{
-                width: `${(getCurrentStep() / getTotalSteps()) * 100}%`,
-              }}
+              style={{ width: `${(getCurrentStep() / getTotalSteps()) * 100}%` }}
             ></div>
           </div>
         )}
 
         {error && (
-          <div
-            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4"
-            role="alert"
-          >
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <span className="block sm:inline">{error}</span>
           </div>
         )}
 
         {hasDpe === null ? (
           <div className="flex justify-center space-x-4 py-4">
-            <div className="relative group">
-              <Button
-                onClick={() => setHasDpe(true)}
-                variant="secondary"
-                disabled
-                className="hover:cursor-not-allowed"
-              >
-                Oui, j'ai un DPE
-              </Button>
-              <div className="absolute bottom-full left transform mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
-                Bientôt disponible
-              </div>
-            </div>
-            <Button
-              onClick={() => setHasDpe(false)}
+            <Button 
+              onClick={() => setHasDpe(true)}
               className="bg-primary hover:bg-primary/90"
+            >
+              Oui, j'ai un DPE
+            </Button>
+            <Button 
+              onClick={() => setHasDpe(false)}
+              variant="secondary"
             >
               Non, je n'ai pas de DPE
             </Button>

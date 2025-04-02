@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getEnergyLabelColor, getFuturEnergyConsumption } from '../utils';
+import { getEnergyLabelColor } from '../utils';
 import { ProjectType } from '@/types/project.types';
 
 interface WorkSolutionsProps {
@@ -88,7 +88,7 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
                   <div className="text-sm">
                     {bouquet && currentProjectDisplayed.iziResponse && (
                       <>
-                        <p>{getFuturEnergyConsumption(currentProjectDisplayed.iziResponse.CEP, bouquet.pourcentageGainCEP)} kwh/m2/an</p>
+                        <p>{Math.round(currentProjectDisplayed.iziResponse.CEP * (1 - bouquet.pourcentageGainCEP))} kwh/m2/an</p>
                         <p>Étiquette GES: {bouquet.etiquetteEGES}</p>
                       </>
                     )}

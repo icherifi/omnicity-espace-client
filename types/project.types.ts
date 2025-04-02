@@ -55,6 +55,7 @@ export interface WorkResultProps {
   initialState: IziResponse;
 }
 
+<<<<<<< HEAD
 export interface Dpe {
   administratif: any;
   logement: any;
@@ -63,6 +64,8 @@ export interface Dpe {
 
 }
 
+=======
+>>>>>>> 5aa70d9 (EnergyFormData UI fix)
 export interface ProjectType {
   id: number;
   name: string;
@@ -70,7 +73,10 @@ export interface ProjectType {
   created_at?: string;
   actualEnergyRating: EnergyRating;
   targetedEnergyRating: EnergyRating;
+<<<<<<< HEAD
   dpe?: Dpe;
+=======
+>>>>>>> 5aa70d9 (EnergyFormData UI fix)
   features: {
     size: string;
     roomsNumber: string;
