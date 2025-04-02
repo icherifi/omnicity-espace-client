@@ -23,7 +23,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DateRangePicker from "@/components/omnicity/table/DateRangePicker";
 import ProjectsDataTable from "../omnicity/table/projectsDataTable";
-import NewProjectForm from "../form/NewProjectForm";
+import NewProjectDialog from "../dialogs/NewProjectDialog";
 
 export default function ProjectsPage() {
   return (
@@ -70,7 +70,7 @@ export default function ProjectsPage() {
             </DropdownMenu>
             <Button size="sm" className="h-7 gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
-              <NewProjectForm onProjectsPage={true} />
+              <NewProjectDialog onProjectsPage={true} />
             </Button>
           </div>
         </div>

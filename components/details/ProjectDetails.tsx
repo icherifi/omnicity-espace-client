@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -24,10 +23,12 @@ import { useDashboardContext } from "@/contexts/dashboard.context";
 import PropertyState from "@/components/energy//components/PropertyState";
 import ExportView from "./ExportView";
 import { StateOfPlay } from "./components/StateOfPlay";
+import { useRouter } from "next/navigation";
 
 function ProjectDetails() {
   const { currentProjectDisplayed } = useDashboardContext();
   const [showDetail, setShowDetail] = React.useState(false);
+  const router = useRouter();
 
   if (!currentProjectDisplayed?.id) {
     return <p>Chargement du projet...</p>;  
@@ -149,13 +150,13 @@ function ProjectDetails() {
                 <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed!.actualEnergyRating?.toLocaleLowerCase()! as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      (currentProjectDisplayed?.iziResponse?.etiquetteInitial?.toLowerCase() || 'g') as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Actuel"
                   />
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed!.targetedEnergyRating?.toLocaleLowerCase()! as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      (currentProjectDisplayed?.iziResponse?.bouquets[2]?.etiquette?.toLowerCase() || 'g') as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Visé"
                   />
@@ -177,19 +178,17 @@ function ProjectDetails() {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Sans aides</span>
               <span>
-                {currentProjectDisplayed!.costEstimation?.withoutAid.toLocaleString(
-                  "fr-FR"
-                )}
-                €
+                {currentProjectDisplayed?.iziResponse?.bouquets[0]?.coutTotal 
+                  ? `${currentProjectDisplayed.iziResponse.bouquets[0].coutTotal.toLocaleString("fr-FR")}€`
+                  : 'Non disponible'}
               </span>
             </li>
             <li className="flex items-center justify-between font-semibold">
               <span className="text-muted-foreground">Avec aides</span>
               <span>
-                {currentProjectDisplayed!.costEstimation?.withAid.toLocaleString(
-                  "fr-FR"
-                )}
-                €
+                {currentProjectDisplayed?.iziResponse?.bouquets[0]?.resteACharge
+                  ? `${currentProjectDisplayed.iziResponse.bouquets[0].resteACharge.toLocaleString("fr-FR")}€`
+                  : 'Non disponible'}
               </span>
             </li>
           </ul>

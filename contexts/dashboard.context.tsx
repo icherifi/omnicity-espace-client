@@ -8,8 +8,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { ProjectType, useProjectsContext } from "./projects.context";
-
+import { useProjectsContext } from "./projects.context";
+import { ProjectType } from "@/types/project.types";
 interface DashboardContextType {
   currentProjectDisplayed: ProjectType | null;
   setCurrentProjectDisplayed: Dispatch<SetStateAction<ProjectType | null>>;

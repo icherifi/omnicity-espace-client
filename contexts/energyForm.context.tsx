@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
 
-export interface Step {
+interface Step {
   "@context"?: string;
   "@id"?: string;
   "@type"?: string;
@@ -77,7 +77,7 @@ export default function EnergyFormContextProvider({ children }: { children: Reac
   const [postalCode, setPostalCode] = useState("");
   const [showPostalCode, setShowPostalCode] = useState(true);
 
-  const [steps, setSteps] = useState<any[]>([]);
+  const [steps, setSteps] = useState<Step[]>([]);
   const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
   const [answerState, setAnswerState] = useState<any>(null);
   const [energyFormCompleted, setEnergyFormCompleted] = useState(false);

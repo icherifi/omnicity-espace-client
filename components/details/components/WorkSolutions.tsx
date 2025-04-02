@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { getEnergyLabelColor } from '../utils';
-import { ProjectType } from "@/contexts/projects.context";
+import { ProjectType } from '@/types/project.types';
 
 interface WorkSolutionsProps {
   currentProjectDisplayed: ProjectType;
@@ -29,14 +29,14 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
           const isSelected = JSON.stringify(currentProjectDisplayed.choice) === JSON.stringify(bouquet);
           const solutionType = index === 0 ? "Simplicité" : index === 1 ? "Équilibrée" : "Performante";
           
-          const worksList = [
+          const worksList = bouquet ? [
             bouquet.renoComblesPerdus && "Isolation des combles",
             bouquet.renovationMurs && "Isolation des murs",
             bouquet.renoMenuiserie && "Remplacement menuiseries",
             bouquet.appareilChauffage1 && `Nouveau chauffage: ${bouquet.appareilChauffage1}`,
             bouquet.appareilChauffage2 && `Chauffage secondaire: ${bouquet.appareilChauffage2}`,
             bouquet.remplacementEauChaudeSanitaire && "Remplacement eau chaude sanitaire"
-          ].filter(Boolean);
+          ].filter(Boolean) : [];
 
           return (
             <div 
@@ -81,20 +81,43 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
                 <div className="flex items-center gap-2 mb-2">
                   <div className={cn(
                     "px-3 py-1 font-bold rounded text-white",
-                    getEnergyLabelColor(bouquet.etiquette)
+                    bouquet?.etiquette ? getEnergyLabelColor(bouquet.etiquette) : ''
                   )}>
-                    {bouquet.etiquette}
+                    {bouquet?.etiquette}
                   </div>
                   <div className="text-sm">
-                    <p>{Math.round(currentProjectDisplayed.iziResponse!.CEP * (1 - bouquet.pourcentageGainCEP))} kwh/m2/an</p>
-                    <p>Étiquette GES: {bouquet.etiquetteEGES}</p>
+                    {bouquet && currentProjectDisplayed.iziResponse && (
+                      <>
+                        <p>{Math.round(currentProjectDisplayed.iziResponse.CEP * (1 - bouquet.pourcentageGainCEP))} kwh/m2/an</p>
+                        <p>Étiquette GES: {bouquet.etiquetteEGES}</p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="mb-6">
                 <h4 className="font-medium mb-2">Confort</h4>
-                <p>{bouquet.confort === 3 ? 'Bien' : bouquet.confort === 2 ? 'Moyen' : 'Faible'}</p>
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "text-2xl",
+                    isSelected && "text-white"
+                  )}>
+                    {bouquet?.confort === 3 ? "😊" : 
+                     bouquet?.confort === 2 ? "😐" : 
+                     bouquet?.confort === 1 ? "😔" : "❓"}
+                  </span>
+                  <span className={cn(
+                    isSelected ? "text-white" : "text-gray-700"
+                  )}>
+                    Confort {
+                      bouquet?.confort === 3 ? "bon" : 
+                      bouquet?.confort === 2 ? "moyen" : 
+                      bouquet?.confort === 1 ? "faible" : 
+                      "non évalué"
+                    }
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -103,25 +126,20 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
                   <div className="flex justify-between">
                     <span className="text-sm">Coût travaux</span>
                     <span className="text-sm font-medium">
-                      {bouquet.coutTotal.toLocaleString('fr-FR')}€
+                      {bouquet?.coutTotal?.toLocaleString('fr-FR')}€
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm">Aides de l'État</span>
+                    <span className="text-sm">Aides financières</span>
                     <span className="text-sm font-medium">
-                      {bouquet.montantAides.toLocaleString('fr-FR')}€
+                      {bouquet?.montantAides?.toLocaleString('fr-FR')}€
                     </span>
                   </div>
-                  <div className={cn(
-                    "mt-4 p-3 rounded-lg",
-                    isSelected ? 'bg-violet-600' : 'bg-white'
-                  )}>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Total aides déduites: </span>
-                      <span className="text-sm font-medium">
-                        {bouquet.resteACharge.toLocaleString('fr-FR')}€
-                      </span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">Reste à charge</span>
+                    <span className="text-sm font-medium">
+                      {bouquet?.resteACharge?.toLocaleString('fr-FR')}€
+                    </span>
                   </div>
                 </div>
               </div>

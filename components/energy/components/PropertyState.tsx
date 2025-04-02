@@ -8,7 +8,7 @@ import {
 import EnergyRating from "@/components/energy/components/EnergyRating";
 import EnergyPerformanceBadge from "@/components/energy/components/EnergyPerformanceBadge";
 import Image from "next/image";
-import { ProjectType } from "@/contexts/projects.context";
+import { ProjectType } from '@/types/project.types';
 
 function PropertyState({ project }: { project: ProjectType }) {
   if (!project) {

@@ -1,3 +1,4 @@
+import { Separator } from "@/components/ui/separator";
 import React from "react";
 
 export interface WorkCostProps {
@@ -6,50 +7,44 @@ export interface WorkCostProps {
     montantAides: number;
     resteACharge: number;
   };
-  inPdf?: boolean; // Add inPdf to the props
+  inPdf?: boolean;
 }
 
 export function WorkCost({ bouquet, inPdf }: WorkCostProps) {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="flex flex-col gap-6 bg-slate-100 px-4 py-6 rounded-2xl">
-        <h4 className="text-lg font-bold text-secondary-500 @md:text-xl self-center">
+    <div className="flex flex-col items-center h-full">
+      <div className="flex flex-col gap-4 bg-slate-100 p-6 rounded-2xl w-full">
+        <h4 className="text-xl font-bold text-secondary-500">
           Coût du projet
         </h4>
-        <div className="flex flex-col">
-          <div className="flex justify-between gap-2 border-b-2 border-white pb-4">
-            <p className="w-5/12 whitespace-nowrap text-base">
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <p className="text-gray-800">
               Coût des travaux
             </p>
-            <div className="flex w-5/12 flex-col flex-wrap gap-1 whitespace-nowrap text-base font-bold @sm:w-7/12 @sm:flex-row">
-              <p>{Math.floor(bouquet.coutTotal)} €</p>
-            </div>
+            <p className="font-semibold">{Math.floor(bouquet.coutTotal).toLocaleString('fr-FR')} €</p>
           </div>
-          <div className="flex items-center justify-between gap-2 pt-4">
-            <p className="w-5/12 whitespace-nowrap text-base">Aides</p>
-            <span className="w-5/12 whitespace-nowrap text-base font-bold sm:w-7/12">
-              jusqu’à{" "}
-              <span className="whitespace-nowrap">
-                {Math.floor(bouquet.montantAides)} €
-              </span>
-            </span>
+          <Separator className="w-full bg-white my-2 h-1" />
+          <div className="flex justify-between items-center">
+            <p className="text-gray-800">Aides de l'État</p>
+            <p className="font-semibold">
+              jusqu'à {Math.floor(bouquet.montantAides).toLocaleString('fr-FR')} €
+            </p>
           </div>
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex w-full flex-col items-center gap-2 rounded-2xl bg-white p-4">
-            <p className="self-center text-base">
-              <span className="font-bold">Total du projet</span> (aides
-              déduites)
-            </p>
-            <p className="flex items-center text-sm text-violet-500">
-              {Math.floor(bouquet.resteACharge)} €
-            </p>
+        <div className="flex flex-col items-center gap-2 bg-white p-4 rounded-xl">
+          <p className="text-center">
+            <span className="font-bold">Total du projet</span>{" "}
+            <span className="text-gray-600">(aides déduites)</span>
+          </p>
+          <div className="text-violet-600 font-bold text-xl">
+            {Math.floor(bouquet.resteACharge).toLocaleString('fr-FR')} €
           </div>
         </div>
         {!inPdf && (
-          <a className="mx-auto w-full cursor-pointer whitespace-nowrap rounded-md bg-violet-500 px-4 py-3 text-center text-base font-bold text-white shadow-sm transition duration-300 ease-in-out hover:bg-violet-600 sm:w-10/12 md:w-full">
+          <button className="w-full py-3 bg-violet-600 text-white font-bold rounded-lg hover:bg-violet-700 transition-colors">
             Obtenir mon devis
-          </a>
+          </button>
         )}
       </div>
     </div>

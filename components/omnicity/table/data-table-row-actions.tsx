@@ -14,8 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteProject } from "@/utils/handleProjectDetails";
-import { ProjectType, useProjectsContext } from "@/contexts/projects.context";
+import { useProjectsContext } from "@/contexts/projects.context";
 import { getToken } from "@/utils/supabase/client";
+import { ProjectType } from "@/types/project.types";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<ProjectType>;

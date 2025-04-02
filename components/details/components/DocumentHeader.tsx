@@ -1,4 +1,4 @@
-import { ProjectType } from "@/contexts/projects.context";
+import { ProjectType } from '@/types/project.types';
 
 interface DocumentHeaderProps {
   currentProjectDisplayed: ProjectType;
