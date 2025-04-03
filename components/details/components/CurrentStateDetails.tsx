@@ -4,19 +4,6 @@ import EnergyTag from "@/components/ui/EnergyTag";
 import { WorkResultProps } from "@/types/project.types";
 import { getConfortLabel } from "../utils";
 
-const getConfortLabel = (confort: number): string => {
-  switch (confort) {
-    case 1:
-      return "Confort faible";
-    case 2:
-      return "Confort moyen";
-    case 3:
-      return "Confort optimal";
-    default:
-      return "Confort non défini";
-  }
-};
-
 const CurrentStateDetails = ({ initialState }: Omit<WorkResultProps, 'bouquet'>) => {
   return (
     <div className="space-y-1 mt-4 pl-6">
