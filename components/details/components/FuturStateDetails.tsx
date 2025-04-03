@@ -2,19 +2,7 @@ import React from "react";
 import { Separator } from "@/components/ui/separator";
 import EnergyTag from "@/components/ui/EnergyTag";
 import { WorkResultProps } from "@/types/project.types";
-
-const getConfortLabel = (confort: number): string => {
-  switch (confort) {
-    case 1:
-      return "Confort faible";
-    case 2:
-      return "Confort moyen";
-    case 3:
-      return "Confort optimal";
-    default:
-      return "Confort non défini";
-  }
-};
+import { getConfortLabel } from "../utils";
 
 const FuturStateDetails = ({ bouquet, initialState }: WorkResultProps) => {
   const gainCEP = Math.floor(initialState.CEP * (1 - bouquet.pourcentageGainCEP));

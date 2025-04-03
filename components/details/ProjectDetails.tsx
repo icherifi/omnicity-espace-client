@@ -23,12 +23,10 @@ import { useDashboardContext } from "@/contexts/dashboard.context";
 import PropertyState from "@/components/energy//components/PropertyState";
 import ExportView from "./ExportView";
 import { StateOfPlay } from "./components/StateOfPlay";
-import { useRouter } from "next/navigation";
 
 function ProjectDetails() {
   const { currentProjectDisplayed } = useDashboardContext();
   const [showDetail, setShowDetail] = React.useState(false);
-  const router = useRouter();
 
   if (!currentProjectDisplayed?.id) {
     return <p>Chargement du projet...</p>;  
@@ -56,9 +54,9 @@ function ProjectDetails() {
               </CardDescription>
             </div>
             <div className="ml-auto flex items-center gap-1">
-              <Button size="sm" variant="outline" className="h-8 gap-1">
+              <Button size="sm" variant="outline" className="h-8 gap-1" onClick={() => setShowDetail(true)}>
                 <File className="h-3.5 w-3.5" />
-                <span onClick={() => setShowDetail(true)} className="xl:whitespace-nowrap max-[1500px]:hidden">
+                <span className="xl:whitespace-nowrap max-[1500px]:hidden">
                   Exporter devis
                 </span>
               </Button>
@@ -113,9 +111,9 @@ function ProjectDetails() {
             </CardDescription>
           </div>
           <div className="ml-auto flex items-center gap-1">
-            <Button size="sm" variant="outline" className="h-8 gap-1">
+            <Button size="sm" variant="outline" className="h-8 gap-1" onClick={() => setShowDetail(true)}>
               <File className="h-3.5 w-3.5" />
-              <span onClick={() => setShowDetail(true)} className="xl:whitespace-nowrap max-[1500px]:hidden">
+              <span className="xl:whitespace-nowrap max-[1500px]:hidden">
                 Exporter devis
               </span>
             </Button>
@@ -150,13 +148,13 @@ function ProjectDetails() {
                 <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                   <EnergyRating
                     energyRatingValue={
-                      (currentProjectDisplayed?.iziResponse?.etiquetteInitial?.toLowerCase() || 'g') as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      (currentProjectDisplayed?.iziResponse?.etiquetteInitial?.toLowerCase()!) as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Actuel"
                   />
                   <EnergyRating
                     energyRatingValue={
-                      (currentProjectDisplayed?.iziResponse?.bouquets[2]?.etiquette?.toLowerCase() || 'g') as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      (currentProjectDisplayed?.choice?.etiquette?.toLowerCase()!) as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Visé"
                   />
@@ -178,16 +176,16 @@ function ProjectDetails() {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Sans aides</span>
               <span>
-                {currentProjectDisplayed?.iziResponse?.bouquets[0]?.coutTotal 
-                  ? `${currentProjectDisplayed.iziResponse.bouquets[0].coutTotal.toLocaleString("fr-FR")}€`
+                {currentProjectDisplayed?.choice?.coutTotal 
+                  ? `${currentProjectDisplayed.choice.coutTotal.toLocaleString("fr-FR")}€`
                   : 'Non disponible'}
               </span>
             </li>
             <li className="flex items-center justify-between font-semibold">
               <span className="text-muted-foreground">Avec aides</span>
               <span>
-                {currentProjectDisplayed?.iziResponse?.bouquets[0]?.resteACharge
-                  ? `${currentProjectDisplayed.iziResponse.bouquets[0].resteACharge.toLocaleString("fr-FR")}€`
+                {currentProjectDisplayed?.choice?.resteACharge
+                  ? `${currentProjectDisplayed.choice.resteACharge.toLocaleString("fr-FR")}€`
                   : 'Non disponible'}
               </span>
             </li>
