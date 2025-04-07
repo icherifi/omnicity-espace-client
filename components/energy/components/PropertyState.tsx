@@ -17,7 +17,7 @@ function PropertyState({ project }: { project: ProjectType }) {
 
   return (
     <div className="flex flex-col items-center justify-center space-x-2">
-      <div className="flex items-center p-4 pt-0">
+      <div className="flex items-center p-4 pt-0 2xl:flex-row flex-col">
         <EnergyRating
           energyRatingValue={project.actualEnergyRating?.toLowerCase() as "a" | "b" | "c" | "d" | "e" | "f" | "g"}
         />
