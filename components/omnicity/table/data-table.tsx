@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useDashboardContext } from "@/contexts/dashboard.context";
-import { ProjectType } from "@/contexts/projects.context";
+import { ProjectType } from '@/types/project.types';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,7 +36,7 @@ export function DataTable<TData, TValue>({
   onlyInProgress,
 }: DataTableProps<TData, TValue>) {
   const [pageSize, setPageSize] = useState<PaginationState>({
-    pageSize: 3,
+    pageSize: 5,
     pageIndex: 0,
   }); 
 

@@ -7,12 +7,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import NewProjectForm from "@/components/form/NewProjectForm";
 import ProjectDetails from "@/components/details/ProjectDetails";
 import ProjectsDataTable from "@/components/omnicity/table/projectsDataTable";
 import DashboardScrollCarousel from "@/components/omnicity/carousel/DashboardScrollCarousel";
+import NewProjectDialog from "@/components/dialogs/NewProjectDialog";
+import { useProjectsContext } from "@/contexts/projects.context";
 
 export default function MainComponent() {
+  const { projects } = useProjectsContext();
+  
+  const completedProjects = projects.filter(project => project.state === "completed").length;
+  const inProgressProjects = projects.filter(project => project.state === "inprogress").length;
+
   return (
     <div className="min-h-screen w-full bg-muted/40">
       <main className="grid h-full gap-4 p-4 sm:px-6 sm:py-4 md:gap-8 lg:grid-cols-3">
@@ -27,18 +33,18 @@ export default function MainComponent() {
                 </CardDescription>
               </CardHeader>
               <CardFooter>
-                <NewProjectForm />
+                <NewProjectDialog />
               </CardFooter>
             </Card>
 
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Projets en cours</CardDescription>
-                <CardTitle className="text-4xl">3</CardTitle>
+                <CardTitle className="text-4xl">{inProgressProjects}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-xs text-muted-foreground">
-                  +25% depuis la semaine passée
+                  Projets actuellement en cours de développement
                 </div>
               </CardContent>
               <CardFooter>
@@ -49,15 +55,15 @@ export default function MainComponent() {
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Projets finis</CardDescription>
-                <CardTitle className="text-4xl">14</CardTitle>
+                <CardTitle className="text-4xl">{completedProjects}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-xs text-muted-foreground">
-                  +10% depuis le mois passé
+                  Projets terminés avec succès
                 </div>
               </CardContent>
               <CardFooter>
-                <Progress value={12} aria-label="12% increase" />
+                <Progress value={0} aria-label="No increase" />
               </CardFooter>
             </Card>
           </div>
@@ -66,7 +72,7 @@ export default function MainComponent() {
           <ProjectsDataTable />
         </div>
 
-        <div className="max-h-screen overflow-auto">
+        <div className="overflow-auto">
           <ProjectDetails />
         </div>
       </main>

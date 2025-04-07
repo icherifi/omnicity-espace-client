@@ -12,10 +12,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useNewProjectFormContext } from "@/contexts/newProjectForm.context"
+import { useNewProjectStandardFormContext } from "@/contexts/newProjectStandardForm.context"
 
 export default function DatePicker () {
-  const { projectDate, setProjectDate } = useNewProjectFormContext()
+  const { projectDate, setProjectDate } = useNewProjectStandardFormContext()
   return (
     <Popover>
       <PopoverTrigger asChild>

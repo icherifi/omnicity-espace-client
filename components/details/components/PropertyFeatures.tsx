@@ -1,4 +1,4 @@
-import { ProjectType } from "@/contexts/projects.context";
+import { ProjectType } from '@/types/project.types';
 
 interface PropertyFeaturesProps {
   currentProjectDisplayed: ProjectType;
@@ -9,7 +9,7 @@ export const PropertyFeatures = ({ currentProjectDisplayed }: PropertyFeaturesPr
     {[
       { 
         label: 'Surface', 
-        value: `${currentProjectDisplayed?.features.size} m²`,
+        value: `${currentProjectDisplayed?.iziResponse?.inputQr["Sa surface habitable (m²) :"] || 'N/A'} m²`,
         icon: (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" />
@@ -27,7 +27,7 @@ export const PropertyFeatures = ({ currentProjectDisplayed }: PropertyFeaturesPr
       },
       { 
         label: "Nombre d'étages",
-        value: currentProjectDisplayed?.features.floorsNumber,
+        value: currentProjectDisplayed?.iziResponse?.inputQr["Le nombre de niveaux habités :"]?.[0] || 'N/A',
         icon: (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" />

@@ -2,6 +2,7 @@ import React from "react";
 import { Separator } from "@/components/ui/separator";
 import EnergyTag from "@/components/ui/EnergyTag";
 import { WorkResultProps } from "@/types/project.types";
+import { getConfortLabel } from "../utils";
 
 const FuturStateDetails = ({ bouquet, initialState }: WorkResultProps) => {
   const gainCEP = Math.floor(initialState.CEP * (1 - bouquet.pourcentageGainCEP));
@@ -19,15 +20,15 @@ const FuturStateDetails = ({ bouquet, initialState }: WorkResultProps) => {
           <li>{gainEGES} kgCO2/m²/an</li>
         </ul>
       </div>
-      <Separator className="my-6 pl-6" />
-      <div className="space-y-1 pl-6">
+      <Separator className="my-6" />
+      <div className="space-y-1">
         <p className="text-lg font-semibold leading-none">Confort</p>
         <div className="flex" style={{ marginTop: "1rem" }}>
-          <p>{bouquet.confort === 2 ? "Confort bien" : "Confort moyen"}</p>
+          <p>{getConfortLabel(bouquet.confort)}</p>
         </div>
       </div>
-      <Separator className="my-6 pl-6" />
-      <div className="space-y-1 pl-6">
+      <Separator className="my-6" />
+      <div className="space-y-1">
         <p className="text-lg font-semibold leading-none">Valeur immobilière</p>
         <div className="flex" style={{ marginTop: "1rem" }}>
           <p>

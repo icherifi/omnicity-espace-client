@@ -3,7 +3,7 @@ import "../app/globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
-import NewProjectFormContextProvider from "@/contexts/newProjectForm.context";
+import NewProjectStandardFormContextProvider from "@/contexts/newProjectStandardForm.context";
 import EnergyFormContextProvider from "@/contexts/energyForm.context";
 import DashboardContextProvider from "@/contexts/dashboard.context";
 import DesignPageContextProvider from "@/contexts/designPage.context";
@@ -36,7 +36,7 @@ export default function RootLayout({
 
   return (
     <ProjectsContextProvider>
-      <NewProjectFormContextProvider>
+      <NewProjectStandardFormContextProvider>
         <EnergyFormContextProvider>
           <DashboardContextProvider>
             <DesignPageContextProvider>
@@ -55,7 +55,7 @@ export default function RootLayout({
             </DesignPageContextProvider>
           </DashboardContextProvider>
         </EnergyFormContextProvider>
-      </NewProjectFormContextProvider>
+      </NewProjectStandardFormContextProvider>
     </ProjectsContextProvider>
   );
 }

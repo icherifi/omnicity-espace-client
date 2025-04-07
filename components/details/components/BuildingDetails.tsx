@@ -1,7 +1,7 @@
 import { IsolationIcons } from './icons/IsolationIcons';
 import { ChauffageIcons } from './icons/ChauffageIcons';
 import { VentilationIcon } from './icons/VentilationIcon';
-import { ProjectType } from '@/contexts/projects.context';
+import { ProjectType } from '@/types/project.types';
 interface BuildingDetailsProps {
   currentProjectDisplayed: ProjectType;
 }

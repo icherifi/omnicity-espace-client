@@ -3,8 +3,73 @@
 import React, { useEffect, useState } from "react";
 import { createSession, sendStepAnswer, getQuizSummary, handleQuizResults } from "@/utils/handleEnergyFormData";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
-import { CheckCircle, X } from 'lucide-react';
+import { CheckCircle, X, Zap, Flame, Droplet } from 'lucide-react';
 import Image from "next/image";
+
+import RectangularCompact from "../svgs/house-shapes/RectangularCompact";
+import RectangularLong from "../svgs/house-shapes/RectangularLong";
+import LShape from "../svgs/house-shapes/LShape";
+import UShape from "../svgs/house-shapes/UShape";
+
+import NonMitoyen from "../svgs/mitoyennete/NonMitoyen";
+import UneFacade from "../svgs/mitoyennete/UneFacade";
+import DeuxFacades from "../svgs/mitoyennete/DeuxFacades";
+import TroisFacades from "../svgs/mitoyennete/TroisFacades";
+
+import ComblesPerdus from "../svgs/toiture/ComblesPerdus";
+import ComblesAmenages from "../svgs/toiture/ComblesAmenages";
+import ToitTerrasse from "../svgs/toiture/ToitTerrasse";
+
+import TerrePlein from "../svgs/plancher/TerrePlein";
+import Cave from "../svgs/plancher/Cave";
+import VideSanitaire from "../svgs/plancher/VideSanitaire";
+
+const WoodIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 12C4 9.79086 5.79086 8 8 8H16C18.2091 8 20 9.79086 20 12C20 14.2091 18.2091 16 16 16H8C5.79086 16 4 14.2091 4 12Z" stroke="currentColor" strokeWidth="2"/>
+    <path d="M8 10C8 10 10 12 12 12C14 12 16 10 16 10" stroke="currentColor" strokeWidth="2"/>
+    <path d="M8 14C8 14 10 12 12 12C14 12 16 14 16 14" stroke="currentColor" strokeWidth="2"/>
+    <path d="M4 11L4 13M20 11L20 13" stroke="currentColor" strokeWidth="2"/>
+  </svg>
+);
+
+const questionIcons: { [key: string]: { [key: string]: React.FC } } = {
+  "Sa forme :": {
+    "Rectangulaire compacte": RectangularCompact,
+    "Rectangulaire allongée": RectangularLong,
+    "En L ou en T compacte": LShape,
+    "En L ou en T allongée": LShape,
+    "En U": UShape
+  },
+  "La maison est-elle mitoyenne ?": {
+    "Non": NonMitoyen,
+    "Oui, sur 1 façade": UneFacade,
+    "Oui, sur 2 façades": DeuxFacades,
+    "Oui, sur 3 façades": TroisFacades
+  },
+  "Le type de toiture :": {
+    "Combles perdus": ComblesPerdus,
+    "Combles aménagés": ComblesAmenages,
+    "Toit terrasse": ToitTerrasse
+  },
+  "Quel est votre type de planchers bas ?": {
+    "Terre plein": TerrePlein,
+    "Cave ou sous-sol": Cave,
+    "Vide sanitaire": VideSanitaire
+  },
+  "Quelle est la source d'énergie de chauffage principale ?": {
+    "Electricité": Zap,
+    "Bois": WoodIcon,
+    "Gaz ou propane": Flame,
+    "Fioul": Droplet,
+    "Charbon": () => (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+        <path d="M12 8v10m-4-7l8 4"/>
+      </svg>
+    )
+  }
+};
 
 export default function EnergyForm() {
   const [loading, setLoading] = useState(true);
@@ -36,40 +101,6 @@ export default function EnergyForm() {
       setError(undefined);
     } else {
       setError("Le code postal doit contenir 5 chiffres");
-    }
-  }
-
-  async function handleSendAnswer() {
-    if (!currentStep) return;
-    try {
-      setLoading(true);
-      const patchedStep = await sendStepAnswer(currentStep.id, answerState);
-
-      const updatedSteps = [...steps];
-      updatedSteps[activeStepIndex] = { ...currentStep, answer: answerState };
-      setSteps(updatedSteps);
-
-      if (patchedStep.nextStep) {
-        setSteps([...updatedSteps, patchedStep.nextStep]);
-        setActiveStepIndex(activeStepIndex + 1);
-        setAnswerState(null);
-      } else {
-        const quizSummary = await getQuizSummary(sessionId!);
-        if (!quizSummary) throw new Error("No quiz summary found");
-
-        const quizResults = await handleQuizResults({ ...quizSummary, "Code Postal": postalCode });
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("quizResults", JSON.stringify(quizResults));
-          localStorage.setItem("quizSteps", JSON.stringify(updatedSteps));
-        }
-        
-        setIsEnergyLabelSolutionsDisplayed(true);
-      }
-    } catch (err: any) {
-      setError(String(err));
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -235,7 +266,22 @@ export default function EnergyForm() {
             <h2 className="text-2xl font-bold mb-8 text-primary">{questionLabel}</h2>
 
             <div className="space-y-4 mb-8">
-              {renderQuestionInputs(questionType!, question, answerState, setAnswerState)}
+              {renderQuestionInputs(
+                questionType!,
+                question,
+                answerState,
+                setAnswerState,
+                currentStep,
+                steps,
+                activeStepIndex,
+                setSteps,
+                setActiveStepIndex,
+                setLoading,
+                sessionId,
+                postalCode,
+                setIsEnergyLabelSolutionsDisplayed,
+                setError
+              )}
             </div>
 
             <div className="flex space-x-4">
@@ -246,14 +292,6 @@ export default function EnergyForm() {
                   ${activeStepIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/10'}`}
               >
                 Retour
-              </button>
-              <button
-                onClick={handleSendAnswer}
-                disabled={!answerState}
-                className={`bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium flex-1
-                  ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
-              >
-                Continuer
               </button>
             </div>
           </div>
@@ -267,53 +305,160 @@ function renderQuestionInputs(
   questionType: string,
   question: any,
   answerState: any,
-  setAnswerState: (val: any) => void
+  setAnswerState: (val: any) => void,
+  currentStep: any,
+  steps: any[],
+  activeStepIndex: number,
+  setSteps: (steps: any[]) => void,
+  setActiveStepIndex: (index: number) => void,
+  setLoading: (loading: boolean) => void,
+  sessionId: string | null,
+  postalCode: string,
+  setIsEnergyLabelSolutionsDisplayed: (displayed: boolean) => void,
+  setError: (error: string | undefined) => void
 ) {
+  const handleAnswer = async (value: any, shouldAutoProceed: boolean = false) => {
+    setAnswerState(value);
+    if (!currentStep || !shouldAutoProceed) return;
+    try {
+      setLoading(true);
+      const patchedStep = await sendStepAnswer(currentStep.id, value);
+
+      const updatedSteps = [...steps];
+      updatedSteps[activeStepIndex] = { ...currentStep, answer: value };
+      setSteps(updatedSteps);
+
+      if (patchedStep.nextStep) {
+        setSteps([...updatedSteps, patchedStep.nextStep]);
+        setActiveStepIndex(activeStepIndex + 1);
+        setAnswerState(null);
+      } else {
+        const quizSummary = await getQuizSummary(sessionId!);
+        if (!quizSummary) throw new Error("No quiz summary found");
+
+        const quizResults = await handleQuizResults({ ...quizSummary, "Code Postal": postalCode });
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("quizResults", JSON.stringify(quizResults));
+          localStorage.setItem("quizSteps", JSON.stringify(updatedSteps));
+        }
+        
+        setIsEnergyLabelSolutionsDisplayed(true);
+      }
+    } catch (err: any) {
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManualProceed = async () => {
+    if (!currentStep || !answerState) return;
+    try {
+      setLoading(true);
+      const patchedStep = await sendStepAnswer(currentStep.id, answerState);
+
+      const updatedSteps = [...steps];
+      updatedSteps[activeStepIndex] = { ...currentStep, answer: answerState };
+      setSteps(updatedSteps);
+
+      if (patchedStep.nextStep) {
+        setSteps([...updatedSteps, patchedStep.nextStep]);
+        setActiveStepIndex(activeStepIndex + 1);
+        setAnswerState(null);
+      } else {
+        const quizSummary = await getQuizSummary(sessionId!);
+        if (!quizSummary) throw new Error("No quiz summary found");
+
+        const quizResults = await handleQuizResults({ ...quizSummary, "Code Postal": postalCode });
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("quizResults", JSON.stringify(quizResults));
+          localStorage.setItem("quizSteps", JSON.stringify(updatedSteps));
+        }
+        
+        setIsEnergyLabelSolutionsDisplayed(true);
+      }
+    } catch (err: any) {
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   switch (questionType) {
     case "QuestionInteger":
     case "QuestionFloat":
       return (
-        <input
-          type="number"
-          value={answerState || ""}
-          onChange={(e) => setAnswerState(Number(e.target.value))}
-          className="border rounded-md w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+        <>
+          <input
+            type="number"
+            value={answerState || ""}
+            onChange={(e) => setAnswerState(Number(e.target.value))}
+            className="border rounded-md w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button
+            onClick={handleManualProceed}
+            disabled={!answerState}
+            className={`w-full bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium mt-4
+              ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
+          >
+            Continuer
+          </button>
+        </>
       );
 
     case "QuestionString":
       return (
-        <input
-          type="text"
-          value={answerState || ""}
-          onChange={(e) => setAnswerState(e.target.value)}
-          className="border rounded-md w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+        <>
+          <input
+            type="text"
+            value={answerState || ""}
+            onChange={(e) => setAnswerState(e.target.value)}
+            className="border rounded-md w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button
+            onClick={handleManualProceed}
+            disabled={!answerState}
+            className={`w-full bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium mt-4
+              ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
+          >
+            Continuer
+          </button>
+        </>
       );
 
     case "QuestionChoice":
       return (
         <div className="space-y-3">
-          {question?.choices?.map((choice: any) => (
-            <div
-              key={choice.id}
-              onClick={() => setAnswerState(choice)}
-              className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
-                ${answerState?.id === choice.id 
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-gray-200 hover:border-gray-300'}`}
-            >
-              <label className="flex items-center w-full cursor-pointer">
-                <input
-                  type="radio"
-                  className="sr-only"
-                  checked={answerState?.id === choice.id}
-                  onChange={() => setAnswerState(choice)}
-                />
-                <span className="text-base">{choice.label}</span>
-              </label>
-            </div>
-          ))}
+          {question?.choices?.map((choice: any) => {
+            const IconComponent = questionIcons[question.label]?.[choice.label];
+            return (
+              <div
+                key={choice.id}
+                onClick={() => handleAnswer(choice, true)}
+                className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
+                  ${answerState?.id === choice.id 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <label className="flex items-center w-full cursor-pointer">
+                  <input
+                    type="radio"
+                    className="sr-only"
+                    checked={answerState?.id === choice.id}
+                    onChange={() => handleAnswer(choice, true)}
+                  />
+                  {IconComponent && (
+                    <div className="w-8 h-8 mr-3 flex items-center justify-center text-primary">
+                      <IconComponent />
+                    </div>
+                  )}
+                  <span className="text-base">{choice.label}</span>
+                </label>
+              </div>
+            );
+          })}
         </div>
       );
 
@@ -323,15 +468,15 @@ function renderQuestionInputs(
         <div className="space-y-3">
           {question?.choices?.map((c: any) => {
             const isChecked = chosen.some((x: any) => x.id === c.id);
+            const IconComponent = questionIcons[question.label]?.[c.label];
             return (
               <div
                 key={c.id}
                 onClick={() => {
-                  if (isChecked) {
-                    setAnswerState(chosen.filter((x: any) => x.id !== c.id));
-                  } else {
-                    setAnswerState([...chosen, c]);
-                  }
+                  const newAnswer = isChecked 
+                    ? chosen.filter((x: any) => x.id !== c.id)
+                    : [...chosen, c];
+                  handleAnswer(newAnswer, true);
                 }}
                 className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
                   ${isChecked 
@@ -344,13 +489,17 @@ function renderQuestionInputs(
                     className="sr-only"
                     checked={isChecked}
                     onChange={() => {
-                      if (isChecked) {
-                        setAnswerState(chosen.filter((x: any) => x.id !== c.id));
-                      } else {
-                        setAnswerState([...chosen, c]);
-                      }
+                      const newAnswer = isChecked 
+                        ? chosen.filter((x: any) => x.id !== c.id)
+                        : [...chosen, c];
+                      handleAnswer(newAnswer, true);
                     }}
                   />
+                  {IconComponent && (
+                    <div className="w-8 h-8 mr-3 flex items-center justify-center text-primary">
+                      <IconComponent />
+                    </div>
+                  )}
                   <span className="text-base">{c.label}</span>
                 </label>
               </div>

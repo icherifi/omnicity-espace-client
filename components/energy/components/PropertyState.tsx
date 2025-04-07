@@ -8,7 +8,7 @@ import {
 import EnergyRating from "@/components/energy/components/EnergyRating";
 import EnergyPerformanceBadge from "@/components/energy/components/EnergyPerformanceBadge";
 import Image from "next/image";
-import { ProjectType } from "@/contexts/projects.context";
+import { ProjectType } from '@/types/project.types';
 
 function PropertyState({ project }: { project: ProjectType }) {
   if (!project) {
@@ -17,7 +17,7 @@ function PropertyState({ project }: { project: ProjectType }) {
 
   return (
     <div className="flex flex-col items-center justify-center space-x-2">
-      <div className="flex items-center p-4 pt-0">
+      <div className="flex items-center p-4 pt-0 2xl:flex-row flex-col">
         <EnergyRating
           energyRatingValue={project.actualEnergyRating?.toLowerCase() as "a" | "b" | "c" | "d" | "e" | "f" | "g"}
         />

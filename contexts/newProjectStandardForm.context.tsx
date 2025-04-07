@@ -14,7 +14,7 @@ interface GeneralInformationType {
   floorsNumber?: number;
 }
 
-interface NewProjectFormType {
+interface NewProjectStandardFormType {
   projectAuthorName: string;
   setProjectAuthorName: Dispatch<SetStateAction<string>>;
   projectName: string;
@@ -29,10 +29,10 @@ interface NewProjectFormType {
   setProjectGeneralInformation: Dispatch<
     SetStateAction<GeneralInformationType>
   >;
-  resetProjectForm: () => void;
+  resetProjectStandardForm: () => void;
 }
 
-export const NewProjectFormContext = createContext<NewProjectFormType | null>(
+export const NewProjectStandardFormContext = createContext<NewProjectStandardFormType | null>(
   null
 );
 
@@ -49,7 +49,7 @@ const initialState = {
   },
 };
 
-export default function NewProjectFormContextProvider({
+export default function NewProjectStandardFormContextProvider({
   children,
 }: useCustomHook) {
   const [projectAuthorName, setProjectAuthorName] = useState(
@@ -68,7 +68,7 @@ export default function NewProjectFormContextProvider({
   const [projectGeneralInformation, setProjectGeneralInformation] =
     useState<GeneralInformationType>(initialState.projectGeneralInformation);
 
-  const resetProjectForm = () => {
+  const resetProjectStandardForm = () => {
     setProjectAuthorName(initialState.projectAuthorName);
     setProjectName(initialState.projectName);
     setProjectAddress(initialState.projectAddress);
@@ -78,7 +78,7 @@ export default function NewProjectFormContextProvider({
   };
 
   return (
-    <NewProjectFormContext.Provider
+    <NewProjectStandardFormContext.Provider
       value={{
         projectAuthorName,
         setProjectAuthorName,
@@ -92,18 +92,18 @@ export default function NewProjectFormContextProvider({
         setProjectDate,
         projectGeneralInformation,
         setProjectGeneralInformation,
-        resetProjectForm,
+        resetProjectStandardForm,
       }}
     >
       {children}
-    </NewProjectFormContext.Provider>
+    </NewProjectStandardFormContext.Provider>
   );
 }
-export function useNewProjectFormContext() {
-  const context = useContext(NewProjectFormContext);
+export function useNewProjectStandardFormContext() {
+  const context = useContext(NewProjectStandardFormContext);
   if (!context) {
     throw new Error(
-      "useNewProjectFormContext must be used within NewProjectFormContextProvider"
+      "useNewProjectStandardFormContext must be used within NewProjectStandardFormContextProvider"
     );
   }
   return context;

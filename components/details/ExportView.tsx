@@ -1,21 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useDashboardContext } from "@/contexts/dashboard.context";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
-
-const getEnergyLabelColor = (label: string) => {
-  const colors = {
-    'A': 'bg-[#319834]',
-    'B': 'bg-[#33cc31]',
-    'C': 'bg-[#fff200]',
-    'D': 'bg-[#ff9a35]',
-    'E': 'bg-[#ff5a35]',
-    'F': 'bg-[#fe0000]',
-    'G': 'bg-[#960032]'
-  };
-  return colors[label as keyof typeof colors] || 'bg-gray-500';
-};
 
 export const exportToPDF = async () => {
   try {
@@ -123,18 +109,13 @@ export const exportToPDF = async () => {
   }
 };
 
-// Déplacer les composants d'icônes dans des fichiers séparés
-import { IsolationIcons } from './components/icons/IsolationIcons';
-import { ChauffageIcons } from './components/icons/ChauffageIcons';
-import { VentilationIcon } from './components/icons/VentilationIcon';
-
-// Composants séparés
 import { DocumentHeader } from './components/DocumentHeader';
 import { PropertyFeatures } from './components/PropertyFeatures';
 import { CurrentCondition } from './components/CurrentCondition';
 import { BuildingDetails } from './components/BuildingDetails';
 import { WorkSolutions } from './components/WorkSolutions';
 import { ExportHeader } from './components/ExportHeader';
+
 function ExportView({ onClose }: { onClose: () => void }) {
   const { currentProjectDisplayed } = useDashboardContext();
   const [isExporting, setIsExporting] = useState(false);

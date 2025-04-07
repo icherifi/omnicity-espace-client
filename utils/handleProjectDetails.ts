@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 import { getToken } from "./supabase/client";
-import { ProjectType } from "@/contexts/projects.context";
 
 export const deleteProject = async (
   projectId: string,
