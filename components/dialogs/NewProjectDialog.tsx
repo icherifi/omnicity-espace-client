@@ -118,25 +118,25 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
 
         {hasDpe === null ? (
           <div className="flex justify-center space-x-4 py-4">
-            <Button
-              onClick={() => setHasDpe(true)}
-              className="bg-primary hover:bg-primary/90"
-            >
-              Oui, j'ai un DPE
-            </Button>
             <div className="relative group">
               <Button
-                onClick={() => setHasDpe(false)}
+                onClick={() => setHasDpe(true)}
                 variant="secondary"
                 disabled
                 className="hover:cursor-not-allowed"
               >
-                Non, je n'ai pas de DPE
+                Oui, j'ai un DPE
               </Button>
               <div className="absolute bottom-full left transform mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
                 Bientôt disponible
               </div>
             </div>
+            <Button
+              onClick={() => setHasDpe(false)}
+              className="bg-primary hover:bg-primary/90"
+            >
+              Non, je n'ai pas de DPE
+            </Button>
           </div>
         ) : (
           <>
