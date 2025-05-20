@@ -14,6 +14,8 @@ import {
   PencilRuler,
   Search,
   Settings,
+  Moon,
+  Sun,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -41,10 +43,12 @@ import EstimationCard from "./components/EstimationCard";
 import { Unity } from "react-unity-webgl";
 import ModelTypeSelect from "./components/ModelTypeSelect";
 import { useUnity } from "./components/unityContext";
+import { useTheme } from "@/contexts/theme.context";
+import { Switch } from "@/components/ui/switch";
 
 export default function Design() {
   const { setIsDesignPageAssetsDisplayed } = useDesignPageContext();
-
+  const { theme, setTheme } = useTheme();
   const { unityProvider, isLoaded, sendMessage } = useUnity();
 
   React.useEffect(() => {
@@ -73,7 +77,7 @@ export default function Design() {
             <SheetContent side="left" className="sm:max-w-xs">
               <nav className="grid gap-6 text-lg font-medium">
                 <Link
-                  href="#"
+                  href="/"
                   className="flex items-center gap-2 text-lg font-semibold"
                 >
                   <Package2 className="h-6 w-6" />
@@ -113,20 +117,6 @@ export default function Design() {
                 >
                   <List className="h-5 w-5" />
                   Formulaire
-                </Link>
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <LifeBuoy className="h-5 w-5" />
-                  Aide
-                </Link>
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Settings className="h-5 w-5" />
-                  Parametres
                 </Link>
               </nav>
             </SheetContent>
@@ -177,6 +167,15 @@ export default function Design() {
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Se déconnecter</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="flex items-center justify-center p-2">
+                <Sun className="h-4 w-4 mr-2" />
+                <Switch
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                />
+                <Moon className="h-4 w-4 ml-2" />
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

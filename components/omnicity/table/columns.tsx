@@ -58,7 +58,7 @@ export const columns: ColumnDef<ProjectType>[] = [
     cell: ({ row }) => (
       <span>
         {row.original.costEstimation?.withoutAid
-          ? `${row.original.costEstimation?.withoutAid?.toLocaleString("fr-FR")}€`
+          ? `${Math.round(row.original.costEstimation?.withoutAid).toLocaleString("fr-FR")}€`
           : "N/A"}
       </span>
     ),

@@ -26,7 +26,7 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
       
       <div className={gridClassName}>
         {bouquets.map((bouquet, index) => {
-          const isSelected = JSON.stringify(currentProjectDisplayed.choice) === JSON.stringify(bouquet);
+          const isSelected = JSON.stringify(currentProjectDisplayed.energyMixChoice) === JSON.stringify(bouquet);
           const solutionType = index === 0 ? "Simplicité" : index === 1 ? "Équilibrée" : "Performante";
           
           const worksList = bouquet ? [

@@ -24,11 +24,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DateRangePicker from "@/components/omnicity/table/DateRangePicker";
 import ProjectsDataTable from "../omnicity/table/projectsDataTable";
 import NewProjectDialog from "../dialogs/NewProjectDialog";
+import { useState } from "react";
+import { useProjectsContext } from "@/contexts/projects.context";
+import { DateRange } from "react-day-picker";
 
 export default function ProjectsPage() {
+  const { projects } = useProjectsContext();
+  const [tab, setTab] = useState("all");
+  const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
+  const authors = Array.from(new Set(projects.map(p => p.authorName).filter(Boolean)));
+
   return (
-    <div className="flex overflow-auto p-4">
-      <Tabs defaultValue="all">
+    <div className="w-full h-full p-8">
+      <Tabs defaultValue={tab} onValueChange={setTab}>
         <div className="flex items-center">
           <TabsList>
             <TabsTrigger value="all">Tout</TabsTrigger>
@@ -52,7 +62,7 @@ export default function ProjectsPage() {
                   <DropdownMenuSubTrigger>Par date</DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
-                      <DateRangePicker />
+                      <DateRangePicker value={dateRange} onChange={setDateRange} />
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
@@ -60,9 +70,21 @@ export default function ProjectsPage() {
                   <DropdownMenuSubTrigger>Par auteur</DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
-                      <DropdownMenuItem>Saikou</DropdownMenuItem>
-                      <DropdownMenuItem>Kevin</DropdownMenuItem>
-                      <DropdownMenuItem>Ilyas</DropdownMenuItem>
+                      {authors.map(author => (
+                        <DropdownMenuItem
+                          key={author}
+                          onClick={() => setSelectedAuthor(author)}
+                          className={selectedAuthor === author ? "font-bold" : ""}
+                        >
+                          {author}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuItem
+                        onClick={() => setSelectedAuthor(null)}
+                        className={!selectedAuthor ? "font-bold" : ""}
+                      >
+                        Tous
+                      </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
@@ -75,17 +97,46 @@ export default function ProjectsPage() {
           </div>
         </div>
         <TabsContent value="all">
-          <Card x-chunk="dashboard-06-chunk-0">
-            <CardContent className="flex p-4">
-              <div>
+          <Card className="w-full">
+            <CardContent className="w-full p-0">
                 <CardHeader>
                   <CardTitle>Projets</CardTitle>
                   <CardDescription>
                     Gérer et manager vos projets à partir d'ici.
                   </CardDescription>
                 </CardHeader>
-                <ProjectsDataTable />
-              </div>
+              <ProjectsDataTable
+                onlyInProgress={false}
+                onlyCompleted={false}
+                author={selectedAuthor}
+                dateRange={dateRange}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="active">
+          <Card className="w-full">
+            <CardContent className="w-full p-0">
+              <CardHeader>
+                <CardTitle>Projets en cours</CardTitle>
+                <CardDescription>
+                  Retrouvez ici vos projets en cours.
+                </CardDescription>
+              </CardHeader>
+              <ProjectsDataTable onlyInProgress={true} author={selectedAuthor} dateRange={dateRange} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="draft">
+          <Card className="w-full">
+            <CardContent className="w-full p-0">
+              <CardHeader>
+                <CardTitle>Projets terminés</CardTitle>
+                <CardDescription>
+                  Retrouvez ici vos projets terminés.
+                </CardDescription>
+              </CardHeader>
+              <ProjectsDataTable onlyCompleted={true} author={selectedAuthor} dateRange={dateRange} />
             </CardContent>
           </Card>
         </TabsContent>

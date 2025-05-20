@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import ProjectDetails from "@/components/details/ProjectDetails";
 import ProjectsDataTable from "@/components/omnicity/table/projectsDataTable";
 import DashboardScrollCarousel from "@/components/omnicity/carousel/DashboardScrollCarousel";
@@ -38,32 +37,24 @@ export default function MainComponent() {
             </Card>
 
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Projets en cours</CardDescription>
-                <CardTitle className="text-4xl">{inProgressProjects}</CardTitle>
+              <CardHeader className="pb-2 flex flex-row items-center gap-4">
+                <CardTitle className="text-5xl font-bold text-foreground w-16 text-left">{inProgressProjects.toString().padStart(2, '0')}</CardTitle>
+                <CardDescription className="text-sm text-muted-foreground flex-1 text-left">Projets en cours</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  Projets actuellement en cours de développement
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Progress value={25} aria-label="25% increase" />
+              <CardContent />
+              <CardFooter className="pb-0 mt-4">
+                <div className="text-xs text-muted-foreground mt-2">+25% depuis la semaine passée</div>
               </CardFooter>
             </Card>
 
             <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Projets finis</CardDescription>
-                <CardTitle className="text-4xl">{completedProjects}</CardTitle>
+              <CardHeader className="pb-2 flex flex-row items-center gap-4">
+                <CardTitle className="text-5xl font-bold text-foreground w-16 text-left">{completedProjects.toString().padStart(2, '0')}</CardTitle>
+                <CardDescription className="text-sm text-muted-foreground flex-1 text-left">Projets finis</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  Projets terminés avec succès
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Progress value={0} aria-label="No increase" />
+              <CardContent />
+              <CardFooter className="pb-0 mt-4">
+                <div className="text-xs text-muted-foreground mt-2">+10% depuis le mois passé</div>
               </CardFooter>
             </Card>
           </div>

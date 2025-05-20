@@ -10,14 +10,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import NewProjectStandardForm from "../forms/NewProjectStandardForm";
+import NewProjectStandardForm from "../forms/newProjectStandardForm/NewProjectStandardForm";
 import NewProjectDpeForm from "../forms/newProjectDpeForm/NewProjectDpeForm";
 import { useNewProjectStandardFormContext } from "@/contexts/newProjectStandardForm.context";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
 
-function NewProjectDialog(props: { onProjectsPage?: boolean }) {
+function NewProjectDialog(props: { onProjectsPage?: boolean, children?: React.ReactNode }) {
   const [hasDpe, setHasDpe] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
   const { 
     setIsEnergyFormDisplayed, 
     setEnergyFormCompleted, 
@@ -27,6 +28,16 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
     energyFormCompleted
   } = useEnergyFormContext();
   const { resetProjectStandardForm } = useNewProjectStandardFormContext();
+
+  const handleClose = () => {
+    setOpen(false);
+    setHasDpe(null);
+    resetProjectStandardForm();
+    setIsEnergyFormDisplayed(false);
+    setEnergyFormCompleted(false);
+    setEnergyFormGotOpened(false);
+    setError(null);
+  };
 
   const getCurrentStep = () => {
     if (hasDpe === null) return 0;
@@ -66,23 +77,22 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
 
   return (
     <Dialog 
-      onOpenChange={() => {
-        setHasDpe(null);
-        resetProjectStandardForm();
-        setIsEnergyFormDisplayed(false);
-        setEnergyFormCompleted(false);
-        setEnergyFormGotOpened(false);
-        setError(null);
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          handleClose();
+        } else {
+          setOpen(true);
+        }
       }}
     >
       <DialogTrigger asChild>
-        {props.onProjectsPage ? (
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Nouveau projet
-          </span>
-        ) : (
-          <Button>Nouveau projet</Button>
-        )}
+        {props.children
+          ? props.children
+          : props.onProjectsPage
+            ? <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Nouveau projet</span>
+            : <Button>Nouveau projet</Button>
+        }
       </DialogTrigger>
 
       <DialogContent className={`${isEnergyLabelSolutionsDisplayed ? "sm:max-w-fit" : "sm:max-w-[750px]"} max-h-[85vh] overflow-y-auto`}>
@@ -126,9 +136,9 @@ function NewProjectDialog(props: { onProjectsPage?: boolean }) {
         ) : (
           <>
             {hasDpe ? (
-              <NewProjectDpeForm onError={(error) => setError(error)} />
+              <NewProjectDpeForm onError={(error) => setError(error)} onClose={handleClose} />
             ) : (
-              <NewProjectStandardForm onError={(error) => setError(error)} />
+              <NewProjectStandardForm onError={(error) => setError(error)} onClose={handleClose} />
             )}
           </>
         )}

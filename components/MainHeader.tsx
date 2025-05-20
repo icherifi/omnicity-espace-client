@@ -1,6 +1,7 @@
-import { Search, CircleUser } from "lucide-react";
+import { Search, CircleUser, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { useTheme } from "@/contexts/theme.context";
 
 export default function MainHeader() {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = async () => {
     await createClient().auth.signOut();
@@ -23,16 +26,6 @@ export default function MainHeader() {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
       <div className="w-full flex-1">
-        <form>
-          <div className="relative w-full">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Chercher un projet..."
-              className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-            />
-          </div>
-        </form>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -50,6 +43,15 @@ export default function MainHeader() {
           <DropdownMenuItem onClick={handleLogout}>
             Se déconnecter
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <div className="flex items-center justify-center p-2">
+            <Sun className="h-4 w-4 mr-2" />
+            <Switch
+              checked={theme === "dark"}
+              onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+            />
+            <Moon className="h-4 w-4 ml-2" />
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

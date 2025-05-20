@@ -1,8 +1,8 @@
 import React from "react";
-import { Bouquet } from "@/types/project.types";
+import { EnergyMix } from "@/types/project.types";
 
 interface WorkDetailsProps {
-  bouquet: Bouquet;
+  bouquet: EnergyMix;
 }
 
 const WorkDetails: React.FC<WorkDetailsProps> = ({ bouquet }) => {

@@ -9,21 +9,13 @@ import Plan from "@/components/scans/Plan";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import ProjectsPage from "@/components/projects/Projects";
-import FormPage from "@/components/proto-form/formPage";
+import FormPage from "@/components/forms/formPage/FormPage";
 
 const componentsMap: ComponentsMap = {
   main: <MainComponent />,
-  import: (
-    <div>
-      <Plan />
-    </div>
-  ),
+  import: <Plan />,
   form: <FormPage />,
-  projects: (
-    <div>
-      <ProjectsPage />
-    </div>
-  ),
+  projects: <ProjectsPage />,
 };
 
 export default function Dashboard() {
@@ -31,7 +23,7 @@ export default function Dashboard() {
   const [content, setContent] =
     React.useState<keyof typeof componentsMap>("main");
   const renderContent = () => {
-    return componentsMap[content] || <div>Dashboard Content</div>;
+    return componentsMap[content] || <div className="flex w-full mt-6 justify-center items-center">En cours de développement...</div>;
   };
   const router = useRouter();
 
