@@ -1,7 +1,10 @@
 import { getScans } from "@/utils/handleProjectDetails";
+import { plan001 } from "./exemple";
+import { sectionLabelMap } from "./labelsMap";
 
 let canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D;
 let AfficheLongueur = false;
+const DEFAULT_WALL_WIDTH = 0.2;
 
 interface Transform {
   transform: number[];
@@ -15,6 +18,7 @@ interface Scan {
   openings?: Transform[];
   windows?: Transform[];
   objects?: Transform[];
+  sections?: { center: number[]; label: string; story: number }[];
 }
 
 function initializeCanvas() {
@@ -35,7 +39,9 @@ export async function draw(projectId: string): Promise<boolean> {
 
   if (scans && scans[0] !== undefined) {
     console.log("first scan", scans[0]);
-    plans = JSON.parse(scans[0].serialized);
+    //plans = JSON.parse(scans[0].serialized);
+    plans = plan001 as any as Scan; // Use the example plan for testing
+
     console.log("plan", plans);
   } else {
     return false;
@@ -53,6 +59,7 @@ export async function draw(projectId: string): Promise<boolean> {
     drawOpenings(plans.openings || []);
     drawWindows(plans.windows || []);
     drawObject(plans.objects || []);
+    writeRoomLabels(plans.sections || []);
   }
   return true;
 }
@@ -63,8 +70,8 @@ export async function draw(projectId: string): Promise<boolean> {
 function drawWalls(walls: Transform[]) {
   walls.forEach((wall) => {
     const transform = wall.transform;
-    const width = wall.dimensions[0];
-    //const height = wall.dimensions[1];
+    const length = wall.dimensions[0] + DEFAULT_WALL_WIDTH * 2;
+    const width = DEFAULT_WALL_WIDTH; // Use the provided width or default
 
     // Décomposez la matrice de transformation
     const scaleFactor = 50; // Facteur d'échelle
@@ -83,19 +90,25 @@ function drawWalls(walls: Transform[]) {
       y
     );
 
-    // Dessinez le mur (une ligne)
+    // Dessinez le mur (un rectangle)
     ctx.beginPath();
-    ctx.moveTo((-width * scaleFactor) / 2, 0);
-    ctx.lineTo((width * scaleFactor) / 2, 0);
-    ctx.strokeStyle = "black"; // Couleur de la ligne
-    ctx.lineWidth = 2; // Épaisseur de la ligne
+    ctx.rect(
+      (-length * scaleFactor) / 2, // Start x
+      0, // added to the outside of the wall
+      length * scaleFactor, // Rectangle length
+      width * scaleFactor // Rectangle width
+    );
+    ctx.fillStyle = "black"; // Mur noir
+    ctx.fill();
+    ctx.strokeStyle = "black"; // Bordure grise
+    ctx.lineWidth = 0; // Épaisseur de la bordure
     ctx.stroke();
 
     // Affichez la taille du mur en mètres avec une précision d'un chiffre après la virgule, seulement si la taille est positive
-    if (width > 0.5 && AfficheLongueur) {
+    if (length > 0.5 && AfficheLongueur) {
       ctx.font = "12px Arial";
-      ctx.fillStyle = "black";
-      ctx.fillText(`${width.toFixed(1)}m`, 0, 10);
+      ctx.fillStyle = "white";
+      ctx.fillText(`${length.toFixed(1)}m`, 0, 10);
     }
 
     // Restaurez le contexte pour le prochain mur
@@ -106,8 +119,8 @@ function drawWalls(walls: Transform[]) {
 function drawDoors(doors: Transform[]) {
   doors.forEach((door) => {
     const transform = door.transform;
-    const width = door.dimensions[0];
-    //const height = Door.dimensions[1];
+    const length = door.dimensions[0];
+    const width = DEFAULT_WALL_WIDTH;
 
     // Décomposez la matrice de transformation
     const scaleFactor = 50; // Facteur d'échelle
@@ -126,19 +139,33 @@ function drawDoors(doors: Transform[]) {
       y
     );
 
-    // Dessinez la porte (une ligne)
-
+    // Dessinez la porte (un rectangle avec des lignes de différentes couleurs)
     ctx.beginPath();
-    ctx.moveTo((-width * scaleFactor) / 2, 0);
-    ctx.lineTo((width * scaleFactor) / 2, 0);
-
-    ctx.strokeStyle = "Black"; // Couleur de la ligne
-    ctx.lineWidth = 4; // Épaisseur de la ligne
+    ctx.moveTo((-length * scaleFactor) / 2, 0);
+    ctx.lineTo((length * scaleFactor) / 2, 0);
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    //ctx.lineTo(width * scaleFactor / 2, width * scaleFactor)
-    ctx.strokeStyle = "Grey"; // Couleur de la ligne
-    ctx.lineWidth = 2; // Épaisseur de la lignes
+    ctx.beginPath();
+    ctx.moveTo((-length * scaleFactor) / 2, width * scaleFactor);
+    ctx.lineTo((length * scaleFactor) / 2, width * scaleFactor);
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo((-length * scaleFactor) / 2, 0);
+    ctx.lineTo((-length * scaleFactor) / 2, width * scaleFactor);
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo((length * scaleFactor) / 2, 0);
+    ctx.lineTo((length * scaleFactor) / 2, width * scaleFactor);
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     // Restaurez le contexte pour le prochain mur
@@ -269,3 +296,22 @@ function drawObject(objects: Transform[]) {
 //   AfficheLongueur = longueur.checked; // Met à jour isOpen en fonction de l'état du switch
 //   updatePlan();
 // }
+
+function writeRoomLabels(
+  sections: { center: number[]; label: string; story: number }[]
+) {
+  const scaleFactor = 50;
+  sections.forEach((section) => {
+    const [x3d, , z3d] = section.center;
+    const x = z3d * scaleFactor + canvas.width / 2;
+    const y = x3d * scaleFactor + canvas.height / 2;
+    const label = sectionLabelMap[section.label] || section.label;
+    ctx.save();
+    ctx.font = "bold 18px Arial";
+    ctx.fillStyle = "#333";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, x, y);
+    ctx.restore();
+  });
+}
