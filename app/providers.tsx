@@ -1,12 +1,15 @@
 "use client"
 import React from 'react'
 import { TooltipProvider } from '@radix-ui/react-tooltip';
+import { ThemeProvider } from '@/contexts/theme.context';
 
 function Providers({children}: {children: React.ReactNode}) {
   return (
-    <TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
         {children}
-    </TooltipProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   )
 }
 

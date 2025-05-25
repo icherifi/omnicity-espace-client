@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./components/SubmitButton";
-import GoogleAuthButton from "@/app/login/components/GoogleAuthButton";
+import Image from "next/image";
 
 export default function Login({
   searchParams,
@@ -53,45 +52,26 @@ export default function Login({
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen bg-[url('data:image/svg+xml;utf8,<svg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M0 20L10 10L20 20\' stroke=\'%23E5E7EB\' stroke-width=\'1\'/></svg>')]">
       <div className="flex-col w-full px-8 sm:max-w-md justify-center gap-2">
-        <Link
-          href="/"
-          className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
-          >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>{" "}
-          Back
-        </Link>
-
         <div className="flex flex-col gap-2 items-center">
+          <Image src="/logo.png" alt="Logo Omnicity" width={180} height={180} className="mb-4" />
+          <h1 className="text-3xl font-bold mb-8 text-[#7B6EF6]">OmniCity</h1>
           <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
             <label className="text-md" htmlFor="email">
               Email
             </label>
             <input
-              className="rounded-md px-4 py-2 bg-background border-foreground border-2 mb-6"
+              className="rounded-md px-4 py-2 bg-background border-foreground border-2 mb-6 focus:outline-none focus:ring-2 focus:ring-[#7B6EF6] focus:border-transparent transition-all"
               name="email"
-              placeholder="you@example.com"
+              placeholder="adresseemail@exemple.com"
               required
             />
             <label className="text-md" htmlFor="password">
-              Password
+              Mot de Passe
             </label>
             <input
-              className="rounded-md px-4 py-2 bg-background border-foreground border-2 mb-6"
+              className="rounded-md px-4 py-2 bg-background border-foreground border-2 mb-6 focus:outline-none focus:ring-2 focus:ring-[#7B6EF6] focus:border-transparent transition-all"
               type="password"
               name="password"
               placeholder="••••••••"
@@ -99,27 +79,26 @@ export default function Login({
             />
             <SubmitButton
               formAction={signIn}
-              className="bg-purple-200 rounded-md px-4 py-2 text-foreground mb-2"
-              pendingText="Signing In..."
+              className="bg-[#7B6EF6] rounded-md px-4 py-2 text-white mb-2 hover:bg-[#6a5dd5] transition-colors"
+              pendingText="Connexion..."
             >
-              Sign In
+              Se connecter
             </SubmitButton>
             <SubmitButton
               formAction={signUp}
-              className="bg-grey-500 border border-foreground/20 rounded-md px-4 py-2 text-background mb-2"
-              pendingText="Signing Up..."
+              className="bg-black border border-foreground/20 rounded-md px-4 py-2 text-white mb-2 hover:bg-gray-800 transition-colors"
+              pendingText="Création..."
             >
-              Sign Up
+              Créer un compte
             </SubmitButton>
             {searchParams?.message && (
-              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-                {searchParams.message}
-              </p>
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-600 text-center font-medium">
+                  {searchParams.message}
+                </p>
+              </div>
             )}
           </form>
-          <div className="flex gap-2">
-            <GoogleAuthButton />
-          </div>
         </div>
       </div>
     </div>

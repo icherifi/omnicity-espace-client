@@ -1,16 +1,14 @@
-import { getToken } from "./supabase/client"; 
-
-export async function fetchDpeData(dpeNumber: string) {
-  const token = await getToken();
-  if (!token) {
-    throw new Error("Not authenticated");
-  }
-  
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/dpe/${dpeNumber}`, {
+export const saveDpeFormToDb = async (dpeFormData: any, projectId: string, token: string) => {
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/dpe/save-form`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    body: JSON.stringify({
+      projectId,
+      dpeFormData
+    }),
   });
 
   if (!resp.ok) {
@@ -20,4 +18,3 @@ export async function fetchDpeData(dpeNumber: string) {
   const data = await resp.json();
   return data;
 }
-

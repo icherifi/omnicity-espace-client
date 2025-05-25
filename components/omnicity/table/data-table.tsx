@@ -50,15 +50,10 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const { currentProjectDisplayed, setCurrentProjectDisplayed } =
-    useDashboardContext();
-
-  useEffect(() => {
-    // Fetch data or perform any asynchronous operations here
-  }, []);
+  const { currentProjectDisplayed, setCurrentProjectDisplayed } = useDashboardContext();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-6">
       <div className="rounded-md">
         <Table>
           <TableHeader>
@@ -127,7 +122,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Aucun résultat.
                 </TableCell>
               </TableRow>
             )}

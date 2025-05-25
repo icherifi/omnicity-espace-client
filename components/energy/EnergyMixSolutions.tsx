@@ -2,34 +2,34 @@ import React, { useEffect, useState } from "react";
 import { useDesignPageContext } from "@/contexts/designPage.context";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
 import { saveEnergyChoice } from "@/utils/handleEnergyChoiceData";
-import { Bouquet } from "@/types/project.types";
+import { EnergyMix } from "@/types/project.types";
 import StrategyButton from "./components/StrategyButton";
 import EnergyLabelTypeCard from "./components/EnergyLabelTypeCard";
 
-export type EnergyLabelSolutionsType = "Simplicity" | "Balanced" | "Efficient";
+export type EnergyMixSolutionsType = "Simplicity" | "Balanced" | "Efficient";
 
 export const STRATEGY_OPTIONS = [
   {
-    type: "Simplicity" as EnergyLabelSolutionsType,
+    type: "Simplicity" as EnergyMixSolutionsType,
     label: "Simplicité",
     description: "Solution simple et accessible",
   },
   {
-    type: "Balanced" as EnergyLabelSolutionsType,
+    type: "Balanced" as EnergyMixSolutionsType,
     label: "Équilibrée",
     description: "Compromis optimal",
   },
   {
-    type: "Efficient" as EnergyLabelSolutionsType,
+    type: "Efficient" as EnergyMixSolutionsType,
     label: "Performante",
     description: "Performance maximale",
   },
 ];
 
-const selectBouquetForStrategy = (
-  bouquets: Bouquet[],
-  strategy: EnergyLabelSolutionsType
-): Bouquet | null => {
+const selectEnergyMixForStrategy = (
+  bouquets: EnergyMix[],
+  strategy: EnergyMixSolutionsType
+): EnergyMix | null => {
   if (!bouquets?.length) return null;
 
   const validBouquets = bouquets.filter(Boolean);
@@ -52,7 +52,14 @@ const selectBouquetForStrategy = (
   }
 };
 
-export function EnergyLabelSolutions() {
+interface EnergyMixSolutionsProps {
+  onFinish?: (selectedBouquet: EnergyMix, selectedStrategy: EnergyMixSolutionsType) => void;
+  initialData?: {
+    bouquets: EnergyMix[];
+  };
+}
+
+export function EnergyMixSolutions({ onFinish, initialData }: EnergyMixSolutionsProps) {
   const quizResults = localStorage.getItem("quizResults");
   const quizResultsData = JSON.parse(quizResults || "{}");
   const { setCostEstimation } = useDesignPageContext();
@@ -63,11 +70,14 @@ export function EnergyLabelSolutions() {
     sessionId 
   } = useEnergyFormContext();
 
-  const [selectedStrategy, setSelectedStrategy] = useState<EnergyLabelSolutionsType>("Balanced");
-  const selectedBouquet = selectBouquetForStrategy(quizResultsData.bouquets, selectedStrategy);
+  const [selectedStrategy, setSelectedStrategy] = useState<EnergyMixSolutionsType>("Balanced");
+  const selectedEnergyMix = selectEnergyMixForStrategy(
+    initialData?.bouquets || quizResultsData.bouquets, 
+    selectedStrategy
+  );
 
   const availableStrategies = STRATEGY_OPTIONS.filter((option, index) => {
-    const validBouquets = quizResultsData.bouquets?.filter(Boolean) || [];
+    const validBouquets = (initialData?.bouquets || quizResultsData.bouquets)?.filter(Boolean) || [];
     switch (option.type) {
       case "Simplicity":
         return validBouquets.length >= 1;
@@ -87,11 +97,11 @@ export function EnergyLabelSolutions() {
   }, [availableStrategies]);
 
   useEffect(() => {
-    if (!selectedBouquet) return;
+    if (!selectedEnergyMix) return;
 
     const newEstimation = {
-      withAid: Math.floor(selectedBouquet.resteACharge),
-      withoutAid: Math.floor(selectedBouquet.coutTotal),
+      withAid: Math.floor(selectedEnergyMix.resteACharge),
+      withoutAid: Math.floor(selectedEnergyMix.coutTotal),
     };
 
     setCostEstimation(prev => {
@@ -100,21 +110,26 @@ export function EnergyLabelSolutions() {
       }
       return newEstimation;
     });
-  }, [selectedBouquet, setCostEstimation]);
+  }, [selectedEnergyMix, setCostEstimation]);
 
   const handleFinish = async () => {
     try {
-      if (!sessionId || !selectedBouquet) {
-        console.error("Session ou bouquet manquant");
+      if (!selectedEnergyMix) {
+        console.error("EnergyMix manquant");
         return;
       }
 
-      await saveEnergyChoice(sessionId, selectedStrategy, selectedBouquet);
+      if (onFinish) {
+        onFinish(selectedEnergyMix, selectedStrategy);
+      } else if (sessionId) {
+        await saveEnergyChoice(sessionId, selectedStrategy, selectedEnergyMix);
+      }
+
       setIsEnergyLabelSolutionsDisplayed(false);
       setEnergyFormCompleted(true);
       setIsEnergyFormDisplayed(false);
     } catch (err) {
-      console.error("Erreur enregistrement bouquet:", err);
+      console.error("Erreur enregistrement EnergyMix:", err);
     }
   };
 
@@ -135,12 +150,12 @@ export function EnergyLabelSolutions() {
         ))}
       </div>
 
-      {selectedBouquet ? (
+      {selectedEnergyMix ? (
         <>
           <EnergyLabelTypeCard
             energyLabelSolutionsType={selectedStrategy}
-            bouquet={selectedBouquet}
-            initialState={quizResultsData}
+            bouquet={selectedEnergyMix}
+            initialState={initialData || quizResultsData}
           />
           <button 
             onClick={handleFinish}
@@ -160,4 +175,4 @@ export function EnergyLabelSolutions() {
   );
 }
 
-export default EnergyLabelSolutions;
+export default EnergyMixSolutions;

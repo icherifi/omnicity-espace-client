@@ -10,7 +10,7 @@ export interface EnergyResults {
 }
 
 export interface IziResponse extends EnergyResults {
-  bouquets: (Bouquet | null)[];
+  bouquets: (EnergyMix | null)[];
   inputQr: any;
   sessionId: string;
   etiquetteInitial: string;
@@ -27,7 +27,7 @@ export interface IziResponse extends EnergyResults {
   };
 }
 
-export interface Bouquet extends EnergyResults {
+export interface EnergyMix extends EnergyResults {
   pourcentageGainCEP: number;
   valeurVerte: number;
   coutTotal: number;
@@ -51,16 +51,18 @@ export interface Bouquet extends EnergyResults {
 }
 
 export interface WorkResultProps {
-  bouquet: Bouquet;
+  bouquet: EnergyMix;
   initialState: IziResponse;
 }
 
+// TODO: typer dpeData
 export interface Dpe {
-  administratif: any;
-  logement: any;
-  logement_sortie: any;
-  id_project: string
-
+  id: number;
+  created_at: string;
+  id_project: string;
+  iziResponse: any;
+  sessionId: string;
+  dpeData: any;
 }
 
 export interface ProjectType {
@@ -75,6 +77,7 @@ export interface ProjectType {
     size: string;
     roomsNumber: string;
     floorsNumber: string;
+    baseValue: string;
   };
   stateOfPlay: string;
   costEstimation: {
@@ -89,5 +92,35 @@ export interface ProjectType {
   authorName: string;
   imageFullPath?: string;
   iziResponse?: IziResponse;
-  choice?: Bouquet;
+  energyMixChoice?: EnergyMix;
+}
+
+export interface GeneralInformation {
+  size: string;
+  roomsNumber: number;
+  floorsNumber: number;
+}
+
+export interface StandardProjectFormData {
+  authorName: string;
+  projectName: string;
+  projectAddress?: string;
+  projectDescription?: string;
+  generalInformation: GeneralInformation;
+  image?: File | null;
+}
+
+export interface DpeInformation {
+  dpeNumber: string;
+  fiscalIncome: string;
+  householdSize: string;
+  occupancyStatus: string;
+  baseValue: string;
+}
+
+export interface DpeProjectFormData {
+  authorName: string;
+  projectName: string;
+  dpeInformation: DpeInformation;
+  image?: File | null;
 }

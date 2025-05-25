@@ -2,8 +2,7 @@
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
-import { useState } from "react";
-
+import { useRouter } from "next/navigation";  
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,6 +39,8 @@ export function DataTableRowActions<TData>({
     }
   };
 
+  const router = useRouter();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -53,7 +54,7 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem>Voir</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push(`/projects/${row.original.id}`)}>Voir</DropdownMenuItem>
         <DropdownMenuItem>Modifier</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleDelete}>Supprimer</DropdownMenuItem>

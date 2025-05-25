@@ -1,36 +1,36 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bouquet } from "@/types/project.types";
-import { EnergyLabelSolutionsType } from "../EnergyLabelSolutions";
+import { EnergyMix } from "@/types/project.types";
+import { EnergyMixSolutionsType } from "../EnergyMixSolutions";
 import WorkResult from "./WorkResult";
 import WorkCost from "./WorkCost";
 import WorkDetails from "./WorkDetails";
 
 interface EnergyLabelTypeCardProps {
-  energyLabelSolutionsType: EnergyLabelSolutionsType;
-  bouquet: Bouquet;
+  energyLabelSolutionsType: EnergyMixSolutionsType;
+  bouquet: EnergyMix;
   initialState: any;
 }
 
 const STRATEGY_OPTIONS = [
   {
-    type: "Simplicity" as EnergyLabelSolutionsType,
+    type: "Simplicity" as EnergyMixSolutionsType,
     label: "Simplicité",
     description: "Solution simple et accessible",
   },
   {
-    type: "Balanced" as EnergyLabelSolutionsType,
+    type: "Balanced" as EnergyMixSolutionsType,
     label: "Équilibrée",
     description: "Compromis optimal",
   },
   {
-    type: "Efficient" as EnergyLabelSolutionsType,
+    type: "Efficient" as EnergyMixSolutionsType,
     label: "Performante",
     description: "Performance maximale",
   },
 ];
 
-const hasAnyWork = (bouquet: Bouquet): boolean => {
+const hasAnyWork = (bouquet: EnergyMix): boolean => {
   return Boolean(
     bouquet.renovationMurs ||
     bouquet.renoComblesPerdus ||
@@ -52,7 +52,7 @@ export function EnergyLabelTypeCard({
   bouquet, 
   initialState 
 }: EnergyLabelTypeCardProps) {
-  const getStrategyLabel = (type: EnergyLabelSolutionsType): string => {
+  const getStrategyLabel = (type: EnergyMixSolutionsType): string => {
     const option = STRATEGY_OPTIONS.find(opt => opt.type === type);
     return option?.label || type;
   };

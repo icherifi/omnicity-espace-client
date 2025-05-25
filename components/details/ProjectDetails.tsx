@@ -23,6 +23,7 @@ import { useDashboardContext } from "@/contexts/dashboard.context";
 import PropertyState from "@/components/energy//components/PropertyState";
 import ExportView from "./ExportView";
 import { StateOfPlay } from "./components/StateOfPlay";
+import { useRouter } from "next/navigation";
 
 function ProjectDetails() {
   const { currentProjectDisplayed } = useDashboardContext();
@@ -32,62 +33,7 @@ function ProjectDetails() {
     return <p>Chargement du projet...</p>;  
   }
 
-  if(!currentProjectDisplayed.iziResponse) {
-    return (
-      <ScrollArea>
-        <Card className="overflow-hidden mb-16">
-          <CardHeader className="flex flex-row items-start bg-muted/50">
-            <div className="grid gap-0.5">
-              <CardTitle className="group flex items-center gap-2 text-lg">
-                Projet {currentProjectDisplayed!.id}
-              </CardTitle>
-              <CardDescription>
-                {currentProjectDisplayed!.created_at &&
-                  new Date(currentProjectDisplayed!.created_at).toLocaleDateString(
-                    "fr-FR",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
-              </CardDescription>
-            </div>
-            <div className="ml-auto flex items-center gap-1">
-              <Button size="sm" variant="outline" className="h-8 gap-1" onClick={() => setShowDetail(true)}>
-                <File className="h-3.5 w-3.5" />
-                <span className="xl:whitespace-nowrap max-[1500px]:hidden">
-                  Exporter devis
-                </span>
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="icon" variant="outline" className="h-8 w-8">
-                    <MoreVertical className="h-3.5 w-3.5" />
-                    <span className="sr-only">Plus</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setShowDetail(true)} className="min-[1500px]:hidden">
-                    Exporter
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowDetail(true)}>
-                    Voir
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Modifier</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Supprimer</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 text-sm">
-            <StateOfPlay currentProjectDisplayed={currentProjectDisplayed} />
-          </CardContent>
-        </Card>
-      </ScrollArea>
-    );
-  }
+  const router = useRouter();
 
   return (
     <ScrollArea>
@@ -128,7 +74,7 @@ function ProjectDetails() {
                 <DropdownMenuItem onClick={() => setShowDetail(true)} className="min-[1500px]:hidden">
                   Exporter
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowDetail(true)}>
+                <DropdownMenuItem onClick={() => router.push(`/projects/${currentProjectDisplayed.id}`)}>
                   Voir
                 </DropdownMenuItem>
                 <DropdownMenuItem>Modifier</DropdownMenuItem>
@@ -154,7 +100,7 @@ function ProjectDetails() {
                   />
                   <EnergyRating
                     energyRatingValue={
-                      (currentProjectDisplayed?.choice?.etiquette?.toLowerCase()!) as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      (currentProjectDisplayed?.targetedEnergyRating.toLowerCase()!) as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
                     }
                     state="Visé"
                   />
@@ -176,16 +122,16 @@ function ProjectDetails() {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Sans aides</span>
               <span>
-                {currentProjectDisplayed?.choice?.coutTotal 
-                  ? `${currentProjectDisplayed.choice.coutTotal.toLocaleString("fr-FR")}€`
+                {currentProjectDisplayed?.energyMixChoice?.coutTotal 
+                  ? `${Math.round(currentProjectDisplayed.energyMixChoice.coutTotal).toLocaleString("fr-FR")}€`
                   : 'Non disponible'}
               </span>
             </li>
             <li className="flex items-center justify-between font-semibold">
               <span className="text-muted-foreground">Avec aides</span>
               <span>
-                {currentProjectDisplayed?.choice?.resteACharge
-                  ? `${currentProjectDisplayed.choice.resteACharge.toLocaleString("fr-FR")}€`
+                {currentProjectDisplayed?.energyMixChoice?.resteACharge
+                  ? `${Math.round(currentProjectDisplayed.energyMixChoice.resteACharge).toLocaleString("fr-FR")}€`
                   : 'Non disponible'}
               </span>
             </li>
