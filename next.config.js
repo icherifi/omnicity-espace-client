@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: [new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname],
+        domains: ['yjjcsltvcfvpidxnhiuf.supabase.co'],
     },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

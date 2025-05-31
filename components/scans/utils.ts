@@ -1,25 +1,13 @@
 import { getScans } from "@/utils/handleProjectDetails";
-import { plan001 } from "./exemple";
+import { plan001, plan000 } from "./exemple";
 import { sectionLabelMap } from "./labelsMap";
+import { Scan, ScanSource, Transform, Wall } from "./interface";
+import { convertSourceScanToScan } from "./helper";
+import { findExteriorWalls } from "./walls/wallGraph";
 
 let canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D;
 let AfficheLongueur = false;
-const DEFAULT_WALL_WIDTH = 0.2;
-
-interface Transform {
-  transform: number[];
-  dimensions: number[];
-}
-
-interface Scan {
-  name: string;
-  walls?: Transform[];
-  doors?: Transform[];
-  openings?: Transform[];
-  windows?: Transform[];
-  objects?: Transform[];
-  sections?: { center: number[]; label: string; story: number }[];
-}
+const DEFAULT_WALL_WIDTH = 0.02;
 
 function initializeCanvas() {
   if (canvas) {
@@ -34,15 +22,14 @@ function initializeCanvas() {
 }
 
 export async function draw(projectId: string): Promise<boolean> {
-  let plans: Scan | undefined;
+  let plan: Scan;
+  let plansSource: ScanSource; // Use any for the source scan type
   const scans: any = await getScans(projectId); // Fetch scans from the database
 
   if (scans && scans[0] !== undefined) {
     console.log("first scan", scans[0]);
-    //plans = JSON.parse(scans[0].serialized);
-    plans = plan001 as any as Scan; // Use the example plan for testing
-
-    console.log("plan", plans);
+    plan = convertSourceScanToScan(JSON.parse(scans[0].serialized)) as Scan; // Convert the first scan to a Scan object
+    //console.log("plan", plans);
   } else {
     return false;
   }
@@ -53,13 +40,13 @@ export async function draw(projectId: string): Promise<boolean> {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Appeler la fonction pour dessiner les murs
-  if (plans) {
-    drawWalls(plans.walls || []);
-    drawDoors(plans.doors || []);
-    drawOpenings(plans.openings || []);
-    drawWindows(plans.windows || []);
-    drawObject(plans.objects || []);
-    writeRoomLabels(plans.sections || []);
+  if (plan) {
+    drawWalls(plan.walls || []);
+    // drawDoors(plan.doors || []);
+    // drawOpenings(plan.openings || []);
+    // drawWindows(plan.windows || []);
+    // drawObject(plan.objects || []);
+    // writeRoomLabels(plan.sections || []);
   }
   return true;
 }
@@ -67,11 +54,15 @@ export async function draw(projectId: string): Promise<boolean> {
 ///////////////////////////////////
 // Dessiner le plan
 //////////////////////////////////
-function drawWalls(walls: Transform[]) {
-  walls.forEach((wall) => {
+
+function drawWalls(walls: Wall[]) {
+  const exteriorWalls = findExteriorWalls(walls);
+  walls.forEach((wall: Wall) => {
     const transform = wall.transform;
     const length = wall.dimensions[0] + DEFAULT_WALL_WIDTH * 2;
-    const width = DEFAULT_WALL_WIDTH; // Use the provided width or default
+    // Draw exterior walls thicker than interior walls
+    const isExterior = exteriorWalls.includes(wall);
+    const width = isExterior ? DEFAULT_WALL_WIDTH : DEFAULT_WALL_WIDTH * 0.5;
 
     // Décomposez la matrice de transformation
     const scaleFactor = 50; // Facteur d'échelle
@@ -98,7 +89,7 @@ function drawWalls(walls: Transform[]) {
       length * scaleFactor, // Rectangle length
       width * scaleFactor // Rectangle width
     );
-    ctx.fillStyle = "black"; // Mur noir
+    ctx.fillStyle = isExterior ? "black" : "#444"; // Mur noir pour extérieur, gris foncé pour intérieur
     ctx.fill();
     ctx.strokeStyle = "black"; // Bordure grise
     ctx.lineWidth = 0; // Épaisseur de la bordure
@@ -109,6 +100,15 @@ function drawWalls(walls: Transform[]) {
       ctx.font = "12px Arial";
       ctx.fillStyle = "white";
       ctx.fillText(`${length.toFixed(1)}m`, 0, 10);
+    }
+
+    // Affichez l'id du mur en petit
+    if (typeof wall.id !== "undefined") {
+      ctx.font = "10px Arial";
+      ctx.fillStyle = "red";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText(`${wall.id}`, 0, width * scaleFactor + 2);
     }
 
     // Restaurez le contexte pour le prochain mur
