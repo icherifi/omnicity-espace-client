@@ -12,10 +12,10 @@ const config = {
   prefix: "",
   theme: {
   	screens: {
-  		'sm': '640px',
-  		'md': '768px',
-  		'lg': '1024px',
-  		'xl': '1280px',
+  		sm: '640px',
+  		md: '768px',
+  		lg: '1024px',
+  		xl: '1280px',
   		'2xl': '1536px',
   		'3xl': '1750px'
   	},
@@ -28,7 +28,10 @@ const config = {
   	},
   	extend: {
   		fontFamily: {
-  			sans: ["var(--font-sans)", ...fontFamily.sans]
+  			sans: [
+  				'var(--font-sans)',
+                    ...fontFamily.sans
+                ]
   		},
   		colors: {
   			border: 'hsl(var(--border))',
@@ -99,7 +102,17 @@ const config = {
   				'400': '#37CC5F',
   				'500': '#227D3A'
   			},
-  			unitybg: '#FFFAEF'
+  			unitybg: '#FFFAEF',
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
+  			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

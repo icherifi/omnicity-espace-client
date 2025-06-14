@@ -157,15 +157,15 @@ export function EnergyMixSolutions({ onFinish, initialData }: EnergyMixSolutions
             bouquet={selectedEnergyMix}
             initialState={initialData || quizResultsData}
           />
-          <button 
+          <button
             onClick={handleFinish}
-            className="mt-4 px-6 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 font-semibold"
+            className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 font-semibold"
           >
             Terminer
           </button>
         </>
       ) : (
-        <p className="mt-4 text-red-500 font-semibold">
+        <p className="mt-4 text-destructive font-semibold">
           Aucun bouquet ne correspond à la stratégie "{
             STRATEGY_OPTIONS.find(opt => opt.type === selectedStrategy)?.label
           }".

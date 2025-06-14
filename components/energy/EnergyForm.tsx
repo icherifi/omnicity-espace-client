@@ -114,23 +114,23 @@ export default function EnergyForm() {
     <div className="flex flex-col md:flex-row gap-8">
       <div className="w-64 hidden md:block">
         <div className="space-y-3 animate-pulse">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
-          <div className="h-5 bg-gray-200 rounded w-1/2" />
-          <div className="h-5 bg-gray-200 rounded w-2/3" />
+          <div className="h-5 bg-muted rounded w-3/4" />
+          <div className="h-5 bg-muted rounded w-1/2" />
+          <div className="h-5 bg-muted rounded w-2/3" />
         </div>
       </div>
       <div className="flex-1 space-y-4 animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/2" />
-        <div className="h-4 bg-gray-200 rounded w-3/4" />
-        <div className="h-8 bg-gray-200 rounded w-1/2" />
-        <div className="h-10 bg-gray-200 rounded w-1/3" />
+        <div className="h-6 bg-muted rounded w-1/2" />
+        <div className="h-4 bg-muted rounded w-3/4" />
+        <div className="h-8 bg-muted rounded w-1/2" />
+        <div className="h-10 bg-muted rounded w-1/3" />
       </div>
     </div>
   );
 
   if (loading) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 p-6">
+      <div className="min-h-0 bg-background text-foreground p-6">
         <SkeletonLoader />
       </div>
     );
@@ -138,7 +138,7 @@ export default function EnergyForm() {
 
   if (error) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 flex flex-col items-center justify-center">
+      <div className="min-h-0 bg-background text-foreground flex flex-col items-center justify-center">
         <p className="text-red-600 font-semibold mb-4">Erreur: {error}</p>
         <button
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -152,13 +152,13 @@ export default function EnergyForm() {
 
   if (showPostalCode) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 flex items-center justify-center p-4">
+      <div className="min-h-0 bg-background text-foreground flex items-center justify-center p-4">
         <div className="bg-white shadow-md rounded-lg w-full max-w-md overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
               <Image src="/logo.png" alt="omnicity logo" width={32} height={32} />
             </div>
-            <button onClick={() => setIsEnergyFormDisplayed(false)} className="text-gray-500 hover:text-gray-700">
+            <button onClick={() => setIsEnergyFormDisplayed(false)} className="text-muted-foreground hover:text-foreground">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -166,11 +166,11 @@ export default function EnergyForm() {
           <div className="p-6">
             <h2 className="text-xl font-bold text-primary mb-6">Améliorer la performance énergétique de mon logement</h2>
             
-            <div className="w-full h-2 bg-gray-200 rounded-full mb-8">
+            <div className="w-full h-2 bg-muted rounded-full mb-8">
               <div className="h-full bg-primary rounded-full w-1/4"></div>
             </div>
             
-            <p className="mb-4 text-sm text-gray-700">
+            <p className="mb-4 text-sm text-muted-foreground">
               Veuillez saisir votre code postal :
             </p>
             <input
@@ -195,7 +195,7 @@ export default function EnergyForm() {
 
   if (!currentStep) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 flex items-center justify-center">
+      <div className="min-h-0 bg-background text-foreground flex items-center justify-center">
         <p>Aucune question disponible pour le moment.</p>
       </div>
     );
@@ -206,7 +206,7 @@ export default function EnergyForm() {
   const questionLabel = question?.label || "";
 
   return (
-    <div className="min-h-0 bg-gray-50 text-gray-800 flex flex-col">
+    <div className="min-h-0 bg-background text-foreground flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-sm border-b p-4 flex items-center justify-between">
         <div className="flex items-center">
@@ -236,12 +236,12 @@ export default function EnergyForm() {
               const isCompleted = i < activeStepIndex;
               
               return (
-                <li key={step.id || i} className="relative pl-7">
+                  <li key={step.id || i} className="relative pl-7">
                   {isCompleted ? (
                     <CheckCircle className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                   ) : (
-                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 
-                      ${isActive ? 'border-primary' : 'border-gray-300'}`}>
+                      <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2
+                        ${isActive ? 'border-primary' : 'border-muted'}`}>
                       {isActive && (
                         <div className="absolute inset-0.5 rounded-full bg-primary"></div>
                       )}
@@ -250,7 +250,7 @@ export default function EnergyForm() {
                   <button
                     onClick={() => handleGoToStep(i)}
                     className={`block w-full text-left py-2 text-sm transition-colors
-                      ${isActive ? 'font-semibold text-primary' : isCompleted ? 'text-gray-700' : 'text-gray-500'}`}
+                      ${isActive ? 'font-semibold text-primary' : isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}
                   >
                     {label}
                   </button>
@@ -438,9 +438,9 @@ function renderQuestionInputs(
                 key={choice.id}
                 onClick={() => handleAnswer(choice, true)}
                 className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
-                  ${answerState?.id === choice.id 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-gray-200 hover:border-gray-300'}`}
+                  ${answerState?.id === choice.id
+                    ? 'border-primary bg-primary/10'
+                    : 'border-muted hover:border-muted-foreground'}`}
               >
                 <label className="flex items-center w-full cursor-pointer">
                   <input
@@ -479,9 +479,9 @@ function renderQuestionInputs(
                   handleAnswer(newAnswer, true);
                 }}
                 className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
-                  ${isChecked 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-gray-200 hover:border-gray-300'}`}
+                  ${isChecked
+                    ? 'border-primary bg-primary/10'
+                    : 'border-muted hover:border-muted-foreground'}`}
               >
                 <label className="flex items-center w-full cursor-pointer">
                   <input

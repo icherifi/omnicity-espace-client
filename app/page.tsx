@@ -1,30 +1,28 @@
 "use client";
 import * as React from "react";
 import { Progress } from "@/components/ui/progress";
-import Navbar from "@/components/Navbar";
-import MainHeader from "@/components/MainHeader";
-import MainComponent from "@/app/home/MainComponent";
-import { ComponentsMap } from "@/types/dashboard.types";
-import Plan from "@/components/scans/Plan";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import ProjectsPage from "@/components/projects/Projects";
-import FormPage from "@/components/forms/formPage/FormPage";
+import { useSidebarContext } from "@/contexts/sidebar.context";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/Sidebar";
+import ProjectsSection from "@/app/sections/ProjectsSection";
+import DashboardSection from "@/app/sections/DashboardSection";
+import DocumentsSection from "@/app/sections/DocumentsSection";
 
-const componentsMap: ComponentsMap = {
-  main: <MainComponent />,
-  import: <Plan />,
-  form: <FormPage />,
-  projects: <ProjectsPage />,
+const sectionsMap = {
+  projects: <ProjectsSection />,
+  dashboard: <DashboardSection />,
+  documents: <DocumentsSection />,
+  renovation: <div className="p-8">Rénovation</div>,
+  relation: <div className="p-8">Mise en relation</div>,
+  assistance: <div className="p-8">Assistance</div>,
+  settings: <div className="p-8">Paramètres</div>,
 };
 
-export default function Dashboard() {
+export default function Page() {
   const [loading, setLoading] = React.useState(true);
-  const [content, setContent] =
-    React.useState<keyof typeof componentsMap>("main");
-  const renderContent = () => {
-    return componentsMap[content] || <div className="flex w-full mt-6 justify-center items-center">En cours de développement...</div>;
-  };
+  const { section } = useSidebarContext();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -49,6 +47,11 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
+  const renderContent = () => {
+    // @ts-ignore
+    return sectionsMap[section] || <div className="flex w-full mt-6 justify-center items-center">En cours de développement...</div>;
+  };
+
   if (loading) {
     return (
       <div className="h-screen w-full flex flex-col items-center mt-16">
@@ -58,16 +61,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="sticky top-0 h-screen">
-        <Navbar content={content} setContent={setContent} />
-      </div>
-      <div className="flex flex-col">
-        <div className="sticky top-0 z-10">
-          <MainHeader />
+    <SidebarProvider>
+      <div className="grid min-h-screen w-full grid-cols-[200px_1fr]">
+        <div className="sticky top-0 h-screen w-full flex justify-center">
+          <AppSidebar />
         </div>
-        <div className="flex-1">{renderContent()}</div>
+        <div className="flex flex-col bg-card text-card-foreground rounded-2xl shadow-xl m-6 p-6 flex-1">
+          <div className="flex-1">{renderContent()}</div>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
