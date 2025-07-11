@@ -21,6 +21,10 @@ const badgeVariants = cva(
           "border-transparent bg-[rgb(var(--status-inprogress))] text-white hover:bg-[rgb(var(--status-inprogress),0.8)]",
         abandoned:
           "border-transparent bg-[rgb(var(--status-abandoned))] text-white hover:bg-[rgb(var(--status-abandoned),0.8)]",
+        archived:
+          "border-transparent bg-[rgb(var(--status-archived))] text-white hover:bg-[rgb(var(--status-archived),0.8)]",
+        draft:
+          "border-transparent bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300",
         average:
           "border-transparent bg-orange-100 text-orange-600 hover:bg-orange-200",
         bad:

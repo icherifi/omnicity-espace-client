@@ -34,8 +34,8 @@ export const columns: ColumnDef<ProjectType>[] = [
     header: "Nom",
     cell: ({ row }) => (
       <div>
-        <div>{row.original.name}</div>
-        <div className="text-sm text-gray-500">{row.original.address}</div>
+        <div className="text-gray-900 dark:text-white">{row.original.firstName} {row.original.lastName}</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{row.original.address}</div>
       </div>
     ),
   },
@@ -45,7 +45,7 @@ export const columns: ColumnDef<ProjectType>[] = [
     cell: ({ row }) => (
       <Badge
         variant={row.original.state}
-        className="mt-4 mb-4 text-black text-center"
+        className="mt-4 mb-4 text-gray-900 dark:text-white text-center"
       >
         {row.original.state === "completed" ? "Terminé" : "En cours..."}
       </Badge>
@@ -56,7 +56,7 @@ export const columns: ColumnDef<ProjectType>[] = [
       row.costEstimation?.withoutAid?.toLocaleString("fr-FR"),
     header: "Cout total",
     cell: ({ row }) => (
-      <span>
+      <span className="text-gray-900 dark:text-white">
         {row.original.costEstimation?.withoutAid
           ? `${Math.round(row.original.costEstimation?.withoutAid).toLocaleString("fr-FR")}€`
           : "N/A"}
@@ -64,16 +64,16 @@ export const columns: ColumnDef<ProjectType>[] = [
     ),
   },
   {
-    accessorKey: "authorName",
+    accessorKey: "firstName",
     header: "Auteur",
-    cell: ({ row }) => <span>{row.original.authorName}</span>,
+    cell: ({ row }) => <span className="text-gray-900 dark:text-white">{`${row.original.firstName} ${row.original.lastName}`}</span>,
     meta: { responsiveHidden: true },
   },
   {
     accessorKey: "date",
     header: "Crée le",
     cell: ({ row }) => (
-      <span>
+      <span className="text-gray-900 dark:text-white">
         {row.original.created_at
           ? new Date(row.original.created_at).toLocaleDateString("fr-FR")
           : "N/A"}
@@ -85,9 +85,9 @@ export const columns: ColumnDef<ProjectType>[] = [
     header: "Energy",
     cell: ({ row }) =>
       row.original.id_bouquet ? (
-        <CheckCircleIcon className="h-6 w-6 text-green-500" />
+        <CheckCircleIcon className="h-6 w-6 text-green-500 dark:text-green-400" />
       ) : (
-        <XCircleIcon className="h-6 w-6 text-red-500" />
+        <XCircleIcon className="h-6 w-6 text-red-500 dark:text-red-400" />
       ),
   },
   {

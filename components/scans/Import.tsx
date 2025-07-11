@@ -107,7 +107,7 @@ export default function ImportPage() {
                 <Card className={`${currentProjectDisplayed!.id == project.id && "border-2 border-violet-500"}`}>
                   <CardContent className="flex flex-col items-center p-6">
                     <Image src={`/dalle${index+1}.png`} width={300} height={300} alt="3d model" />
-                    <h1 className="text-2xl font-semibold mt-2">{project.name}</h1>
+                    <h1 className="text-2xl font-semibold mt-2">{project.firstName} {project.lastName}</h1>
                   </CardContent>
                 </Card>
               </div>

@@ -57,7 +57,7 @@ export interface WorkResultProps {
 
 // TODO: typer dpeData
 export interface Dpe {
-  id: number;
+  id: string;
   created_at: string;
   id_project: string;
   iziResponse: any;
@@ -66,8 +66,7 @@ export interface Dpe {
 }
 
 export interface ProjectType {
-  id: number;
-  name: string;
+  id: string;
   address: string;
   created_at?: string;
   actualEnergyRating: EnergyRating;
@@ -77,19 +76,24 @@ export interface ProjectType {
     size: string;
     roomsNumber: string;
     floorsNumber: string;
-    baseValue: string;
+    baseValue?: string;
+    fiscalIncome?: string;
+    householdSize?: string;
+    occupancyStatus?: string;
   };
   stateOfPlay: string;
   costEstimation: {
     withAid: number;
     withoutAid: number;
   };
-  state: "inprogress" | "completed";
+  state: "draft" | "inprogress" | "completed" | "archived";
   id_bouquet: string;
   id_design: string | null;
   created_by: string;
   description: string;
-  authorName: string;
+  firstName: string;
+  lastName: string;
+  contract_type?: string;
   imageFullPath?: string;
   iziResponse?: IziResponse;
   energyMixChoice?: EnergyMix;
@@ -102,11 +106,17 @@ export interface GeneralInformation {
 }
 
 export interface StandardProjectFormData {
-  authorName: string;
+  firstName: string;
+  lastName: string;
   projectName: string;
   projectAddress?: string;
   projectDescription?: string;
   generalInformation: GeneralInformation;
+  contractType?: string;
+  fiscalIncome?: string;
+  householdSize?: string;
+  baseValue?: string;
+  occupancyStatus?: string;
   image?: File | null;
 }
 
@@ -119,8 +129,11 @@ export interface DpeInformation {
 }
 
 export interface DpeProjectFormData {
-  authorName: string;
+  firstName: string;
+  lastName: string;
   projectName: string;
   dpeInformation: DpeInformation;
+  projectDescription?: string;
+  contract_type?: string;
   image?: File | null;
 }

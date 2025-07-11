@@ -1,29 +1,38 @@
 "use client";
 import * as React from "react";
 import { Progress } from "@/components/ui/progress";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useSidebarContext } from "@/contexts/sidebar.context";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/Sidebar";
-import ProjectsSection from "@/app/sections/ProjectsSection";
-import DashboardSection from "@/app/sections/DashboardSection";
-import DocumentsSection from "@/app/sections/DocumentsSection";
+import ProjectsSection from "@/app/sections/projects/ProjectsSection";
+import DashboardSection from "@/app/sections/dashboard/DashboardSection";
+import EnergySummarySection from "@/app/sections/energySummary/EnergySummarySection";
+import DocumentsSection from "@/app/sections/documents/DocumentsSection";
+import RelationSection from "@/app/sections/relation/RelationSection";
+import RenovationSection from "@/app/sections/renovation/RenovationSection";
+import AssistanceSection from "@/app/sections/assistance/AssistanceSection";
+import SettingsSection from "@/app/sections/settings/SettingsSection";
+import { useDashboardContext } from "@/contexts/dashboard.context";
+import { useProjectsContext } from "@/contexts/projects.context";
 
 const sectionsMap = {
   projects: <ProjectsSection />,
-  dashboard: <DashboardSection />,
   documents: <DocumentsSection />,
-  renovation: <div className="p-8">Rénovation</div>,
-  relation: <div className="p-8">Mise en relation</div>,
-  assistance: <div className="p-8">Assistance</div>,
-  settings: <div className="p-8">Paramètres</div>,
+  renovation: <RenovationSection />,
+  relation: <RelationSection />,
+  assistance: <AssistanceSection />,
+  settings: <SettingsSection />,
 };
 
 export default function Page() {
   const [loading, setLoading] = React.useState(true);
-  const { section } = useSidebarContext();
+  const { section, showEnergySummary, toggleEnergySummary } = useSidebarContext();
+  const { setCurrentProjectDisplayed } = useDashboardContext();
+  const { projects } = useProjectsContext();
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -40,6 +49,23 @@ export default function Page() {
     checkUser();
   }, [router]);
 
+  React.useEffect(() => {
+    if (loading) return;
+
+    const projectMatch = pathname.match(/^\/project\/([0-9a-fA-F-]{36})(?:\/(energy|documents|renovation|relation))?$/);
+    if (projectMatch) {
+      const projectId = projectMatch[1];
+      const sub = projectMatch[2];
+      
+      const project = projects.find(p => p.id === projectId);
+      if (project) {
+        setCurrentProjectDisplayed(project);
+      } else {
+        router.push("/");
+      }
+    }
+  }, [pathname, projects, loading, router, setCurrentProjectDisplayed]);
+
   const [progress, setProgress] = React.useState(13);
 
   React.useEffect(() => {
@@ -48,8 +74,19 @@ export default function Page() {
   }, []);
 
   const renderContent = () => {
+    if (section === "dashboard") {
+      return showEnergySummary ? (
+        <EnergySummarySection onClose={toggleEnergySummary} />
+      ) : (
+        <DashboardSection onToggleSummary={toggleEnergySummary} />
+      );
+    }
     // @ts-ignore
-    return sectionsMap[section] || <div className="flex w-full mt-6 justify-center items-center">En cours de développement...</div>;
+    return sectionsMap[section] || (
+      <div className="flex w-full mt-6 justify-center items-center">
+        En cours de développement...
+      </div>
+    );
   };
 
   if (loading) {

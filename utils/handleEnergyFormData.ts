@@ -18,7 +18,7 @@ export async function createSession() {
     return resp.json();
 }
 
-export async function sendStepAnswer(stepId: string, answer: any) {
+export async function sendStepAnswer(stepId: string, answer: any, sessionId: string) {
     const token = await getToken();
     if (!token) {
         console.error("You are not authenticated");
@@ -31,7 +31,7 @@ export async function sendStepAnswer(stepId: string, answer: any) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ stepId, answer }),
+        body: JSON.stringify({ stepId, answer, sessionId }),
     });
 
     if (!resp.ok) throw new Error(`Erreur sendStepAnswer: ${resp.status}`);

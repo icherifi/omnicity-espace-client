@@ -1,37 +1,39 @@
 import { useState, useCallback } from "react";
 import { useNewProjectStandardFormContext } from "@/contexts/newProjectStandardForm.context";
 import { StandardProjectFormData, DpeProjectFormData } from "@/types/project.types";
-import { validateField } from "@/components/forms/newProjectStandardForm/utils";
+import { validateField } from "@/components/forms/newProjectEnergyForm/utils";
 
 export type ProjectFormType = "standard" | "dpe";
 
 export const useProjectForm = (type: ProjectFormType) => {
   const {
-    projectAuthorName,
-    setProjectAuthorName,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
     projectName,
     setProjectName,
     projectAddress,
     setProjectAddress,
     projectDescription,
     setProjectDescription,
+    contractType,
+    setContractType,
     projectGeneralInformation,
     setProjectGeneralInformation,
+    fiscalIncome,
+    setFiscalIncome,
+    householdSize,
+    setHouseholdSize,
+    baseValue,
+    setBaseValue,
+    occupancyStatus,
+    setOccupancyStatus,
+    image,
+    setImage,
   } = useNewProjectStandardFormContext();
 
-  const [dpeInformation, setDpeInformation] = useState<DpeProjectFormData["dpeInformation"] | undefined>(
-    type === "dpe"
-      ? {
-          dpeNumber: "",
-          fiscalIncome: "",
-          householdSize: "",
-          occupancyStatus: "primaryOwner",
-          baseValue: "",
-        }
-      : undefined
-  );
-
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [dpeNumber, setDpeNumber] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const onFieldChange = useCallback(
@@ -41,8 +43,11 @@ export const useProjectForm = (type: ProjectFormType) => {
       setErrors((prev) => ({ ...prev, [key]: errorMsg }));
 
       switch (field) {
-        case "authorName":
-          setProjectAuthorName(value);
+        case "firstName":
+          setFirstName(value);
+          break;
+        case "lastName":
+          setLastName(value);
           break;
         case "projectName":
           setProjectName(value);
@@ -53,6 +58,9 @@ export const useProjectForm = (type: ProjectFormType) => {
         case "projectDescription":
           setProjectDescription(value);
           break;
+        case "contractType":
+          setContractType(value);
+          break;
         case "generalInformation.size":
           setProjectGeneralInformation({ ...projectGeneralInformation, size: value });
           break;
@@ -62,25 +70,45 @@ export const useProjectForm = (type: ProjectFormType) => {
         case "generalInformation.floorsNumber":
           setProjectGeneralInformation({ ...projectGeneralInformation, floorsNumber: Number(value) });
           break;
+        case "dpeInformation.dpeNumber":
+          setDpeNumber(value);
+          break;
+        case "dpeInformation.fiscalIncome":
+          setFiscalIncome(value);
+          break;
+        case "dpeInformation.householdSize":
+          setHouseholdSize(value);
+          break;
+        case "dpeInformation.baseValue":
+          setBaseValue(value);
+          break;
+        case "dpeInformation.occupancyStatus":
+          setOccupancyStatus(value);
+          break;
         default:
-          if (type === "dpe" && dpeInformation) {
-            const key = field.replace("dpeInformation.", "") as keyof typeof dpeInformation;
-            setDpeInformation({ ...dpeInformation, [key]: value });
-          }
           break;
       }
     },
-    [type, setProjectAuthorName, setProjectName, setProjectAddress, setProjectDescription, setProjectGeneralInformation, projectGeneralInformation, dpeInformation]
+    [setFirstName, setLastName, setProjectName, setProjectAddress, setProjectDescription, setProjectGeneralInformation, projectGeneralInformation, setContractType, setFiscalIncome, setHouseholdSize, setBaseValue, setOccupancyStatus]
   );
 
   const onImageChange = (file: File | null) => {
-    setSelectedImage(file);
+    setImage(file);
   };
 
-  const isFormValid = () => Object.values(errors).every((e) => e === "");
+  const isFormValid = () => {
+    // Vérifier qu'il n'y a pas d'erreurs de validation
+    const hasValidationErrors = Object.values(errors).some((e) => e !== "");
+    
+    // Vérifier que les champs requis ne sont pas vides
+    const hasRequiredFieldsEmpty = !firstName?.trim() || !lastName?.trim();
+    
+    return !hasValidationErrors && !hasRequiredFieldsEmpty;
+  };
 
   const getStandardFormData = (): StandardProjectFormData => ({
-    authorName: projectAuthorName,
+    firstName,
+    lastName,
     projectName,
     projectAddress,
     projectDescription,
@@ -89,20 +117,34 @@ export const useProjectForm = (type: ProjectFormType) => {
       roomsNumber: projectGeneralInformation.roomsNumber as number,
       floorsNumber: projectGeneralInformation.floorsNumber as number,
     },
-    image: selectedImage,
+    contractType,
+    fiscalIncome,
+    householdSize,
+    baseValue,
+    occupancyStatus,
+    image,
   });
 
   const getDpeFormData = (): DpeProjectFormData => ({
-    authorName: projectAuthorName,
+    firstName,
+    lastName,
     projectName,
-    dpeInformation: dpeInformation!,
-    image: selectedImage,
+    projectDescription,
+    dpeInformation: {
+      dpeNumber,
+      fiscalIncome,
+      householdSize,
+      occupancyStatus,
+      baseValue,
+    },
+    contract_type: contractType,
+    image,
   });
 
   return {
     errors,
     isFormValid,
-    selectedImage,
+    selectedImage: image,
     onImageChange,
     onFieldChange,
     getStandardFormData,

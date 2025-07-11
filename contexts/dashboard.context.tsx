@@ -32,7 +32,7 @@ export default function DashboardContextProvider({ children }: useCustomHook) {
     if (projects.length > 0 && !currentProjectDisplayed) {
       setCurrentProjectDisplayed(projects[0]);
     }
-  }, [projects]);
+  }, [projects, currentProjectDisplayed]);
 
   return (
     <DashboardContext.Provider

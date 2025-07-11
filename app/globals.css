@@ -43,7 +43,16 @@
 
     --status-completed: 134, 239, 172;  /* Vert clair */
     --status-inprogress: 255, 165, 0; /* Orange */
-    --status-abandoned: 239, 68, 68;    /* Rouge */    --sidebar-background: transparent;    --sidebar-foreground: 240 5.3% 26.1%;    --sidebar-primary: 240 5.9% 10%;    --sidebar-primary-foreground: 0 0% 98%;    --sidebar-accent: 240 4.8% 95.9%;    --sidebar-accent-foreground: 240 5.9% 10%;    --sidebar-border: 220 13% 91%;    --sidebar-ring: 217.2 91.2% 59.8%;
+    --status-abandoned: 239, 68, 68;    /* Rouge */
+    --status-archived: 161, 161, 170;    /* Gris */
+    --sidebar-background: transparent;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -71,9 +80,9 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --figma-secondary-color: #2B313B;
+    --figma-secondary-color: #ffffff;
 
-    --body-gradient: linear-gradient(180deg,#1e232e 0%,#2a2e39 100%);
+    --body-gradient: linear-gradient(110deg, rgba(175,128,255,0.15) 0%, rgba(88,28,135,0.8) 40%, rgba(30,58,138,0.9) 100%);
 
     --grade-a: 0, 167, 116;  /* A: Vert */
     --grade-b: 0, 187, 84;   /* B: Vert clair */
@@ -85,7 +94,16 @@
 
     --status-completed: 134, 239, 172;  /* Vert clair */
     --status-inprogress: 255, 165, 0; /* Orange */
-    --status-abandoned: 239, 68, 68;    /* Rouge */    --sidebar-background: 240 5.9% 10%;    --sidebar-foreground: 240 4.8% 95.9%;    --sidebar-primary: 224.3 76.3% 48%;    --sidebar-primary-foreground: 0 0% 100%;    --sidebar-accent: 240 3.7% 15.9%;    --sidebar-accent-foreground: 240 4.8% 95.9%;    --sidebar-border: 240 3.7% 15.9%;    --sidebar-ring: 217.2 91.2% 59.8%;
+    --status-abandoned: 239, 68, 68;    /* Rouge */
+    --status-archived: 161, 161, 170;    /* Gris */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .bg-grade-a {

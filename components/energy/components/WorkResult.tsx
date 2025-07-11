@@ -11,15 +11,15 @@ export function WorkResult({ bouquet, initialState }: WorkResultProps) {
 
   return (
     <div className="flex flex-col w-full items-center">
-      <h3 className="text-lg font-bold mb-6">Résultat des travaux</h3>
+      <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">Résultat des travaux</h3>
 
-      <div className="flex rounded-full bg-gray-100 p-1 mb-8">
+      <div className="flex rounded-full bg-gray-100 dark:bg-gray-800 p-1 mb-8">
         <button
           onClick={() => setSelected("avant")}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             selected === "avant"
-              ? "bg-violet-500 text-white"
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-purple-500 dark:bg-purple-400 text-white"
+              : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           }`}
         >
           Avant
@@ -28,8 +28,8 @@ export function WorkResult({ bouquet, initialState }: WorkResultProps) {
           onClick={() => setSelected("apres")}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             selected === "apres"
-              ? "bg-violet-500 text-white"
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-purple-500 dark:bg-purple-400 text-white"
+              : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           }`}
         >
           Après
@@ -38,14 +38,14 @@ export function WorkResult({ bouquet, initialState }: WorkResultProps) {
 
       <div className="space-y-8">
         <div>
-          <h4 className="text-base font-semibold mb-4">
+          <h4 className="text-base font-semibold mb-4 text-gray-900 dark:text-white">
             Étiquette énergétique {selected === "avant" ? "initiale" : "visée"}
           </h4>
           <div className="flex items-start space-x-6">
             <EnergyTag
               label={selected === "avant" ? initialState.etiquetteInitial : bouquet.etiquetteEnergetique}
             />
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-sm text-gray-900 dark:text-white">
               <li>{selected === "avant" ? initialState.CEP : gainCEP} kWh/m²/an</li>
               <li>{selected === "avant" ? initialState.EGES : gainEGES} kgCO2/m²/an</li>
             </ul>
@@ -55,8 +55,8 @@ export function WorkResult({ bouquet, initialState }: WorkResultProps) {
         <Separator className="my-4 w-full" />
 
         <div>
-          <h4 className="text-base font-semibold mb-4">Confort</h4>
-          <p className="text-sm">
+          <h4 className="text-base font-semibold mb-4 text-gray-900 dark:text-white">Confort</h4>
+          <p className="text-sm text-gray-900 dark:text-white">
             {selected === "avant"
               ? initialState.confort === 2
                 ? "Confort moyen"
@@ -74,8 +74,8 @@ export function WorkResult({ bouquet, initialState }: WorkResultProps) {
         <Separator className="my-4 w-full" />
 
         <div>
-          <h4 className="text-base font-semibold mb-4">Valeur immobilière</h4>
-          <p className="text-sm">
+          <h4 className="text-base font-semibold mb-4 text-gray-900 dark:text-white">Valeur immobilière</h4>
+          <p className="text-sm text-gray-900 dark:text-white">
             {selected === "apres" && (
               <>Logement revalorisé de {Math.round(bouquet.valeurVerte * 100)}%</>
             )}

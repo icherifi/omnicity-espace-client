@@ -8,7 +8,6 @@ import DashboardContextProvider from "@/contexts/dashboard.context";
 import DesignPageContextProvider from "@/contexts/designPage.context";
 import { UnityContextProvider } from "./design/components/unityContext";
 import ProjectsContextProvider from "@/contexts/projects.context";
-import { headers } from "next/headers"; // Import the headers module
 import SidebarContextProvider from "@/contexts/sidebar.context";
 import { bricolage } from "./fonts";
 
@@ -17,7 +16,7 @@ export interface useCustomHook {
 }
 
 export const metadata: Metadata = {
-  title: "Omnicity",
+  title: "OmniCity",
 };
 
 export default function RootLayout({
@@ -25,11 +24,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const currentPath =
-    headers().get("x-nextjs-rewrite-path") ||
-    headers().get("x-next-url") ||
-    "/";
-
   return (
     <ProjectsContextProvider>
       <NewProjectStandardFormContextProvider>
