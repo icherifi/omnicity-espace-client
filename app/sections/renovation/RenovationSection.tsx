@@ -3,144 +3,118 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createClient } from "@/utils/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDashboardContext } from "@/contexts/dashboard.context";
 import { useSidebarContext } from "@/contexts/sidebar.context";
 import { useAppRouter } from "@/hooks/useAppRouter";
-import { File, Download, Trash2, Upload, Settings } from "lucide-react";
-import USDZViewer from "./components/USDZViewer";
+import { File, Upload, Settings, Box } from "lucide-react";
+import Plan from "@/components/scans/Plan";
+import {
+  fetchScanData,
+  exampleScanData,
+  type Scan,
+} from "@/components/scans/threeJSUtils";
 
-interface USDZDocument {
+interface ScanDocument {
+  id: string;
   name: string;
-  path: string;
+  project_id: string;
+  created_at: string;
   updated_at?: string;
-  category: string;
 }
 
 export default function RenovationSection() {
   const { currentProjectDisplayed } = useDashboardContext();
-  const { setSection, selectedRenovationDocument, setSelectedRenovationDocument } = useSidebarContext();
+  const { setSection } = useSidebarContext();
   const { navigateToDocuments } = useAppRouter();
-  const [usdzDocuments, setUsdzDocuments] = useState<USDZDocument[]>([]);
-  const [selectedDocument, setSelectedDocument] = useState<USDZDocument | null>(null);
+  const [scanDocuments, setScanDocuments] = useState<ScanDocument[]>([]);
+  const [selectedScanId, setSelectedScanId] = useState<string | null>(null);
+  const [scanData, setScanData] = useState<Scan | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showControls, setShowControls] = useState(false);
-  const supabase = createClient();
 
-  const fetchUSDZDocuments = async () => {
+  const fetchScanDocuments = async () => {
     if (!currentProjectDisplayed?.id) {
-      setUsdzDocuments([]);
+      setScanDocuments([]);
       setLoading(false);
       return;
     }
 
     try {
-      const categories = ["plans", "devis", "photos", "autres"];
-      const documents: USDZDocument[] = [];
+      // For now, we'll use mock data or fetch from your scan endpoint
+      // Replace this with your actual scan data fetching logic
+      const mockScans: ScanDocument[] = [
+        {
+          id: "scan-1",
+          name: "Living Room Scan",
+          project_id: currentProjectDisplayed.id.toString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: "scan-2",
+          name: "Kitchen Scan",
+          project_id: currentProjectDisplayed.id.toString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
 
-      for (const category of categories) {
-        const folder = `${category}-${currentProjectDisplayed.id}`;
-        const { data, error } = await supabase.storage
-          .from("documents")
-          .list(folder);
+      setScanDocuments(mockScans);
 
-        if (!error && data) {
-          const usdzFiles = data
-            .filter(file => file.name.toLowerCase().endsWith('.usdz'))
-            .map(file => ({
-              name: file.name,
-              path: `${folder}/${file.name}`,
-              updated_at: file.updated_at,
-              category
-            }));
-          documents.push(...usdzFiles);
-        }
-      }
-
-      setUsdzDocuments(documents);
-      
-      // Si un document est sélectionné depuis le contexte, l'utiliser
-      if (selectedRenovationDocument) {
-        const docFromContext = documents.find(d => d.path === selectedRenovationDocument);
-        if (docFromContext) {
-          setSelectedDocument(docFromContext);
-          // Nettoyer la sélection du contexte après l'avoir utilisée
-          setSelectedRenovationDocument(null);
-        } else if (documents.length > 0) {
-          setSelectedDocument(documents[0]);
-        }
-      } else if (documents.length > 0 && !selectedDocument) {
-        setSelectedDocument(documents[0]);
+      if (mockScans.length > 0 && !selectedScanId) {
+        setSelectedScanId(mockScans[0].id);
+        // Load the scan data for the first scan
+        await loadScanData(mockScans[0].id);
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération des documents USDZ:", error);
+      console.error("Erreur lors de la récupération des scans:", error);
+      setError("Failed to load scan data");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDocumentChange = (documentPath: string) => {
-    const doc = usdzDocuments.find(d => d.path === documentPath);
-    if (doc) {
-      setSelectedDocument(doc);
+  const loadScanData = async (scanId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Try to fetch real scan data, fallback to example data
+      const data = await fetchScanData(scanId);
+      setScanData(data || exampleScanData);
+    } catch (error) {
+      console.error("Error loading scan data:", error);
+      // Use example data as fallback
+      setScanData(exampleScanData);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDownloadDocument = async (document: USDZDocument) => {
-    try {
-      const { data, error } = await supabase.storage
-        .from("documents")
-        .download(document.path);
-
-      if (error) {
-        console.error("Erreur lors du téléchargement:", error);
-        return;
-      }
-
-      if (data) {
-        const url = URL.createObjectURL(data);
-        const a = window.document.createElement('a');
-        a.href = url;
-        a.download = document.name;
-        window.document.body.appendChild(a);
-        a.click();
-        window.document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    } catch (error) {
-      console.error("Erreur lors du téléchargement:", error);
-    }
-  };
-
-  const handleDeleteDocument = async (document: USDZDocument) => {
-    try {
-      const { error } = await supabase.storage
-        .from("documents")
-        .remove([document.path]);
-
-      if (error) {
-        console.error("Erreur lors de la suppression:", error);
-        return;
-      }
-
-      // Rafraîchir la liste des documents
-      await fetchUSDZDocuments();
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-    }
+  const handleScanChange = async (scanId: string) => {
+    setSelectedScanId(scanId);
+    await loadScanData(scanId);
   };
 
   useEffect(() => {
-    fetchUSDZDocuments();
+    fetchScanDocuments();
   }, [currentProjectDisplayed]);
 
-  // Sélectionner automatiquement le premier document quand les documents changent
+  // Auto-select first scan when scans change
   useEffect(() => {
-    if (usdzDocuments.length > 0 && !selectedDocument && !selectedRenovationDocument) {
-      setSelectedDocument(usdzDocuments[0]);
+    if (scanDocuments.length > 0 && !selectedScanId) {
+      setSelectedScanId(scanDocuments[0].id);
+      loadScanData(scanDocuments[0].id);
     }
-  }, [usdzDocuments, selectedDocument, selectedRenovationDocument]);
+  }, [scanDocuments, selectedScanId]);
 
   if (loading) {
     return (
@@ -152,7 +126,7 @@ export default function RenovationSection() {
 
   return (
     <>
-      {usdzDocuments.length === 0 ? (
+      {scanDocuments.length === 0 && !loading ? (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -160,7 +134,7 @@ export default function RenovationSection() {
                 Rénovation
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Visualisez et analysez vos plans 3D USDZ pour la rénovation
+                Visualisez et analysez vos plans 3D pour la rénovation
               </p>
             </div>
             <Button
@@ -180,23 +154,34 @@ export default function RenovationSection() {
           </div>
 
           <Card className="p-8 text-center">
-            <File className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Aucun plan USDZ disponible</h3>
+            <Box className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">
+              Aucun scan 3D disponible
+            </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Importez des fichiers USDZ depuis la section Documents pour commencer la visualisation 3D.
+              Importez des fichiers de scan ou utilisez l'exemple pour commencer
+              la visualisation 3D.
             </p>
-            <Button
-              onClick={() => {
-                if (currentProjectDisplayed) {
-                  navigateToDocuments(currentProjectDisplayed.id);
-                } else {
-                  setSection("documents");
-                }
-              }}
-              className="bg-primary text-white"
-            >
-              Aller aux Documents
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button
+                onClick={() => {
+                  if (currentProjectDisplayed) {
+                    navigateToDocuments(currentProjectDisplayed.id);
+                  } else {
+                    setSection("documents");
+                  }
+                }}
+                className="bg-primary text-white"
+              >
+                Aller aux Documents
+              </Button>
+              <Button
+                onClick={() => setScanData(exampleScanData)}
+                variant="outline"
+              >
+                Voir un exemple
+              </Button>
+            </div>
           </Card>
         </div>
       ) : (
@@ -208,37 +193,39 @@ export default function RenovationSection() {
                 Rénovation
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Visualisation 3D des plans
+                Visualisation 3D des scans
               </p>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              {/* Sélecteur de plan */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Plan :
-                </span>
-                <Select
-                  value={selectedDocument?.path || ""}
-                  onValueChange={handleDocumentChange}
-                >
-                  <SelectTrigger className="w-64">
-                    <SelectValue placeholder="Sélectionner un plan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {usdzDocuments.map((doc) => (
-                      <SelectItem key={doc.path} value={doc.path}>
-                        <div className="flex items-center justify-between w-full">
-                          <span className="truncate">{doc.name}</span>
-                          <Badge variant="secondary" className="ml-2 text-xs">
-                            {doc.category}
-                          </Badge>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Sélecteur de scan */}
+              {scanDocuments.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Scan :
+                  </span>
+                  <Select
+                    value={selectedScanId || ""}
+                    onValueChange={handleScanChange}
+                  >
+                    <SelectTrigger className="w-64">
+                      <SelectValue placeholder="Sélectionner un scan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {scanDocuments.map((scan) => (
+                        <SelectItem key={scan.id} value={scan.id}>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="truncate">{scan.name}</span>
+                            <Badge variant="secondary" className="ml-2 text-xs">
+                              3D
+                            </Badge>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {/* Bouton paramètres */}
               <Button
@@ -270,41 +257,42 @@ export default function RenovationSection() {
             </div>
           </div>
 
-          {/* Contrôles des documents (optionnel) */}
-          {showControls && (
+          {/* Contrôles des scans (optionnel) */}
+          {showControls && scanDocuments.length > 0 && (
             <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {usdzDocuments.map((document) => (
-                  <Card key={document.path} className="hover:shadow-lg transition-shadow">
+                {scanDocuments.map((scan) => (
+                  <Card
+                    key={scan.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm truncate">{document.name}</CardTitle>
+                        <CardTitle className="text-sm truncate">
+                          {scan.name}
+                        </CardTitle>
                         <Badge variant="secondary" className="text-xs">
-                          {document.category}
+                          3D Scan
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="text-xs text-gray-500">
-                        Modifié le {document.updated_at ? new Date(document.updated_at).toLocaleDateString('fr-FR') : 'N/A'}
+                        Créé le{" "}
+                        {new Date(scan.created_at).toLocaleDateString("fr-FR")}
                       </div>
                       <div className="flex gap-2">
                         <Button
                           size="sm"
-                          variant="outline"
-                          onClick={() => handleDownloadDocument(document)}
+                          variant={
+                            selectedScanId === scan.id ? "default" : "outline"
+                          }
+                          onClick={() => handleScanChange(scan.id)}
                           className="flex-1 text-xs"
                         >
-                          <Download className="h-3 w-3 mr-1" />
-                          Télécharger
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDeleteDocument(document)}
-                          className="text-red-600 hover:text-red-700 text-xs"
-                        >
-                          <Trash2 className="h-3 w-3" />
+                          {selectedScanId === scan.id
+                            ? "Sélectionné"
+                            : "Sélectionner"}
                         </Button>
                       </div>
                     </CardContent>
@@ -315,26 +303,11 @@ export default function RenovationSection() {
           )}
 
           {/* Viewer 3D - prend tout l'espace restant */}
-          <div className="flex-1 relative">
-            {selectedDocument ? (
-              <USDZViewer
-                documentPath={selectedDocument.path}
-                documentName={selectedDocument.name}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <File className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Aucun plan sélectionné</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Sélectionnez un plan dans le menu déroulant ci-dessus.
-                  </p>
-                </div>
-              </div>
-            )}
+          <div className="flex-1 relative p-4">
+            <Plan displayMode="full" />
           </div>
         </div>
       )}
     </>
   );
-} 
+}
