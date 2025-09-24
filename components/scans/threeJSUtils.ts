@@ -3,6 +3,25 @@ import { getScans } from "@/utils/handleProjectDetails";
 export interface Transform {
   transform: number[];
   dimensions: number[];
+  identifier?: string;
+}
+
+export interface RoomSection {
+  center: [number, number, number];
+  label: string;
+  story: number;
+}
+
+export interface WallAssignment {
+  wallIndex: number;
+  roomLabel: string;
+}
+
+export interface RoomAreaData {
+  roomLabel: string;
+  area: number;
+  wallIndices: number[];
+  center: [number, number, number];
 }
 
 export interface Scan {
@@ -12,6 +31,7 @@ export interface Scan {
   openings?: Transform[];
   windows?: Transform[];
   objects?: Transform[];
+  sections?: RoomSection[];
 }
 
 /**
@@ -94,6 +114,145 @@ export function calculateBoundingBox(scanData: Scan) {
 }
 
 /**
+ * Extract wall corner points from transform matrix and dimensions
+ * @param wall - Wall transform data
+ * @returns Array of corner points [x, z] (we use X-Z plane for 2D calculations)
+ */
+export function getWallCorners(wall: Transform): [number, number][] {
+  const matrix = wall.transform;
+  const centerX = matrix[12];
+  const centerZ = matrix[14];
+  const width = wall.dimensions[0];
+  const depth = wall.dimensions[2] || 0.2; // Default wall thickness
+
+  // Calculate rotation from transform matrix
+  const rotationY = Math.atan2(matrix[8], matrix[0]);
+
+  // Calculate corner offsets
+  const halfWidth = width / 2;
+  const halfDepth = depth / 2;
+
+  const cos = Math.cos(rotationY);
+  const sin = Math.sin(rotationY);
+
+  // Calculate the 4 corners of the wall
+  const corners: [number, number][] = [
+    [
+      centerX + (-halfWidth * cos - halfDepth * sin),
+      centerZ + (-halfWidth * sin + halfDepth * cos),
+    ],
+    [
+      centerX + (halfWidth * cos - halfDepth * sin),
+      centerZ + (halfWidth * sin + halfDepth * cos),
+    ],
+    [
+      centerX + (halfWidth * cos + halfDepth * sin),
+      centerZ + (halfWidth * sin - halfDepth * cos),
+    ],
+    [
+      centerX + (-halfWidth * cos + halfDepth * sin),
+      centerZ + (-halfWidth * sin - halfDepth * cos),
+    ],
+  ];
+
+  return corners;
+}
+
+/**
+ * Calculate room area using the Shoelace formula
+ * @param wallIndices - Indices of walls belonging to the room
+ * @param walls - Array of all walls
+ * @returns Calculated area in square meters
+ */
+export function calculateRoomArea(
+  wallIndices: number[],
+  walls: Transform[]
+): number {
+  if (wallIndices.length < 3) {
+    return 0; // Need at least 3 walls to form a room
+  }
+
+  // Get all corner points from selected walls
+  const allCorners: [number, number][] = [];
+
+  wallIndices.forEach((index) => {
+    if (walls[index]) {
+      const corners = getWallCorners(walls[index]);
+      allCorners.push(...corners);
+    }
+  });
+
+  if (allCorners.length < 3) {
+    return 0;
+  }
+
+  // Find the convex hull or arrange points to form a polygon
+  const orderedPoints = orderPointsForPolygon(allCorners);
+
+  // Apply Shoelace formula
+  let area = 0;
+  const n = orderedPoints.length;
+
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    area += orderedPoints[i][0] * orderedPoints[j][1];
+    area -= orderedPoints[j][0] * orderedPoints[i][1];
+  }
+
+  return Math.abs(area) / 2;
+}
+
+/**
+ * Order points to form a polygon (simple approach using center point)
+ * @param points - Array of 2D points
+ * @returns Ordered array of points forming a polygon
+ */
+function orderPointsForPolygon(points: [number, number][]): [number, number][] {
+  if (points.length <= 3) {
+    return points;
+  }
+
+  // Remove duplicate points
+  const uniquePoints = points.filter(
+    (point, index, arr) =>
+      index ===
+      arr.findIndex(
+        (p) =>
+          Math.abs(p[0] - point[0]) < 0.01 && Math.abs(p[1] - point[1]) < 0.01
+      )
+  );
+
+  // Calculate center point
+  const centerX =
+    uniquePoints.reduce((sum, p) => sum + p[0], 0) / uniquePoints.length;
+  const centerZ =
+    uniquePoints.reduce((sum, p) => sum + p[1], 0) / uniquePoints.length;
+
+  // Sort points by angle from center
+  return uniquePoints.sort((a, b) => {
+    const angleA = Math.atan2(a[1] - centerZ, a[0] - centerX);
+    const angleB = Math.atan2(b[1] - centerZ, b[0] - centerX);
+    return angleA - angleB;
+  });
+}
+
+/**
+ * Get room center from sections data
+ * @param roomLabel - Label of the room
+ * @param sections - Array of room sections
+ * @returns Center coordinates [x, y, z] or null if not found
+ */
+export function getRoomCenter(
+  roomLabel: string,
+  sections?: RoomSection[]
+): [number, number, number] | null {
+  if (!sections) return null;
+
+  const section = sections.find((s) => s.label === roomLabel);
+  return section ? section.center : null;
+}
+
+/**
  * Get statistics about the scan data
  * @param scanData - The scan data
  * @returns Object with counts of different elements
@@ -147,6 +306,28 @@ export const exampleScanData: Scan = {
         0.15417418, -0.23865056, 1.9159187, 1,
       ],
       dimensions: [3.2215288, 2.835, 0],
+    },
+  ],
+  sections: [
+    {
+      center: [1.4446131, 0.031975597, -0.99556136],
+      label: "bedroom",
+      story: 0,
+    },
+    {
+      label: "livingRoom",
+      story: 0,
+      center: [-1.2363299, 0.031975597, -2.4537501],
+    },
+    {
+      label: "diningRoom",
+      center: [-1.972178, 0.031975597, -0.7258907],
+      story: 0,
+    },
+    {
+      center: [-0.9855001, 0.031975597, 1.2543747],
+      story: 0,
+      label: "unidentified",
     },
   ],
 };
