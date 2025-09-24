@@ -1,12 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import ThreeJSRenderer from "./ThreeJSRenderer";
-import { getScanStatistics, type Scan } from "./threeJSUtils";
+import RoomAreaCalculator from "./RoomAreaCalculator";
+import {
+  getScanStatistics,
+  type Scan,
+  type RoomAreaData,
+} from "./threeJSUtils";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Box, Square, Ruler, Maximize2 } from "lucide-react";
+import {
+  Box,
+  Square,
+  Ruler,
+  Maximize2,
+  Calculator,
+  HelpCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ModelViewerProps {
@@ -28,8 +40,34 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<"2D" | "3D">("3D");
   const [showDimensions, setShowDimensions] = useState(false);
+  const [showAreaCalculator, setShowAreaCalculator] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [selectedWalls, setSelectedWalls] = useState<Set<number>>(new Set());
+  const [cameraTarget, setCameraTarget] = useState<
+    [number, number, number] | undefined
+  >();
+  const [roomAreaData, setRoomAreaData] = useState<RoomAreaData[]>([]);
+
+  const roomCalculatorRef = useRef<HTMLDivElement>(null);
 
   const containerHeight = displayMode === "embedded" ? height : "600px";
+
+  const handleWallClick = (wallIndex: number) => {
+    const newSelectedWalls = new Set(selectedWalls);
+    if (newSelectedWalls.has(wallIndex)) {
+      newSelectedWalls.delete(wallIndex);
+    } else {
+      newSelectedWalls.add(wallIndex);
+    }
+    setSelectedWalls(newSelectedWalls);
+  };
+
+  const handleAreaCalculationComplete = (data: RoomAreaData[]) => {
+    setRoomAreaData(data);
+    setShowAreaCalculator(false);
+    setSelectedWalls(new Set());
+    setCameraTarget(undefined);
+  };
 
   if (loading) {
     return (
@@ -101,6 +139,27 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 />
               </div>
 
+              {/* Area Calculator Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowAreaCalculator(true);
+                  // Scroll to the calculator component after a short delay to ensure it's rendered
+                  setTimeout(() => {
+                    roomCalculatorRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }, 100);
+                }}
+                disabled={!scanData?.sections || scanData.sections.length === 0}
+                className="flex items-center gap-2"
+              >
+                <Calculator className="h-4 w-4" />
+                Calculate Room Areas
+              </Button>
+
               {/* Statistics */}
               <div className="text-sm text-zinc-600 ml-auto">
                 {stats.walls} walls, {stats.doors} doors, {stats.windows}{" "}
@@ -111,28 +170,107 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         </Card>
 
         {/* 3D Renderer */}
-        <ThreeJSRenderer
-          scanData={scanData}
-          viewMode={viewMode}
-          showDimensions={showDimensions}
-        />
+        <div className="relative">
+          <ThreeJSRenderer
+            scanData={scanData}
+            viewMode={viewMode}
+            showDimensions={showDimensions}
+            selectedWalls={selectedWalls}
+            onWallClick={showAreaCalculator ? handleWallClick : undefined}
+            cameraTarget={cameraTarget}
+          />
 
-        {/* Instructions */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-zinc-600">
-              <p className="mb-2">
-                <strong>Controls:</strong>
-              </p>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Left click + drag: Rotate view (3D mode)</li>
-                <li>Right click + drag: Pan view</li>
-                <li>Mouse wheel: Zoom in/out</li>
-                <li>Toggle between 2D (top-down) and 3D views</li>
-              </ul>
+          {/* Help Icon */}
+          <div className="absolute bottom-4 left-4 z-10">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="bg-white/90 backdrop-blur-sm border shadow-lg hover:bg-white/95 h-10 w-10 p-0"
+              title="Show/Hide Instructions"
+            >
+              <HelpCircle className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Instructions Overlay */}
+          {showInstructions && (
+            <div className="absolute bottom-16 left-4 z-10">
+              <Card className="bg-white/95 backdrop-blur-sm border shadow-lg max-w-sm">
+                <CardContent className="p-4">
+                  <div className="text-sm text-zinc-600">
+                    <p className="mb-2">
+                      <strong>Controls:</strong>
+                    </p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>Left click + drag: Rotate view (3D mode)</li>
+                      <li>Right click + drag: Pan view</li>
+                      <li>Mouse wheel: Zoom in/out</li>
+                      <li>Toggle between 2D (top-down) and 3D views</li>
+                      {showAreaCalculator && (
+                        <li>
+                          Click on walls to select them for room area
+                          calculation
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
+
+        {/* Room Area Calculator */}
+        {showAreaCalculator && (
+          <div ref={roomCalculatorRef}>
+            <RoomAreaCalculator
+              scanData={scanData}
+              selectedWalls={selectedWalls}
+              onWallSelectionChange={setSelectedWalls}
+              onCameraFocus={setCameraTarget}
+              onComplete={handleAreaCalculationComplete}
+            />
+          </div>
+        )}
+
+        {/* Room Area Results */}
+        {roomAreaData && roomAreaData.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5" />
+                Room Area Results
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {roomAreaData.map((room, index) => (
+                  <div key={index} className="border-b pb-2 last:border-b-0">
+                    <p>
+                      <strong>Room:</strong> {room.roomLabel}
+                    </p>
+                    <p>
+                      <strong>Area:</strong> {room.area.toFixed(2)} m²
+                    </p>
+                    <p>
+                      <strong>Walls used:</strong> {room.wallIndices.length}
+                    </p>
+                  </div>
+                ))}
+                <div className="pt-2 border-t">
+                  <p>
+                    <strong>Total Area:</strong>{" "}
+                    {roomAreaData
+                      .reduce((sum, room) => sum + room.area, 0)
+                      .toFixed(2)}{" "}
+                    m²
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     );
   }
@@ -146,6 +284,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
           scanData={scanData}
           viewMode={viewMode}
           showDimensions={showDimensions}
+          selectedWalls={selectedWalls}
+          onWallClick={showAreaCalculator ? handleWallClick : undefined}
+          cameraTarget={cameraTarget}
         />
       </div>
 

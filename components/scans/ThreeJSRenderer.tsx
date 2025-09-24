@@ -23,22 +23,33 @@ interface ThreeJSRendererProps {
   scanData: Scan;
   viewMode: "2D" | "3D";
   showDimensions?: boolean;
+  selectedWalls?: Set<number>;
+  onWallClick?: (wallIndex: number) => void;
+  cameraTarget?: [number, number, number];
 }
 
 // Component to handle dynamic camera positioning
-const CameraController: React.FC<{ is3D: boolean }> = ({ is3D }) => {
+const CameraController: React.FC<{
+  is3D: boolean;
+  cameraTarget?: [number, number, number];
+}> = ({ is3D, cameraTarget }) => {
   const { camera } = useThree();
 
   useEffect(() => {
+    const target = cameraTarget
+      ? new THREE.Vector3(...cameraTarget)
+      : new THREE.Vector3(0, 0, 0);
+
     if (is3D) {
-      camera.position.set(10, 10, 10);
+      const offset = new THREE.Vector3(10, 10, 10);
+      camera.position.copy(target).add(offset);
       camera.up.set(0, 1, 0); // Set up vector for 3D view
     } else {
-      camera.position.set(0, 20, 0); // Look down from above (Y-axis)
+      camera.position.set(target.x, target.y + 20, target.z); // Look down from above (Y-axis)
       camera.up.set(0, 0, 1); // Set up vector for 2D top-down view (Z points up)
     }
-    camera.lookAt(0, 0, 0);
-  }, [camera, is3D]);
+    camera.lookAt(target);
+  }, [camera, is3D, cameraTarget]);
 
   return null;
 };
@@ -48,7 +59,17 @@ const Wall: React.FC<{
   transform: Transform;
   is3D: boolean;
   showDimensions: boolean;
-}> = ({ transform, is3D, showDimensions }) => {
+  wallIndex: number;
+  isSelected: boolean;
+  onWallClick?: (wallIndex: number) => void;
+}> = ({
+  transform,
+  is3D,
+  showDimensions,
+  wallIndex,
+  isSelected,
+  onWallClick,
+}) => {
   const meshRef = useRef<THREE.Mesh>(null);
 
   const { position, rotation, dimensions } = useMemo(() => {
@@ -78,11 +99,25 @@ const Wall: React.FC<{
   const height = is3D ? dimensions[1] : 0.1;
   const depth = 0.2; // Wall thickness
 
+  const handleClick = (event: any) => {
+    event.stopPropagation();
+    onWallClick?.(wallIndex);
+  };
+
   return (
     <group>
-      <mesh ref={meshRef} position={position} rotation={rotation}>
+      <mesh
+        ref={meshRef}
+        position={position}
+        rotation={rotation}
+        onClick={handleClick}
+      >
         <boxGeometry args={[width, height, depth]} />
-        <meshStandardMaterial color="#666666" />
+        <meshStandardMaterial
+          color={isSelected ? "#ff6b35" : "#666666"}
+          emissive={isSelected ? "#ff6b35" : "#000000"}
+          emissiveIntensity={isSelected ? 0.2 : 0}
+        />
       </mesh>
       {showDimensions && width > 0.5 && (
         <Text
@@ -271,16 +306,21 @@ const RoomScene: React.FC<{
   scanData: Scan;
   is3D: boolean;
   showDimensions: boolean;
-}> = ({ scanData, is3D, showDimensions }) => {
+  selectedWalls?: Set<number>;
+  onWallClick?: (wallIndex: number) => void;
+}> = ({ scanData, is3D, showDimensions, selectedWalls, onWallClick }) => {
   return (
     <group>
       {/* Render walls */}
       {scanData.walls?.map((wall, index) => (
         <Wall
           key={`wall-${index}`}
+          wallIndex={index}
           transform={wall}
           is3D={is3D}
           showDimensions={showDimensions}
+          isSelected={selectedWalls?.has(index) || false}
+          onWallClick={onWallClick}
         />
       ))}
 
@@ -311,6 +351,9 @@ const ThreeJSRenderer: React.FC<ThreeJSRendererProps> = ({
   scanData,
   viewMode,
   showDimensions = false,
+  selectedWalls,
+  onWallClick,
+  cameraTarget,
 }) => {
   const is3D = viewMode === "3D";
 
@@ -323,7 +366,7 @@ const ThreeJSRenderer: React.FC<ThreeJSRendererProps> = ({
         }}
       >
         {/* Dynamic camera controller */}
-        <CameraController is3D={is3D} />
+        <CameraController is3D={is3D} cameraTarget={cameraTarget} />
 
         {/* Lighting */}
         <ambientLight intensity={0.6} />
@@ -350,6 +393,8 @@ const ThreeJSRenderer: React.FC<ThreeJSRendererProps> = ({
           scanData={scanData}
           is3D={is3D}
           showDimensions={showDimensions}
+          selectedWalls={selectedWalls}
+          onWallClick={onWallClick}
         />
 
         {/* Controls */}
@@ -357,7 +402,7 @@ const ThreeJSRenderer: React.FC<ThreeJSRendererProps> = ({
           enablePan={true}
           enableZoom={true}
           enableRotate={is3D}
-          target={[0, 0, 0]}
+          target={cameraTarget || [0, 0, 0]}
         />
       </Canvas>
     </div>
