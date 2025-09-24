@@ -8,7 +8,7 @@ export const DocumentHeader = ({ currentProjectDisplayed }: DocumentHeaderProps)
   <div className="w-full bg-violet-500 text-white p-6 flex justify-between items-start">
     <div className="w-32">
       <img
-        src={`${window.location.origin}/logo.png`}
+        src="/logo.png"
         alt="Omnicity"
         className="w-[40px] h-[40px] object-contain"
       />

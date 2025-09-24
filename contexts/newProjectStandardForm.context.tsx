@@ -15,20 +15,34 @@ interface GeneralInformationType {
 }
 
 interface NewProjectStandardFormType {
-  projectAuthorName: string;
-  setProjectAuthorName: Dispatch<SetStateAction<string>>;
+  firstName: string;
+  setFirstName: Dispatch<SetStateAction<string>>;
+  lastName: string;
+  setLastName: Dispatch<SetStateAction<string>>;
   projectName: string;
   setProjectName: Dispatch<SetStateAction<string>>;
   projectAddress: string;
   setProjectAddress: Dispatch<SetStateAction<string>>;
   projectDescription: string;
   setProjectDescription: Dispatch<SetStateAction<string>>;
+  contractType: string;
+  setContractType: Dispatch<SetStateAction<string>>;
   projectDate: Date | undefined;
   setProjectDate: Dispatch<SetStateAction<Date | undefined>>;
   projectGeneralInformation: GeneralInformationType;
   setProjectGeneralInformation: Dispatch<
     SetStateAction<GeneralInformationType>
   >;
+  fiscalIncome: string;
+  setFiscalIncome: Dispatch<SetStateAction<string>>;
+  householdSize: string;
+  setHouseholdSize: Dispatch<SetStateAction<string>>;
+  baseValue: string;
+  setBaseValue: Dispatch<SetStateAction<string>>;
+  occupancyStatus: string;
+  setOccupancyStatus: Dispatch<SetStateAction<string>>;
+  image: File | null;
+  setImage: Dispatch<SetStateAction<File | null>>;
   resetProjectStandardForm: () => void;
 }
 
@@ -37,10 +51,17 @@ export const NewProjectStandardFormContext = createContext<NewProjectStandardFor
 );
 
 const initialState = {
-  projectAuthorName: "",
+  firstName: "",
+  lastName: "",
   projectName: "",
   projectAddress: "",
   projectDescription: "",
+  contractType: "",
+  fiscalIncome: "",
+  householdSize: "",
+  baseValue: "",
+  occupancyStatus: "primaryOwner",
+  image: null as File | null,
   projectDate: undefined,
   projectGeneralInformation: {
     size: "",
@@ -52,9 +73,8 @@ const initialState = {
 export default function NewProjectStandardFormContextProvider({
   children,
 }: useCustomHook) {
-  const [projectAuthorName, setProjectAuthorName] = useState(
-    initialState.projectAuthorName
-  );
+  const [firstName, setFirstName] = useState(initialState.firstName);
+  const [lastName, setLastName] = useState(initialState.lastName);
   const [projectName, setProjectName] = useState(initialState.projectName);
   const [projectAddress, setProjectAddress] = useState(
     initialState.projectAddress
@@ -62,34 +82,63 @@ export default function NewProjectStandardFormContextProvider({
   const [projectDescription, setProjectDescription] = useState(
     initialState.projectDescription
   );
+  const [contractType, setContractType] = useState(initialState.contractType);
   const [projectDate, setProjectDate] = useState<Date | undefined>(
     initialState.projectDate
   );
+  const [fiscalIncome, setFiscalIncome] = useState(initialState.fiscalIncome);
+  const [householdSize, setHouseholdSize] = useState(initialState.householdSize);
+  const [baseValue, setBaseValue] = useState(initialState.baseValue);
+  const [occupancyStatus, setOccupancyStatus] = useState(
+    initialState.occupancyStatus
+  );
+  const [image, setImage] = useState<File | null>(initialState.image);
   const [projectGeneralInformation, setProjectGeneralInformation] =
     useState<GeneralInformationType>(initialState.projectGeneralInformation);
 
   const resetProjectStandardForm = () => {
-    setProjectAuthorName(initialState.projectAuthorName);
+    setFirstName(initialState.firstName);
+    setLastName(initialState.lastName);
     setProjectName(initialState.projectName);
     setProjectAddress(initialState.projectAddress);
     setProjectDescription(initialState.projectDescription);
+    setContractType(initialState.contractType);
     setProjectDate(initialState.projectDate);
+    setFiscalIncome(initialState.fiscalIncome);
+    setHouseholdSize(initialState.householdSize);
+    setBaseValue(initialState.baseValue);
+    setOccupancyStatus(initialState.occupancyStatus);
+    setImage(initialState.image);
     setProjectGeneralInformation(initialState.projectGeneralInformation);
   };
 
   return (
     <NewProjectStandardFormContext.Provider
       value={{
-        projectAuthorName,
-        setProjectAuthorName,
+        firstName,
+        setFirstName,
+        lastName,
+        setLastName,
         projectName,
         setProjectName,
         projectAddress,
         setProjectAddress,
         projectDescription,
         setProjectDescription,
+        contractType,
+        setContractType,
         projectDate,
         setProjectDate,
+        fiscalIncome,
+        setFiscalIncome,
+        householdSize,
+        setHouseholdSize,
+        baseValue,
+        setBaseValue,
+        occupancyStatus,
+        setOccupancyStatus,
+        image,
+        setImage,
         projectGeneralInformation,
         setProjectGeneralInformation,
         resetProjectStandardForm,

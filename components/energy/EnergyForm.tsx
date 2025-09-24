@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { createSession, sendStepAnswer, getQuizSummary, handleQuizResults } from "@/utils/handleEnergyFormData";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
-import { CheckCircle, X, Zap, Flame, Droplet } from 'lucide-react';
+import { CheckCircle, X, Zap, Flame, Droplet, ChevronDown } from 'lucide-react';
 import Image from "next/image";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useProjectForm } from "@/hooks/useProjectForm";
 
 import RectangularCompact from "../svgs/house-shapes/RectangularCompact";
 import RectangularLong from "../svgs/house-shapes/RectangularLong";
@@ -23,6 +25,44 @@ import ToitTerrasse from "../svgs/toiture/ToitTerrasse";
 import TerrePlein from "../svgs/plancher/TerrePlein";
 import Cave from "../svgs/plancher/Cave";
 import VideSanitaire from "../svgs/plancher/VideSanitaire";
+
+const isIleDeFrance = (cp: string): string =>
+  /^(75|77|78|91|92|93|94|95)/.test(cp) ? "En Ile de France" : "Hors Ile de France";
+
+function mapOccupancyStatusToLabel(status: string): string {
+  switch (status) {
+    case "primaryOwner":
+      return "Propriétaire résidence principale";
+    case "secondaryOwner":
+      return "Propriétaire résidence secondaire";
+    case "ownerTenant":
+      return "Propriétaire bailleur";
+    case "tenant":
+      return "Locataire";
+    default:
+      return "";
+  }
+}
+
+function mapFiscalIncomeToInterval(
+  income: string,
+  choices: { id: string; label: string; position?: number }[] = []
+): string {
+  if (!choices.length) return income;
+  const numeric = parseFloat(income);
+  if (isNaN(numeric)) return choices[0]?.label ?? "";
+  const sorted = [...choices].sort(
+    (a, b) => (a.position ?? 0) - (b.position ?? 0)
+  );
+  for (const c of sorted) {
+    const nums = c.label.match(/\d+/g)?.map(Number) ?? [];
+    if (c.label.startsWith("<") && numeric < nums[0]) return c.label;
+    if (c.label.startsWith(">") && numeric > nums[0]) return c.label;
+    if (nums.length === 2 && numeric >= nums[0] && numeric <= nums[1])
+      return c.label;
+  }
+  return sorted[sorted.length - 1].label;
+}
 
 const WoodIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,14 +111,32 @@ const questionIcons: { [key: string]: { [key: string]: React.FC } } = {
   }
 };
 
-export default function EnergyForm() {
+export default function EnergyForm({ onQuit }: { onQuit?: () => void }) {
   const [loading, setLoading] = useState(true);
+  const [showSummary, setShowSummary] = useState(false);
   const [error, setError] = useState<string>();
-  const { sessionId, setSessionId, setIsEnergyFormDisplayed, setEnergyFormCompleted, setEnergyFormGotOpened, setIsEnergyLabelSolutionsDisplayed } = useEnergyFormContext();
-  const { postalCode, setPostalCode, 
-  showPostalCode, setShowPostalCode, 
-  steps, setSteps, activeStepIndex, 
-  setActiveStepIndex, answerState, setAnswerState } = useEnergyFormContext();
+  const {
+    sessionId,
+    setSessionId,
+    setIsEnergyFormDisplayed,
+    setEnergyFormCompleted,
+    setEnergyFormGotOpened,
+    setIsEnergyLabelSolutionsDisplayed,
+    postalCode,
+    setPostalCode,
+    showPostalCode,
+    setShowPostalCode,
+    steps,
+    setSteps,
+    activeStepIndex,
+    setActiveStepIndex,
+    answerState,
+    setAnswerState
+  } = useEnergyFormContext();
+
+  const { getStandardFormData } = useProjectForm("standard");
+
+  const standardData = getStandardFormData();
   
   const currentStep = steps[activeStepIndex] || null;
 
@@ -106,31 +164,143 @@ export default function EnergyForm() {
 
   function handleGoToStep(index: number) {
     if (index < 0 || index >= steps.length) return;
-    setActiveStepIndex(index);
-    setAnswerState(steps[index]?.answer || null);
+    
+    setShowSummary(false);
+    
+    if (index < activeStepIndex) {
+      handleBackToStep(index);
+    } else {
+      setActiveStepIndex(index);
+      setAnswerState(steps[index]?.answer || null);
+    }
   }
+
+  async function handleBackToStep(targetIndex: number) {
+    try {
+      setLoading(true);
+      
+      const stepsToKeep = steps.slice(0, targetIndex + 1);
+      setSteps(stepsToKeep);
+      setActiveStepIndex(targetIndex);
+      
+      const targetStep = stepsToKeep[targetIndex];
+      setAnswerState(targetStep?.answer || null);
+      
+      const stepsAfterTarget = steps.slice(targetIndex + 1);
+      
+      if (stepsAfterTarget.length > 0) {
+        if (targetStep?.answer) {
+          const patchedStep = await sendStepAnswer(targetStep.id, targetStep.answer, sessionId!);
+          
+          if (patchedStep.nextStep) {
+            setSteps([...stepsToKeep, patchedStep.nextStep]);
+          }
+        }
+      }
+    } catch (err: any) {
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const getPrefilledValue = (q: any) => {
+    if (!q) return null;
+    switch (q.label) {
+      case "Sa surface habitable (m²) :":
+        return standardData.generalInformation.size
+          ? Number(standardData.generalInformation.size)
+          : null;
+      case "Par rapport au logement, vous êtes ?": {
+        const label = mapOccupancyStatusToLabel(standardData.occupancyStatus || "");
+        return q.choices?.find((c: any) => c.label === label) || null;
+      }
+      case "Vous habitez": {
+        const label = isIleDeFrance(postalCode);
+        return q.choices?.find((c: any) => c.label === label) || null;
+      }
+      case "Nombre d'habitants composant votre foyer fiscal":
+        return standardData.householdSize
+          ? Number(standardData.householdSize)
+          : null;
+      case "Revenu annuel moyen de votre foyer fiscal": {
+        const label = mapFiscalIncomeToInterval(
+          standardData.fiscalIncome || "",
+          q.choices || []
+        );
+        return q.choices?.find((c: any) => c.label === label) || null;
+      }
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+    if (!currentStep) return;
+    const prefill = getPrefilledValue(currentStep.node?.question);
+    if (prefill !== null) {
+      setAnswerState(prefill);
+    } else {
+      setAnswerState(currentStep.answer || null);
+    }
+  }, [currentStep]);
 
   const SkeletonLoader = () => (
     <div className="flex flex-col md:flex-row gap-8">
       <div className="w-64 hidden md:block">
         <div className="space-y-3 animate-pulse">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
-          <div className="h-5 bg-gray-200 rounded w-1/2" />
-          <div className="h-5 bg-gray-200 rounded w-2/3" />
+          <div className="h-5 bg-muted rounded w-3/4" />
+          <div className="h-5 bg-muted rounded w-1/2" />
+          <div className="h-5 bg-muted rounded w-2/3" />
         </div>
       </div>
       <div className="flex-1 space-y-4 animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/2" />
-        <div className="h-4 bg-gray-200 rounded w-3/4" />
-        <div className="h-8 bg-gray-200 rounded w-1/2" />
-        <div className="h-10 bg-gray-200 rounded w-1/3" />
+        <div className="h-6 bg-muted rounded w-1/2" />
+        <div className="h-4 bg-muted rounded w-3/4" />
+        <div className="h-8 bg-muted rounded w-1/2" />
+        <div className="h-10 bg-muted rounded w-1/3" />
       </div>
     </div>
   );
 
+  const formatAnswer = (step: typeof steps[number]) => {
+    const qType = step.node?.question?.type;
+    const ans = step.answer;
+    if (!ans) return "";
+    switch (qType) {
+      case "QuestionChoice":
+        return ans.label;
+      case "QuestionChoiceMultiple":
+        return Array.isArray(ans) ? ans.map((c: any) => c.label).join(", ") : "";
+      default:
+        return ans;
+    }
+  };
+
+  const handleValidate = async () => {
+    try {
+      setLoading(true);
+      const quizSummary = await getQuizSummary(sessionId!);
+      if (!quizSummary) throw new Error("No quiz summary found");
+
+      const quizResults = await handleQuizResults({ ...quizSummary, "Code Postal": postalCode });
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("quizResults", JSON.stringify(quizResults));
+        localStorage.setItem("quizSteps", JSON.stringify(steps));
+      }
+
+      setIsEnergyLabelSolutionsDisplayed(true);
+    } catch (err: any) {
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 p-6">
+      <div className="min-h-0 bg-background text-foreground p-6">
         <SkeletonLoader />
       </div>
     );
@@ -138,7 +308,7 @@ export default function EnergyForm() {
 
   if (error) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 flex flex-col items-center justify-center">
+      <div className="min-h-0 bg-background text-foreground flex flex-col items-center justify-center">
         <p className="text-red-600 font-semibold mb-4">Erreur: {error}</p>
         <button
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -152,13 +322,23 @@ export default function EnergyForm() {
 
   if (showPostalCode) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 flex items-center justify-center p-4">
+      <div className="min-h-0 bg-background text-foreground flex items-center justify-center p-4">
         <div className="bg-white shadow-md rounded-lg w-full max-w-md overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
               <Image src="/logo.png" alt="omnicity logo" width={32} height={32} />
             </div>
-            <button onClick={() => setIsEnergyFormDisplayed(false)} className="text-gray-500 hover:text-gray-700">
+            <button 
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setIsEnergyFormDisplayed(false);
+                setEnergyFormCompleted(false);
+                setEnergyFormGotOpened(false);
+                setPostalCode("");
+                setShowPostalCode(true);
+                onQuit?.();
+              }}
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -166,11 +346,7 @@ export default function EnergyForm() {
           <div className="p-6">
             <h2 className="text-xl font-bold text-primary mb-6">Améliorer la performance énergétique de mon logement</h2>
             
-            <div className="w-full h-2 bg-gray-200 rounded-full mb-8">
-              <div className="h-full bg-primary rounded-full w-1/4"></div>
-            </div>
-            
-            <p className="mb-4 text-sm text-gray-700">
+            <p className="mb-4 text-sm text-muted-foreground">
               Veuillez saisir votre code postal :
             </p>
             <input
@@ -195,7 +371,7 @@ export default function EnergyForm() {
 
   if (!currentStep) {
     return (
-      <div className="min-h-0 bg-gray-50 text-gray-800 flex items-center justify-center">
+      <div className="min-h-0 bg-background text-foreground flex items-center justify-center">
         <p>Aucune question disponible pour le moment.</p>
       </div>
     );
@@ -205,9 +381,37 @@ export default function EnergyForm() {
   const questionType = question?.type;
   const questionLabel = question?.label || "";
 
+  if (showSummary) {
+    return (
+      <div className="min-h-0 bg-background text-foreground flex flex-col p-6">
+        <h2 className="text-2xl font-bold mb-6 text-primary text-center">Récapitulatif de vos réponses</h2>
+        <div className="flex-1 overflow-auto max-w-3xl w-full mx-auto space-y-4">
+          {steps.map((s, idx) => (
+            <button
+              key={s.id}
+              onClick={() => handleGoToStep(idx)}
+              className="w-full text-left p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <span className="font-medium text-sm text-muted-foreground">{s.node?.question?.label}</span>
+              <br />
+              <span className="text-base text-foreground">{formatAnswer(s)}</span>
+            </button>
+          ))}
+        </div>
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={handleValidate}
+            className="bg-primary text-primary-foreground px-8 py-3 rounded-md font-medium hover:bg-primary/90"
+          >
+            Valider
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-0 bg-gray-50 text-gray-800 flex flex-col">
-      {/* Header */}
+    <div className="min-h-0 bg-background text-foreground flex flex-col">
       <header className="bg-white shadow-sm border-b p-4 flex items-center justify-between">
         <div className="flex items-center">
           <Image src="/logo.png" alt="omnicity logo" width={32} height={32} />
@@ -215,55 +419,25 @@ export default function EnergyForm() {
         <h1 className="text-primary font-bold text-lg hidden md:block">
           Améliorer la performance énergétique de mon logement
         </h1>
-        <button onClick={() => {
-          setIsEnergyFormDisplayed(false)
-          setEnergyFormCompleted(false)
-          setEnergyFormGotOpened(false)
-          setPostalCode("")
-        }} className="text-primary font-medium hover:text-primary/80 flex items-center">
+        <button 
+          className="text-primary font-medium hover:text-primary/80 flex items-center"
+          onClick={() => {
+            setIsEnergyFormDisplayed(false);
+            setEnergyFormCompleted(false);
+            setEnergyFormGotOpened(false);
+            setPostalCode("");
+            setShowPostalCode(true);
+            onQuit?.();
+          }}
+        >
           <X className="h-5 w-5 mr-1" /> Quitter
         </button>
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="hidden md:block bg-white shadow-md w-80 p-6 border-r">
-          <h3 className="text-lg font-bold mb-6 text-primary">Votre parcours</h3>
-          <ul className="space-y-1">
-            {steps.map((step, i) => {
-              const label = step.node?.question?.label || `Étape ${i + 1}`;
-              const isActive = i === activeStepIndex;
-              const isCompleted = i < activeStepIndex;
-              
-              return (
-                <li key={step.id || i} className="relative pl-7">
-                  {isCompleted ? (
-                    <CheckCircle className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
-                  ) : (
-                    <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 
-                      ${isActive ? 'border-primary' : 'border-gray-300'}`}>
-                      {isActive && (
-                        <div className="absolute inset-0.5 rounded-full bg-primary"></div>
-                      )}
-                    </div>
-                  )}
-                  <button
-                    onClick={() => handleGoToStep(i)}
-                    className={`block w-full text-left py-2 text-sm transition-colors
-                      ${isActive ? 'font-semibold text-primary' : isCompleted ? 'text-gray-700' : 'text-gray-500'}`}
-                  >
-                    {label}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-
-        {/* Main content */}
         <main className="flex-1 p-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8 text-primary">{questionLabel}</h2>
+            <h2 className="text-2xl font-bold mb-8 text-primary text-center">{questionLabel}</h2>
 
             <div className="space-y-4 mb-8">
               {renderQuestionInputs(
@@ -280,7 +454,9 @@ export default function EnergyForm() {
                 sessionId,
                 postalCode,
                 setIsEnergyLabelSolutionsDisplayed,
-                setError
+                setError,
+                getPrefilledValue(question) !== null,
+                setShowSummary
               )}
             </div>
 
@@ -315,17 +491,25 @@ function renderQuestionInputs(
   sessionId: string | null,
   postalCode: string,
   setIsEnergyLabelSolutionsDisplayed: (displayed: boolean) => void,
-  setError: (error: string | undefined) => void
+  setError: (error: string | undefined) => void,
+  prefilled: boolean,
+  setShowSummary: (show: boolean) => void
 ) {
   const handleAnswer = async (value: any, shouldAutoProceed: boolean = false) => {
     setAnswerState(value);
     if (!currentStep || !shouldAutoProceed) return;
+    
     try {
       setLoading(true);
-      const patchedStep = await sendStepAnswer(currentStep.id, value);
+      const patchedStep = await sendStepAnswer(currentStep.id, value, sessionId!);
 
       const updatedSteps = [...steps];
       updatedSteps[activeStepIndex] = { ...currentStep, answer: value };
+      
+      if (activeStepIndex < steps.length - 1) {
+        updatedSteps.splice(activeStepIndex + 1);
+      }
+      
       setSteps(updatedSteps);
 
       if (patchedStep.nextStep) {
@@ -333,17 +517,7 @@ function renderQuestionInputs(
         setActiveStepIndex(activeStepIndex + 1);
         setAnswerState(null);
       } else {
-        const quizSummary = await getQuizSummary(sessionId!);
-        if (!quizSummary) throw new Error("No quiz summary found");
-
-        const quizResults = await handleQuizResults({ ...quizSummary, "Code Postal": postalCode });
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("quizResults", JSON.stringify(quizResults));
-          localStorage.setItem("quizSteps", JSON.stringify(updatedSteps));
-        }
-        
-        setIsEnergyLabelSolutionsDisplayed(true);
+        setShowSummary(true);
       }
     } catch (err: any) {
       setError(String(err));
@@ -354,12 +528,18 @@ function renderQuestionInputs(
 
   const handleManualProceed = async () => {
     if (!currentStep || !answerState) return;
+    
     try {
       setLoading(true);
-      const patchedStep = await sendStepAnswer(currentStep.id, answerState);
+      const patchedStep = await sendStepAnswer(currentStep.id, answerState, sessionId!);
 
       const updatedSteps = [...steps];
       updatedSteps[activeStepIndex] = { ...currentStep, answer: answerState };
+      
+      if (activeStepIndex < steps.length - 1) {
+        updatedSteps.splice(activeStepIndex + 1);
+      }
+      
       setSteps(updatedSteps);
 
       if (patchedStep.nextStep) {
@@ -367,17 +547,7 @@ function renderQuestionInputs(
         setActiveStepIndex(activeStepIndex + 1);
         setAnswerState(null);
       } else {
-        const quizSummary = await getQuizSummary(sessionId!);
-        if (!quizSummary) throw new Error("No quiz summary found");
-
-        const quizResults = await handleQuizResults({ ...quizSummary, "Code Postal": postalCode });
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("quizResults", JSON.stringify(quizResults));
-          localStorage.setItem("quizSteps", JSON.stringify(updatedSteps));
-        }
-        
-        setIsEnergyLabelSolutionsDisplayed(true);
+        setShowSummary(true);
       }
     } catch (err: any) {
       setError(String(err));
@@ -390,121 +560,202 @@ function renderQuestionInputs(
     case "QuestionInteger":
     case "QuestionFloat":
       return (
-        <>
+        <div className="flex flex-col gap-2 w-full justify-center items-center">
           <input
-            type="number"
+            type="text"
             value={answerState || ""}
-            onChange={(e) => setAnswerState(Number(e.target.value))}
-            className="border rounded-md w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, "");
+              setAnswerState(value ? Number(value) : null);
+            }}
+            className="border w-1/2 rounded-[12px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             onClick={handleManualProceed}
             disabled={!answerState}
-            className={`w-full bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium mt-4
+            className={`bg-primary w-1/2 text-primary-foreground px-6 py-3 rounded-md font-medium mt-4
               ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
           >
             Continuer
           </button>
-        </>
+        </div>
       );
 
     case "QuestionString":
       return (
-        <>
+        <div className="flex flex-col gap-2 w-full justify-center items-center">
           <input
             type="text"
             value={answerState || ""}
             onChange={(e) => setAnswerState(e.target.value)}
-            className="border rounded-md w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="border w-1/2 rounded-[12px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             onClick={handleManualProceed}
             disabled={!answerState}
-            className={`w-full bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium mt-4
+            className={`bg-primary w-1/2 text-primary-foreground px-6 py-3 rounded-md font-medium mt-4
               ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
           >
             Continuer
           </button>
-        </>
+        </div>
       );
 
     case "QuestionChoice":
-      return (
-        <div className="space-y-3">
-          {question?.choices?.map((choice: any) => {
-            const IconComponent = questionIcons[question.label]?.[choice.label];
-            return (
-              <div
-                key={choice.id}
-                onClick={() => handleAnswer(choice, true)}
-                className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
-                  ${answerState?.id === choice.id 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-gray-200 hover:border-gray-300'}`}
+      if (question?.choices?.length === 2) {
+        return (
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex justify-center items-center gap-4">
+              {question.choices.map((choice: any) => (
+                <button
+                  key={choice.id}
+                  onClick={() =>
+                    prefilled
+                      ? setAnswerState(choice)
+                      : handleAnswer(choice, true)
+                  }
+                  className={`px-8 py-3 rounded-xl border-2 transition-colors
+                    ${
+                      answerState?.id === choice.id
+                        ? "border-primary bg-primary/10"
+                        : "border-muted hover:border-primary/50"
+                    }`}
+                >
+                  <span className="text-base font-medium">{choice.label}</span>
+                </button>
+              ))}
+            </div>
+            {prefilled && (
+              <button
+                onClick={handleManualProceed}
+                disabled={!answerState}
+                className={`bg-primary w-1/2 text-primary-foreground px-6 py-3 rounded-xl font-medium mt-4
+                  ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
               >
-                <label className="flex items-center w-full cursor-pointer">
-                  <input
-                    type="radio"
-                    className="sr-only"
-                    checked={answerState?.id === choice.id}
-                    onChange={() => handleAnswer(choice, true)}
-                  />
-                  {IconComponent && (
-                    <div className="w-8 h-8 mr-3 flex items-center justify-center text-primary">
-                      <IconComponent />
+                Continuer
+              </button>
+            )}
+          </div>
+        );
+      }
+      return (
+        <div className="flex flex-col items-center">
+          <Select
+            value={answerState?.id || ""}
+            onValueChange={(value) => {
+              const choice = question?.choices?.find((c: any) => c.id === value);
+              if (choice) {
+                if (prefilled) {
+                  setAnswerState(choice);
+                } else {
+                  handleAnswer(choice, true);
+                }
+              }
+            }}
+          >
+            <SelectTrigger className="w-1/2 p-4 h-auto rounded-xl">
+              <SelectValue placeholder="Sélectionnez une option">
+                {answerState && (
+                  <div className="flex items-center">
+                    {questionIcons[question.label]?.[answerState.label] && (
+                      <div className="w-6 h-6 mr-3 flex items-center justify-center text-primary">
+                        {React.createElement(questionIcons[question.label][answerState.label])}
+                      </div>
+                    )}
+                    <span>{answerState.label}</span>
+                  </div>
+                )}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {question?.choices?.map((choice: any) => {
+                const IconComponent = questionIcons[question.label]?.[choice.label];
+                return (
+                  <SelectItem key={choice.id} value={choice.id}>
+                    <div className="flex items-center">
+                      {IconComponent && (
+                        <div className="w-6 h-6 mr-3 flex items-center justify-center text-primary">
+                          <IconComponent />
+                        </div>
+                      )}
+                      <span>{choice.label}</span>
                     </div>
-                  )}
-                  <span className="text-base">{choice.label}</span>
-                </label>
-              </div>
-            );
-          })}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+          {prefilled && (
+            <button
+              onClick={handleManualProceed}
+              disabled={!answerState}
+              className={`bg-primary w-1/2 text-primary-foreground px-6 py-3 rounded-xl font-medium mt-4
+                ${!answerState ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
+            >
+              Continuer
+            </button>
+          )}
         </div>
       );
 
     case "QuestionChoiceMultiple": {
       const chosen = Array.isArray(answerState) ? answerState : [];
+      
       return (
-        <div className="space-y-3">
-          {question?.choices?.map((c: any) => {
-            const isChecked = chosen.some((x: any) => x.id === c.id);
-            const IconComponent = questionIcons[question.label]?.[c.label];
-            return (
-              <div
-                key={c.id}
-                onClick={() => {
-                  const newAnswer = isChecked 
-                    ? chosen.filter((x: any) => x.id !== c.id)
-                    : [...chosen, c];
-                  handleAnswer(newAnswer, true);
-                }}
-                className={`w-full p-4 rounded-lg border-2 transition-colors cursor-pointer
-                  ${isChecked 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-gray-200 hover:border-gray-300'}`}
-              >
-                <label className="flex items-center w-full cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only"
-                    checked={isChecked}
-                    onChange={() => {
-                      const newAnswer = isChecked 
-                        ? chosen.filter((x: any) => x.id !== c.id)
-                        : [...chosen, c];
-                      handleAnswer(newAnswer, true);
-                    }}
-                  />
-                  {IconComponent && (
-                    <div className="w-8 h-8 mr-3 flex items-center justify-center text-primary">
-                      <IconComponent />
+        <div className="space-y-4 flex flex-col items-center">
+          <Select
+            onValueChange={(value) => {
+              const choice = question?.choices?.find((c: any) => c.id === value);
+              if (choice) {
+                const isAlreadyChosen = chosen.some((c: any) => c.id === choice.id);
+                const newAnswer = isAlreadyChosen 
+                  ? chosen.filter((c: any) => c.id !== choice.id)
+                  : [...chosen, choice];
+                handleAnswer(newAnswer, false);
+              }
+            }}
+          >
+            <SelectTrigger className="w-1/2 p-4 h-auto rounded-xl">
+              <SelectValue placeholder="Sélectionnez vos options">
+                {chosen.length > 0 && (
+                  <span>{chosen.length} option{chosen.length > 1 ? 's' : ''} sélectionnée{chosen.length > 1 ? 's' : ''}</span>
+                )}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {question?.choices?.map((choice: any) => {
+                const isChecked = chosen.some((c: any) => c.id === choice.id);
+                const IconComponent = questionIcons[question.label]?.[choice.label];
+                return (
+                  <SelectItem key={choice.id} value={choice.id}>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="mr-3"
+                        checked={isChecked}
+                        readOnly
+                      />
+                      {IconComponent && (
+                        <div className="w-6 h-6 mr-3 flex items-center justify-center text-primary">
+                          <IconComponent />
+                        </div>
+                      )}
+                      <span>{choice.label}</span>
                     </div>
-                  )}
-                  <span className="text-base">{c.label}</span>
-                </label>
-              </div>
-            );
-          })}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+          
+          {chosen.length > 0 && (
+            <button
+              onClick={handleManualProceed}
+              className="bg-primary w-1/2 text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90"
+            >
+              Continuer
+            </button>
+          )}
         </div>
       );
     }

@@ -3,7 +3,6 @@ import { useDesignPageContext } from "@/contexts/designPage.context";
 import { useEnergyFormContext } from "@/contexts/energyForm.context";
 import { saveEnergyChoice } from "@/utils/handleEnergyChoiceData";
 import { EnergyMix } from "@/types/project.types";
-import StrategyButton from "./components/StrategyButton";
 import EnergyLabelTypeCard from "./components/EnergyLabelTypeCard";
 
 export type EnergyMixSolutionsType = "Simplicity" | "Balanced" | "Efficient";
@@ -16,12 +15,12 @@ export const STRATEGY_OPTIONS = [
   },
   {
     type: "Balanced" as EnergyMixSolutionsType,
-    label: "Équilibrée",
+    label: "Équilibré",
     description: "Compromis optimal",
   },
   {
     type: "Efficient" as EnergyMixSolutionsType,
-    label: "Performante",
+    label: "Optimal",
     description: "Performance maximale",
   },
 ];
@@ -32,21 +31,31 @@ const selectEnergyMixForStrategy = (
 ): EnergyMix | null => {
   if (!bouquets?.length) return null;
 
-  const validBouquets = bouquets.filter(Boolean);
-  if (!validBouquets.length) return null;
-
-  const sortedByLabelAsc = [...validBouquets].sort((a, b) =>
-    a.etiquette!.localeCompare(b.etiquette!)
-  );
-
+  // Filtrer les bouquets non-null et les trier par prix (resteACharge)
+  const validBouquets = bouquets.filter(Boolean).sort((a, b) => a.resteACharge - b.resteACharge);
+  
+  if (validBouquets.length === 0) return null;
+  
+  // Si on a 3 bouquets : le moins cher = Simplicity, le plus cher = Efficient, le milieu = Balanced
+  // Si on a 2 bouquets : le moins cher = Simplicity, le plus cher = Balanced
+  // Si on a 1 bouquet : il devient Balanced par défaut
+  
   switch (strategy) {
     case "Simplicity":
-      return sortedByLabelAsc[sortedByLabelAsc.length - 1] || null;
+      return validBouquets[0] || null;
     case "Balanced":
-      const middleIndex = Math.floor(sortedByLabelAsc.length / 2);
-      return sortedByLabelAsc[middleIndex] || sortedByLabelAsc[0] || null;
+      if (validBouquets.length === 1) {
+        return validBouquets[0] || null;
+      } else if (validBouquets.length === 2) {
+        return validBouquets[1] || null; // Le plus cher des 2
+      } else {
+        return validBouquets[1] || null; // Le milieu des 3
+      }
     case "Efficient":
-      return sortedByLabelAsc[0] || null;
+      if (validBouquets.length >= 3) {
+        return validBouquets[2] || null; // Le plus cher des 3
+      }
+      return null; // Pas d'Efficient si moins de 3 bouquets
     default:
       return null;
   }
@@ -56,12 +65,13 @@ interface EnergyMixSolutionsProps {
   onFinish?: (selectedBouquet: EnergyMix, selectedStrategy: EnergyMixSolutionsType) => void;
   initialData?: {
     bouquets: EnergyMix[];
+    dpeData?: any;
   };
 }
 
 export function EnergyMixSolutions({ onFinish, initialData }: EnergyMixSolutionsProps) {
-  const quizResults = localStorage.getItem("quizResults");
-  const quizResultsData = JSON.parse(quizResults || "{}");
+  const quizResults = typeof window !== 'undefined' ? localStorage.getItem("quizResults") : null;
+  const quizResultsData = quizResults ? JSON.parse(quizResults) : {};
   const { setCostEstimation } = useDesignPageContext();
   const { 
     setIsEnergyLabelSolutionsDisplayed, 
@@ -70,40 +80,52 @@ export function EnergyMixSolutions({ onFinish, initialData }: EnergyMixSolutions
     sessionId 
   } = useEnergyFormContext();
 
-  const [selectedStrategy, setSelectedStrategy] = useState<EnergyMixSolutionsType>("Balanced");
-  const selectedEnergyMix = selectEnergyMixForStrategy(
-    initialData?.bouquets || quizResultsData.bouquets, 
-    selectedStrategy
+  const bouquets = (initialData?.bouquets || quizResultsData.bouquets)?.filter(Boolean) || [];
+
+  const bouquetsByStrategy = {
+    Simplicity: selectEnergyMixForStrategy(bouquets, "Simplicity"),
+    Balanced: selectEnergyMixForStrategy(bouquets, "Balanced"),
+    Efficient: selectEnergyMixForStrategy(bouquets, "Efficient"),
+  };
+
+  // Filtrer les stratégies qui ont un bouquet disponible
+  const availableStrategies = STRATEGY_OPTIONS.filter(
+    option => bouquetsByStrategy[option.type] !== null
   );
 
-  const availableStrategies = STRATEGY_OPTIONS.filter((option, index) => {
-    const validBouquets = (initialData?.bouquets || quizResultsData.bouquets)?.filter(Boolean) || [];
-    switch (option.type) {
-      case "Simplicity":
-        return validBouquets.length >= 1;
-      case "Balanced":
-        return validBouquets.length >= 2;
-      case "Efficient":
-        return validBouquets.length >= 1;
-      default:
-        return false;
+  // Sélectionner automatiquement "Équilibré" par défaut, sinon la première stratégie disponible
+  const getDefaultStrategy = (): EnergyMixSolutionsType => {
+    if (availableStrategies.length === 0) return "Balanced";
+    
+    // Priorité : Équilibré > Simplicité > Optimal
+    const priorityOrder: EnergyMixSolutionsType[] = ["Balanced", "Simplicity", "Efficient"];
+    
+    for (const strategy of priorityOrder) {
+      if (availableStrategies.some(s => s.type === strategy)) {
+        return strategy;
+      }
     }
-  });
+    
+    // Fallback sur la première stratégie disponible
+    return availableStrategies[0].type;
+  };
 
+  const [selectedStrategy, setSelectedStrategy] = useState<EnergyMixSolutionsType>(getDefaultStrategy);
+  const selectedEnergyMix = bouquetsByStrategy[selectedStrategy];
+
+  // Mettre à jour la stratégie sélectionnée si la stratégie actuelle n'est pas disponible
   useEffect(() => {
-    if (!availableStrategies.find(s => s.type === selectedStrategy)) {
-      setSelectedStrategy(availableStrategies[0]?.type || "Balanced");
+    if (!bouquetsByStrategy[selectedStrategy] && availableStrategies.length > 0) {
+      setSelectedStrategy(availableStrategies[0].type);
     }
-  }, [availableStrategies]);
+  }, [selectedStrategy, availableStrategies]);
 
   useEffect(() => {
     if (!selectedEnergyMix) return;
-
     const newEstimation = {
       withAid: Math.floor(selectedEnergyMix.resteACharge),
       withoutAid: Math.floor(selectedEnergyMix.coutTotal),
     };
-
     setCostEstimation(prev => {
       if (prev.withAid === newEstimation.withAid && prev.withoutAid === newEstimation.withoutAid) {
         return prev;
@@ -118,58 +140,95 @@ export function EnergyMixSolutions({ onFinish, initialData }: EnergyMixSolutions
         console.error("EnergyMix manquant");
         return;
       }
-
       if (onFinish) {
         onFinish(selectedEnergyMix, selectedStrategy);
       } else if (sessionId) {
         await saveEnergyChoice(sessionId, selectedStrategy, selectedEnergyMix);
       }
-
-      setIsEnergyLabelSolutionsDisplayed(false);
       setEnergyFormCompleted(true);
       setIsEnergyFormDisplayed(false);
+      setIsEnergyLabelSolutionsDisplayed(false);
     } catch (err) {
       console.error("Erreur enregistrement EnergyMix:", err);
     }
   };
 
-  return (
-    <div className="flex flex-col items-center">
-      <h1 className="font-semibold text-xl">
-        Des options pour optimiser votre classification énergétique
-      </h1>
-      
-      <div className="flex mt-4 items-center justify-around space-x-2 w-4/5">
-        {availableStrategies.map((option) => (
-          <StrategyButton
-            key={option.type}
-            option={option}
-            isSelected={selectedStrategy === option.type}
-            onClick={() => setSelectedStrategy(option.type)}
-          />
-        ))}
-      </div>
+  const cardBase =
+    "flex-1 mx-2 bg-white dark:bg-gray-900 rounded-2xl shadow-md transition-all duration-300 flex flex-col items-center border-2 cursor-pointer min-w-[260px] max-w-[340px]";
+  const cardSelected =
+    "border-purple-300 dark:border-purple-200 !bg-purple-50 dark:!bg-purple-900/10 scale-105 z-10 shadow-xl ring-2 ring-purple-300 dark:ring-purple-200";
+  const cardUnselected =
+    "border-gray-200 dark:border-gray-700 opacity-60 hover:opacity-90 hover:scale-102";
 
-      {selectedEnergyMix ? (
-        <>
-          <EnergyLabelTypeCard
-            energyLabelSolutionsType={selectedStrategy}
-            bouquet={selectedEnergyMix}
-            initialState={initialData || quizResultsData}
-          />
-          <button 
-            onClick={handleFinish}
-            className="mt-4 px-6 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 font-semibold"
-          >
-            Terminer
-          </button>
-        </>
+  return (
+    <div className="flex flex-col items-center w-full">
+      {availableStrategies.length === 1 && (
+        <div className="text-center mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg max-w-2xl">
+          <p className="text-blue-800 dark:text-blue-200 font-medium">
+            Une seule solution optimale disponible pour votre projet
+          </p>
+          <p className="text-blue-600 dark:text-blue-300 text-sm mt-1">
+            Basé sur vos données, nous avons identifié la meilleure approche pour votre situation.
+          </p>
+        </div>
+      )}
+      {availableStrategies.length === 0 ? (
+        <div className="text-center mb-8 p-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg max-w-2xl">
+          <p className="text-red-800 dark:text-red-200 font-medium text-lg mb-2">
+            Aucune solution disponible
+          </p>
+          <p className="text-red-600 dark:text-red-300 text-sm">
+            Nous n'avons pas pu générer de solutions avec les données fournies. 
+            Veuillez vérifier vos informations ou contacter le support.
+          </p>
+        </div>
       ) : (
-        <p className="mt-4 text-red-500 font-semibold">
-          Aucun bouquet ne correspond à la stratégie "{
-            STRATEGY_OPTIONS.find(opt => opt.type === selectedStrategy)?.label
-          }".
-        </p>
+        <div className="flex flex-row justify-center items-stretch w-full max-w-5xl mb-8">
+          {availableStrategies.map((option, idx) => {
+            const isSelected = selectedStrategy === option.type;
+            const bouquet = bouquetsByStrategy[option.type];
+            const isSingleStrategy = availableStrategies.length === 1;
+            return (
+              <div
+                key={option.type}
+                className={
+                  cardBase +
+                  " " +
+                  (isSelected ? cardSelected : cardUnselected) +
+                  (availableStrategies.length === 2 && idx === 0 ? " mr-4" : "") +
+                  (availableStrategies.length === 2 && idx === 1 ? " ml-4" : "") +
+                  (isSingleStrategy ? " mx-auto cursor-default" : "")
+                }
+                style={{ 
+                  minHeight: isSelected ? 600 : 520, 
+                  boxShadow: isSelected ? "0 4px 32px rgba(167, 139, 250, 0.15)" : undefined,
+                  maxWidth: isSingleStrategy ? "400px" : undefined
+                }}
+                onClick={isSingleStrategy ? undefined : () => setSelectedStrategy(option.type as EnergyMixSolutionsType)}
+              >
+                <div className="w-full flex flex-col items-center p-6">
+                  <EnergyLabelTypeCard
+                    energyLabelSolutionsType={option.type}
+                    bouquet={bouquet!}
+                    initialState={initialData || quizResultsData}
+                    isSelected={isSelected}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {availableStrategies.length > 0 && (
+        <div className="flex w-full max-w-5xl justify-end">
+          <button
+            onClick={handleFinish}
+            disabled={!selectedEnergyMix}
+            className={`px-8 py-3 rounded-lg font-semibold text-white text-lg transition-colors duration-200 ${selectedEnergyMix ? "bg-purple-300 dark:bg-purple-400 hover:bg-purple-400 dark:hover:bg-purple-500" : "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"}`}
+          >
+            Suivant
+          </button>
+        </div>
       )}
     </div>
   );

@@ -2,7 +2,10 @@ import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./components/SubmitButton";
-import Image from "next/image";
+import { ThemeSwitch } from "./components/ThemeSwitch";
+import { LoginBackground } from "./components/LoginBackground";
+import dynamic from "next/dynamic";
+const LoginLogo = dynamic(() => import("./components/LoginLogo").then(mod => mod.LoginLogo), { ssr: false });
 
 export default function Login({
   searchParams,
@@ -52,11 +55,11 @@ export default function Login({
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[url('data:image/svg+xml;utf8,<svg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M0 20L10 10L20 20\' stroke=\'%23E5E7EB\' stroke-width=\'1\'/></svg>')]">
-      <div className="flex-col w-full px-8 sm:max-w-md justify-center gap-2">
+    <div className="relative min-h-screen w-full flex justify-center items-center">
+      <LoginBackground />
+      <div className="flex-col w-full px-8 sm:max-w-md justify-center gap-2 z-10">
         <div className="flex flex-col gap-2 items-center">
-          <Image src="/logo.png" alt="Logo Omnicity" width={180} height={180} className="mb-4" />
-          <h1 className="text-3xl font-bold mb-8 text-[#7B6EF6]">OmniCity</h1>
+          <LoginLogo />
           <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
             <label className="text-md" htmlFor="email">
               Email
@@ -79,7 +82,7 @@ export default function Login({
             />
             <SubmitButton
               formAction={signIn}
-              className="bg-[#7B6EF6] rounded-md px-4 py-2 text-white mb-2 hover:bg-[#6a5dd5] transition-colors"
+              className="bg-[#AF80FF] rounded-md px-4 py-2 text-white mb-2 hover:bg-[#6a5dd5] transition-colors"
               pendingText="Connexion..."
             >
               Se connecter
@@ -101,6 +104,7 @@ export default function Login({
           </form>
         </div>
       </div>
+      <ThemeSwitch />
     </div>
   );
 }

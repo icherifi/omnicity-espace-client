@@ -13,12 +13,35 @@ const ThemeContext = createContext<ThemeContextType | null>(null)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light")
+  const [mounted, setMounted] = useState(false)
 
+  // Restaurer le thème depuis localStorage au chargement
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const savedTheme = localStorage.getItem("theme") as Theme
+    if (savedTheme && (savedTheme === "dark" || savedTheme === "light")) {
+      setTheme(savedTheme)
+    }
+    setMounted(true)
+  }, [])
+
+  // Appliquer le thème au DOM et sauvegarder en localStorage
+  useEffect(() => {
+    if (!mounted || typeof window === 'undefined') return
+
     const root = window.document.documentElement
     root.classList.remove("light", "dark")
     root.classList.add(theme)
-  }, [theme])
+    
+    // Sauvegarder en localStorage
+    localStorage.setItem("theme", theme)
+  }, [theme, mounted])
+
+  // Éviter le rendu pendant l'hydratation
+  if (!mounted) {
+    return <div className="light">{children}</div>
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

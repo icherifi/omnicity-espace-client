@@ -26,6 +26,32 @@ export const deleteProject = async (
   }
 };
 
+export const archiveProject = async (
+  projectId: string,
+  token: string
+): Promise<boolean> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ state: "archived" }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to archive project");
+    }
+    return true;
+  } catch (error) {
+    console.error("Error archiving project:", error);
+    return false;
+  }
+};
+
 export const getScans = async (projectId: string): Promise<any[] | null> => {
   const token = await getToken();
   if (!token) {
@@ -57,7 +83,7 @@ export const getScans = async (projectId: string): Promise<any[] | null> => {
 export const handleImageChange = async (
   file: File,
   token: string,
-  projectId: number
+  projectId: string
 ): Promise<string | null> => {
   try {
     if (!file) return null;
@@ -93,7 +119,7 @@ export const handleImageChange = async (
 };
 
 export const updateProjectImage = async (
-  projectId: number,
+  projectId: string,
   imageFullPath: string,
   token: string
 ) => {
@@ -120,10 +146,39 @@ export const updateProjectImage = async (
   }
 };
 
+export const updateProject = async (
+  projectId: string,
+  updatedData: any,
+  token: string
+): Promise<boolean> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return false;
+  }
+};
+
 export const handleNewProject = async (
   projectData: any,
   token: string
-): Promise<{ message: string; data: { id: number }[] }> => {
+): Promise<{ message: string; data: { id: string }[] }> => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
@@ -152,7 +207,7 @@ export const handleNewProject = async (
 
 export async function saveIziResponseToBackend(
   iziResponse: any,
-  projectId: number,
+  projectId: string,
   token: string
 ) {
   try {

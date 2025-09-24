@@ -1,31 +1,38 @@
 "use client";
 import * as React from "react";
 import { Progress } from "@/components/ui/progress";
-import Navbar from "@/components/Navbar";
-import MainHeader from "@/components/MainHeader";
-import MainComponent from "@/app/home/MainComponent";
-import { ComponentsMap } from "@/types/dashboard.types";
-import Plan from "@/components/scans/Plan";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import ProjectsPage from "@/components/projects/Projects";
-import FormPage from "@/components/forms/formPage/FormPage";
+import { useSidebarContext } from "@/contexts/sidebar.context";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/Sidebar";
+import ProjectsSection from "@/app/sections/projects/ProjectsSection";
+import DashboardSection from "@/app/sections/dashboard/DashboardSection";
+import EnergySummarySection from "@/app/sections/energySummary/EnergySummarySection";
+import DocumentsSection from "@/app/sections/documents/DocumentsSection";
+import RelationSection from "@/app/sections/relation/RelationSection";
+import RenovationSection from "@/app/sections/renovation/RenovationSection";
+import AssistanceSection from "@/app/sections/assistance/AssistanceSection";
+import SettingsSection from "@/app/sections/settings/SettingsSection";
+import { useDashboardContext } from "@/contexts/dashboard.context";
+import { useProjectsContext } from "@/contexts/projects.context";
 
-const componentsMap: ComponentsMap = {
-  main: <MainComponent />,
-  import: <Plan />,
-  form: <FormPage />,
-  projects: <ProjectsPage />,
+const sectionsMap = {
+  projects: <ProjectsSection />,
+  documents: <DocumentsSection />,
+  renovation: <RenovationSection />,
+  relation: <RelationSection />,
+  assistance: <AssistanceSection />,
+  settings: <SettingsSection />,
 };
 
-export default function Dashboard() {
+export default function Page() {
   const [loading, setLoading] = React.useState(true);
-  const [content, setContent] =
-    React.useState<keyof typeof componentsMap>("main");
-  const renderContent = () => {
-    return componentsMap[content] || <div className="flex w-full mt-6 justify-center items-center">En cours de développement...</div>;
-  };
+  const { section, showEnergySummary, toggleEnergySummary } = useSidebarContext();
+  const { setCurrentProjectDisplayed } = useDashboardContext();
+  const { projects } = useProjectsContext();
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -42,12 +49,45 @@ export default function Dashboard() {
     checkUser();
   }, [router]);
 
+  React.useEffect(() => {
+    if (loading) return;
+
+    const projectMatch = pathname.match(/^\/project\/([0-9a-fA-F-]{36})(?:\/(energy|documents|renovation|relation))?$/);
+    if (projectMatch) {
+      const projectId = projectMatch[1];
+      const sub = projectMatch[2];
+      
+      const project = projects.find(p => p.id === projectId);
+      if (project) {
+        setCurrentProjectDisplayed(project);
+      } else {
+        router.push("/");
+      }
+    }
+  }, [pathname, projects, loading, router, setCurrentProjectDisplayed]);
+
   const [progress, setProgress] = React.useState(13);
 
   React.useEffect(() => {
     const timer = setTimeout(() => setProgress(100), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  const renderContent = () => {
+    if (section === "dashboard") {
+      return showEnergySummary ? (
+        <EnergySummarySection onClose={toggleEnergySummary} />
+      ) : (
+        <DashboardSection onToggleSummary={toggleEnergySummary} />
+      );
+    }
+    // @ts-ignore
+    return sectionsMap[section] || (
+      <div className="flex w-full mt-6 justify-center items-center">
+        En cours de développement...
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -58,16 +98,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="sticky top-0 h-screen">
-        <Navbar content={content} setContent={setContent} />
-      </div>
-      <div className="flex flex-col">
-        <div className="sticky top-0 z-10">
-          <MainHeader />
+    <SidebarProvider>
+      <div className="grid min-h-screen w-full grid-cols-[200px_1fr]">
+        <div className="sticky top-0 h-screen w-full flex justify-center">
+          <AppSidebar />
         </div>
-        <div className="flex-1">{renderContent()}</div>
+        <div className="flex flex-col bg-card text-card-foreground rounded-2xl shadow-xl m-6 p-6 flex-1">
+          <div className="flex-1">{renderContent()}</div>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

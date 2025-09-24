@@ -11,6 +11,8 @@ interface FormFieldProps {
   type?: string;
   placeholder?: string;
   className?: string;
+  inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search";
+  pattern?: string;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -22,6 +24,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   type = "text",
   placeholder,
   className = "",
+  inputMode,
+  pattern,
 }) => {
   return (
     <div className="grid grid-cols-4 items-center gap-4 w-full">
@@ -34,6 +38,8 @@ export const FormField: React.FC<FormFieldProps> = ({
           type={type}
           value={value as string | number}
           placeholder={placeholder}
+          inputMode={inputMode}
+          pattern={pattern}
           className={`${error ? "border-red-500" : ""} ${className}`}
           onChange={(e) => onChange(e.currentTarget.value)}
         />

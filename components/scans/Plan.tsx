@@ -33,7 +33,7 @@ export default function Plan() {
       canvas.remove();
     }
     const selectedProject = projects.find(
-      (project) => project.name === e.target.value
+      (project) => project.firstName + " " + project.lastName === e.target.value
     );
     if (selectedProject) {
       setCurrentProjectDisplayed(selectedProject);
@@ -57,7 +57,7 @@ export default function Plan() {
             <Wrench className="mb-4 text-zinc-800" size={48} />
             <h2 className="font-semibold text-[22px] mb-2">Aucun scan disponible pour ce projet</h2>
             <div className="text-center max-w-[500px] mb-6 text-zinc-600">
-              Vous n'avez pas encore importé de plans, scans 3D ou relevés pour le projet <a href="#" className="text-primary underline">{currentProjectDisplayed.name}</a>.<br /><br />
+              Vous n'avez pas encore importé de plans, scans 3D ou relevés pour le projet <a href="#" className="text-primary underline">{currentProjectDisplayed.firstName} {currentProjectDisplayed.lastName}</a>.<br /><br />
               Importez vos fichiers (plans PDF, scans LIDAR, etc.) pour commencer la modélisation et profiter pleinement des fonctionnalités de visualisation et d'estimation.
             </div>
             <div className="border-2 border-dashed border-zinc-300 rounded-xl p-8 w-[400px] text-center bg-zinc-50 mb-4">
@@ -80,12 +80,12 @@ export default function Plan() {
             </span>
             <select
               onChange={handlePlanChange}
-              value={currentProjectDisplayed.name}
+              value={currentProjectDisplayed.firstName + " " + currentProjectDisplayed.lastName}
               className="pl-10 pr-4 py-2 rounded-xl border border-zinc-300 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary transition text-zinc-700 bg-white min-w-[220px] text-base appearance-none"
             >
               {projects.map((project) => (
-                <option key={project.name} value={project.name}>
-                  {project.name}
+                <option key={project.firstName + " " + project.lastName} value={project.firstName + " " + project.lastName}>
+                  {project.firstName} {project.lastName}
                 </option>
               ))}
             </select>

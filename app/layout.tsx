@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "../app/globals.css";
-import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import NewProjectStandardFormContextProvider from "@/contexts/newProjectStandardForm.context";
@@ -9,19 +8,15 @@ import DashboardContextProvider from "@/contexts/dashboard.context";
 import DesignPageContextProvider from "@/contexts/designPage.context";
 import { UnityContextProvider } from "./design/components/unityContext";
 import ProjectsContextProvider from "@/contexts/projects.context";
-import { headers } from "next/headers"; // Import the headers module
+import SidebarContextProvider from "@/contexts/sidebar.context";
+import { bricolage } from "./fonts";
 
 export interface useCustomHook {
   children: React.ReactNode;
 }
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
 export const metadata: Metadata = {
-  title: "Omnicity",
+  title: "OmniCity",
 };
 
 export default function RootLayout({
@@ -29,23 +24,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const currentPath =
-    headers().get("x-nextjs-rewrite-path") ||
-    headers().get("x-next-url") ||
-    "/";
-
   return (
     <ProjectsContextProvider>
       <NewProjectStandardFormContextProvider>
         <EnergyFormContextProvider>
+          <SidebarContextProvider>
           <DashboardContextProvider>
             <DesignPageContextProvider>
               <UnityContextProvider>
                 <html lang="fr">
                   <body
                     className={cn(
-                      "min-h-screen bg-background font-sans antialiased",
-                      fontSans.variable
+                      "min-h-screen antialiased bg-body-gradient",
+                      bricolage.className
                     )}
                   >
                     <Providers>{children}</Providers>
@@ -54,6 +45,7 @@ export default function RootLayout({
               </UnityContextProvider>
             </DesignPageContextProvider>
           </DashboardContextProvider>
+          </SidebarContextProvider>
         </EnergyFormContextProvider>
       </NewProjectStandardFormContextProvider>
     </ProjectsContextProvider>

@@ -20,7 +20,7 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
 
   return (
     <div className="mt-8">
-      <h2 className="text-xl text-center font-bold mb-6 text-violet-500">
+      <h2 className="text-xl text-center font-bold mb-6 text-purple-500 dark:text-purple-400">
         Les solutions de travaux pour améliorer votre étiquette énergétique
       </h2>
       
@@ -43,41 +43,41 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
               key={index}
               className={cn(
                 "rounded-2xl p-4 sm:p-6 relative",
-                isSelected ? 'bg-violet-500 text-white' : 'bg-gray-50'
+                isSelected ? 'bg-purple-500 dark:bg-purple-600 text-white' : 'bg-gray-50 dark:bg-gray-800'
               )}
             >
               {isSelected && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-violet-500 text-white px-4 py-1 rounded-full text-sm">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 dark:bg-purple-600 text-white px-4 py-1 rounded-full text-sm">
                   Votre choix
                 </div>
               )}
               
               <h3 className={cn(
                 "text-lg font-semibold mb-4",
-                isSelected ? 'text-white' : 'text-violet-500'
+                isSelected ? 'text-white' : 'text-purple-500 dark:text-purple-400'
               )}>
                 {solutionType}
               </h3>
               
               <div className="mb-6">
-                <h4 className="font-medium mb-3">Travaux à réaliser</h4>
+                <h4 className="font-medium mb-3 text-gray-900 dark:text-white">Travaux à réaliser</h4>
                 {worksList.map((work, idx) => (
                   <div key={idx} className="flex items-start gap-3 mb-3">
                     <div className={cn(
                       "w-6 h-6 rounded-full flex items-center justify-center text-sm flex-shrink-0",
                       isSelected 
-                        ? 'bg-white text-violet-500' 
-                        : 'bg-violet-500 text-white'
+                        ? 'bg-white text-purple-500 dark:text-purple-400' 
+                        : 'bg-purple-500 dark:bg-purple-400 text-white'
                     )}>
                       {idx + 1}
                     </div>
-                    <span className="flex-1">{work}</span>
+                    <span className="flex-1 text-gray-900 dark:text-white">{work}</span>
                   </div>
                 ))}
               </div>
 
               <div className="mb-6">
-                <h4 className="font-medium mb-2">Résultat des travaux</h4>
+                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Résultat des travaux</h4>
                 <div className="flex items-center gap-2 mb-2">
                   <div className={cn(
                     "px-3 py-1 font-bold rounded text-white",
@@ -85,7 +85,7 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
                   )}>
                     {bouquet?.etiquette}
                   </div>
-                  <div className="text-sm">
+                  <div className="text-sm text-gray-900 dark:text-white">
                     {bouquet && currentProjectDisplayed.iziResponse && (
                       <>
                         <p>{getFuturEnergyConsumption(currentProjectDisplayed.iziResponse.CEP, bouquet.pourcentageGainCEP)} kwh/m2/an</p>
@@ -97,7 +97,7 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
               </div>
 
               <div className="mb-6">
-                <h4 className="font-medium mb-2">Confort</h4>
+                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Confort</h4>
                 <div className="flex items-center gap-2">
                   <span className={cn(
                     "text-2xl",
@@ -108,7 +108,7 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
                      bouquet?.confort === 1 ? "😔" : "❓"}
                   </span>
                   <span className={cn(
-                    isSelected ? "text-white" : "text-gray-700"
+                    isSelected ? "text-white" : "text-gray-700 dark:text-gray-300"
                   )}>
                     Confort {
                       bouquet?.confort === 3 ? "bon" : 
@@ -121,23 +121,23 @@ export const WorkSolutions = ({ currentProjectDisplayed }: WorkSolutionsProps) =
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-medium">Coût du projet</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white">Coût du projet</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm">Coût travaux</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Coût travaux</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {bouquet?.coutTotal?.toLocaleString('fr-FR')}€
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm">Aides financières</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Aides financières</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {bouquet?.montantAides?.toLocaleString('fr-FR')}€
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm">Reste à charge</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Reste à charge</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {bouquet?.resteACharge?.toLocaleString('fr-FR')}€
                     </span>
                   </div>

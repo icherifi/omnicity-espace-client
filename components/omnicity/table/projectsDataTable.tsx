@@ -19,7 +19,9 @@ export default function ProjectsDataTable(props: {
     filteredProjects = filteredProjects.filter(p => p.state === "completed");
   }
   if (props.author) {
-    filteredProjects = filteredProjects.filter(p => p.authorName === props.author);
+    filteredProjects = filteredProjects.filter(
+      p => `${p.firstName} ${p.lastName}` === props.author
+    );
   }
   if (props.dateRange?.from && props.dateRange?.to) {
     filteredProjects = filteredProjects.filter(p => {

@@ -75,7 +75,7 @@ function DashboardScrollCarousel() {
     <div className="relative w-full">
       <button
         onClick={() => throttledScroll(-1)}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all"
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 p-2 rounded-full shadow-lg transition-all"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -94,9 +94,9 @@ function DashboardScrollCarousel() {
 
       <div
         ref={scrollContainerRef}
-        className="w-full overflow-x-auto rounded-lg border border-gray-200
-        scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200
-        hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+        className="w-full overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700
+        scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800
+        hover:scrollbar-thumb-gray-500 dark:hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
       >
         <div className="flex space-x-4 p-4" style={{ width: "max-content" }}>
           {projects.map((project, i) => (
@@ -111,7 +111,7 @@ function DashboardScrollCarousel() {
                 <Card
                   className={`${
                     currentProjectDisplayed?.id === project.id
-                      ? "border-violet-500 border-2"
+                      ? "border-purple-500 dark:border-purple-400 border-2"
                       : ""
                   }`}
                 >
@@ -142,10 +142,10 @@ function DashboardScrollCarousel() {
                       <CarouselNext />
                     </Carousel>
 
-                    <CardTitle className="text-center mt-8">
-                      {project.name}
+                    <CardTitle className="text-center mt-8 text-gray-900 dark:text-white">
+                      {project.firstName} {project.lastName}
                     </CardTitle>
-                    <CardDescription className="text-center mt-4">
+                    <CardDescription className="text-center mt-4 text-gray-700 dark:text-gray-300">
                       <span className="font-semibold mt-4">
                         {project.features?.roomsNumber} pièce
                         {Number(project.features?.roomsNumber) > 1 && "s"} &bull;
@@ -157,7 +157,7 @@ function DashboardScrollCarousel() {
                   <CardFooter className="flex flex-col p-0 pb-4">
                     <Badge
                       variant={project.state}
-                      className="mt-4 mb-4 text-black"
+                      className="mt-4 mb-4 text-gray-900 dark:text-white"
                     >
                       {project.state == "completed" ? "Terminé" : "En cours..."}
                     </Badge>
@@ -171,7 +171,7 @@ function DashboardScrollCarousel() {
             <div className="p-1 w-full h-full flex items-center justify-center">
               <NewProjectDialog>
                 <button
-                  className="flex items-center justify-center w-20 h-20 rounded-full bg-violet-500 text-white text-5xl shadow-lg hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 transition-all"
+                  className="flex items-center justify-center w-20 h-20 rounded-full bg-purple-500 dark:bg-purple-600 text-white text-5xl shadow-lg hover:bg-purple-600 dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 dark:focus:ring-purple-300 focus:ring-offset-2 transition-all"
                   aria-label="Ajouter un projet"
                   type="button"
                 >
@@ -185,7 +185,7 @@ function DashboardScrollCarousel() {
 
       <button
         onClick={() => throttledScroll(1)}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all"
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 p-2 rounded-full shadow-lg transition-all"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
