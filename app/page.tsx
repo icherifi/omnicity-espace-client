@@ -28,7 +28,8 @@ const sectionsMap = {
 
 export default function Page() {
   const [loading, setLoading] = React.useState(true);
-  const { section, showEnergySummary, toggleEnergySummary } = useSidebarContext();
+  const { section, showEnergySummary, toggleEnergySummary } =
+    useSidebarContext();
   const { setCurrentProjectDisplayed } = useDashboardContext();
   const { projects } = useProjectsContext();
   const router = useRouter();
@@ -52,12 +53,14 @@ export default function Page() {
   React.useEffect(() => {
     if (loading) return;
 
-    const projectMatch = pathname.match(/^\/project\/([0-9a-fA-F-]{36})(?:\/(energy|documents|renovation|relation))?$/);
+    const projectMatch = pathname.match(
+      /^\/project\/([0-9a-fA-F-]{36})(?:\/(energy|documents|renovation|relation))?$/
+    );
     if (projectMatch) {
       const projectId = projectMatch[1];
       const sub = projectMatch[2];
-      
-      const project = projects.find(p => p.id === projectId);
+
+      const project = projects.find((p) => p.id === projectId);
       if (project) {
         setCurrentProjectDisplayed(project);
       } else {
@@ -82,10 +85,12 @@ export default function Page() {
       );
     }
     // @ts-ignore
-    return sectionsMap[section] || (
-      <div className="flex w-full mt-6 justify-center items-center">
-        En cours de développement...
-      </div>
+    return (
+      sectionsMap[section] || (
+        <div className="flex w-full mt-6 justify-center items-center">
+          En cours de développement...
+        </div>
+      )
     );
   };
 
