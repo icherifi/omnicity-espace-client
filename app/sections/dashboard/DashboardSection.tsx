@@ -45,7 +45,8 @@ export default function DashboardSection({
   const { navigateToProjectEnergy } = useAppRouter();
   const [openRecap, setOpenRecap] = React.useState(false);
 
-  const { targetedEnergyRating, iziResponse } = currentProjectDisplayed as any;
+  const { targetedEnergyRating, energyResults } =
+    currentProjectDisplayed as any;
 
   const avanc = getCompletionPercentage(currentProjectDisplayed as ProjectType);
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function DashboardSection({
 
   const currentLabel =
     overallEnergyLabel(initialCEP, initialEGES) ||
-    iziResponse?.etiquetteInitial ||
+    energyResults?.etiquetteInitial ||
     "-";
   const targetLabel =
     overallEnergyLabel(targetCEP, targetEGES) || targetedEnergyRating || "-";
@@ -90,7 +91,7 @@ export default function DashboardSection({
   }
 
   const isEnergyDataAvailable =
-    !!iziResponse || !!(currentProjectDisplayed as any)?.dpe?.dpeData;
+    !!energyResults || !!(currentProjectDisplayed as any)?.dpe?.dpeData;
   const isEnergyMixAvailable = !!(currentProjectDisplayed as any)
     .energyMixChoice;
   const isDraft =
@@ -163,14 +164,14 @@ export default function DashboardSection({
               initialEGES={initialEGES}
               costs={costs}
               hasCosts={hasCosts}
-              iziResponse={iziResponse}
+              energyResults={energyResults}
               isEnergyDataAvailable={isEnergyDataAvailable}
             />
             <EnergyTargetCard
               targetLabel={targetLabel}
               targetCEP={targetCEP}
               targetEGES={targetEGES}
-              iziResponse={iziResponse}
+              energyResults={energyResults}
               energyMixChoice={currentProjectDisplayed.energyMixChoice}
               isEnergyDataAvailable={isEnergyDataAvailable}
             />

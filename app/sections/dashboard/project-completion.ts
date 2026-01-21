@@ -21,11 +21,14 @@ export interface ProjectCompletion {
 /**
  * Vérifie si un projet a des plans importés (fonction utilitaire pour les composants)
  */
-export function checkPlansImported(project: ProjectType, hasPlans?: boolean): boolean {
+export function checkPlansImported(
+  project: ProjectType,
+  hasPlans?: boolean,
+): boolean {
   if (hasPlans !== undefined) {
     return hasPlans;
   }
-  
+
   return project.state === "completed" || project.id_design !== null;
 }
 
@@ -33,13 +36,14 @@ export const PROJECT_STEPS: ProjectStep[] = [
   {
     id: "project_creation",
     name: "Création du projet",
-    description: "Informations de base du projet (client, adresse, caractéristiques)",
+    description:
+      "Informations de base du projet (client, adresse, caractéristiques)",
     percentage: 10,
     isCompleted: (project: ProjectType) => {
       return !!(project.firstName && project.lastName && project.address);
     },
     nextStepAction: "Compléter les informations du client",
-    isRequired: true
+    isRequired: true,
   },
   {
     id: "energy_assessment",
@@ -47,10 +51,10 @@ export const PROJECT_STEPS: ProjectStep[] = [
     description: "Évaluation de la performance énergétique actuelle",
     percentage: 25,
     isCompleted: (project: ProjectType) => {
-      return !!(project.iziResponse || project.dpe?.dpeData);
+      return !!(project.energyResults || project.dpe?.dpeData);
     },
     nextStepAction: "Effectuer le diagnostic énergétique",
-    isRequired: true
+    isRequired: true,
   },
   {
     id: "energy_analysis",
@@ -58,10 +62,10 @@ export const PROJECT_STEPS: ProjectStep[] = [
     description: "Analyse détaillée des consommations et émissions",
     percentage: 40,
     isCompleted: (project: ProjectType) => {
-      return !!(project.iziResponse?.CEP && project.iziResponse?.EGES);
+      return !!(project.energyResults?.CEP && project.energyResults?.EGES);
     },
     nextStepAction: "Analyser les données énergétiques",
-    isRequired: true
+    isRequired: true,
   },
   {
     id: "work_planning",
@@ -69,10 +73,10 @@ export const PROJECT_STEPS: ProjectStep[] = [
     description: "Définition des solutions de rénovation et choix du bouquet",
     percentage: 60,
     isCompleted: (project: ProjectType) => {
-      return !!(project.energyMixChoice);
+      return !!project.energyMixChoice;
     },
     nextStepAction: "Choisir le plan de rénovation",
-    isRequired: true
+    isRequired: true,
   },
   {
     id: "cost_estimation",
@@ -80,10 +84,13 @@ export const PROJECT_STEPS: ProjectStep[] = [
     description: "Calcul des coûts et des aides disponibles",
     percentage: 75,
     isCompleted: (project: ProjectType) => {
-      return !!(project.energyMixChoice?.coutTotal && project.energyMixChoice?.montantAides);
+      return !!(
+        project.energyMixChoice?.coutTotal &&
+        project.energyMixChoice?.montantAides
+      );
     },
     nextStepAction: "Finaliser l'estimation des coûts",
-    isRequired: true
+    isRequired: true,
   },
   {
     id: "scan_import",
@@ -94,7 +101,7 @@ export const PROJECT_STEPS: ProjectStep[] = [
       return checkPlansImported(project);
     },
     nextStepAction: "Importer le plan avec LiDAR",
-    isRequired: false
+    isRequired: false,
   },
   {
     id: "professional_contact",
@@ -105,7 +112,7 @@ export const PROJECT_STEPS: ProjectStep[] = [
       return project.state === "completed";
     },
     nextStepAction: "Prendre contact avec un professionnel",
-    isRequired: true
+    isRequired: true,
   },
   {
     id: "project_completion",
@@ -116,36 +123,43 @@ export const PROJECT_STEPS: ProjectStep[] = [
       return project.state === "completed";
     },
     nextStepAction: "Finaliser le projet",
-    isRequired: true
-  }
+    isRequired: true,
+  },
 ];
 
 /**
  * Calcule la complétion d'un projet en fonction des étapes définies
  */
-export function calculateProjectCompletion(project: ProjectType): ProjectCompletion {
-  const completedSteps = PROJECT_STEPS.filter(step => step.isCompleted(project));
-  const remainingSteps = PROJECT_STEPS.filter(step => !step.isCompleted(project));
-  
+export function calculateProjectCompletion(
+  project: ProjectType,
+): ProjectCompletion {
+  const completedSteps = PROJECT_STEPS.filter((step) =>
+    step.isCompleted(project),
+  );
+  const remainingSteps = PROJECT_STEPS.filter(
+    (step) => !step.isCompleted(project),
+  );
+
   let completionPercentage = 0;
   if (completedSteps.length > 0) {
     completionPercentage = Math.max(
-      ...completedSteps.map(step => step.percentage)
+      ...completedSteps.map((step) => step.percentage),
     );
   }
-  
-  const currentStep = completedSteps.length > 0 
-    ? completedSteps[completedSteps.length - 1]
-    : PROJECT_STEPS[0];
-  
+
+  const currentStep =
+    completedSteps.length > 0
+      ? completedSteps[completedSteps.length - 1]
+      : PROJECT_STEPS[0];
+
   const nextStep = remainingSteps.length > 0 ? remainingSteps[0] : null;
-  
+
   return {
     currentStep,
     nextStep,
     completionPercentage,
     completedSteps,
-    remainingSteps
+    remainingSteps,
   };
 }
 
@@ -185,23 +199,23 @@ export function getNextStepAction(project: ProjectType): string {
  * Vérifie si une étape spécifique est complétée
  */
 export function isStepCompleted(project: ProjectType, stepId: string): boolean {
-  const step = PROJECT_STEPS.find(s => s.id === stepId);
+  const step = PROJECT_STEPS.find((s) => s.id === stepId);
   return step ? step.isCompleted(project) : false;
 }
 
 /**
  * Obtient toutes les étapes d'un projet avec leur statut
  */
-export function getProjectStepsStatus(project: ProjectType): Array<Omit<ProjectStep, 'isCompleted'> & { isCompleted: boolean }> {
-  return PROJECT_STEPS.map(step => ({
+export function getProjectStepsStatus(
+  project: ProjectType,
+): Array<Omit<ProjectStep, "isCompleted"> & { isCompleted: boolean }> {
+  return PROJECT_STEPS.map((step) => ({
     id: step.id,
     name: step.name,
     description: step.description,
     percentage: step.percentage,
     nextStepAction: step.nextStepAction,
     isRequired: step.isRequired,
-    isCompleted: step.isCompleted(project)
+    isCompleted: step.isCompleted(project),
   }));
 }
-
-

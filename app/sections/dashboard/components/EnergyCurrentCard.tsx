@@ -1,12 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogTrigger,
@@ -23,7 +18,7 @@ interface EnergyCurrentCardProps {
   initialEGES?: number;
   costs: { monthlyBefore: number; monthlyAfter: number };
   hasCosts: boolean;
-  iziResponse: any;
+  energyResults: any;
   isEnergyDataAvailable: boolean;
 }
 
@@ -33,7 +28,7 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
   initialEGES,
   costs,
   hasCosts,
-  iziResponse,
+  energyResults,
   isEnergyDataAvailable,
 }) => {
   return (
@@ -54,9 +49,21 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
             <DialogContent className="max-w-2xl p-0 pb-6">
               <div className="flex flex-row items-stretch w-full">
                 <div className="flex-1 p-8 flex flex-col justify-center">
-                  <h2 className="text-3xl font-bold mb-6 leading-tight">Diagnostic de Performance Énergétique (DPE)</h2>
-                  <p className="text-lg mb-8">Le DPE donne des informations sur la performance énergétique et climatique d'un logement ou d'un bâtiment.</p>
-                  <a href="https://www.service-public.fr/particuliers/vosdroits/F16096" target="_blank" rel="noreferrer" className="text-xs underline text-foreground mt-2 w-fit">En savoir plus</a>
+                  <h2 className="text-3xl font-bold mb-6 leading-tight">
+                    Diagnostic de Performance Énergétique (DPE)
+                  </h2>
+                  <p className="text-lg mb-8">
+                    Le DPE donne des informations sur la performance énergétique
+                    et climatique d'un logement ou d'un bâtiment.
+                  </p>
+                  <a
+                    href="https://www.service-public.fr/particuliers/vosdroits/F16096"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs underline text-foreground mt-2 w-fit"
+                  >
+                    En savoir plus
+                  </a>
                 </div>
                 <div className="flex flex-col items-center pr-8 pt-8">
                   <svg
@@ -72,49 +79,63 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
                           d="M136.416 0H0V58H136.416L156 29L136.416 0Z"
                           fill="#21803D"
                         />
-                        <text x="18" y="38" fill="white">A</text>
+                        <text x="18" y="38" fill="white">
+                          A
+                        </text>
                       </g>
                       <g transform="translate(0,58)">
                         <path
                           d="M160.416 0H0V58H160.416L180 29L160.416 0Z"
                           fill="#59AB3F"
                         />
-                        <text x="18" y="38" fill="white">B</text>
+                        <text x="18" y="38" fill="white">
+                          B
+                        </text>
                       </g>
                       <g transform="translate(0,116)">
                         <path
                           d="M184.416 0H0V58H184.416L204 29L184.416 0Z"
                           fill="#A5C140"
                         />
-                        <text x="18" y="38" fill="white">C</text>
+                        <text x="18" y="38" fill="white">
+                          C
+                        </text>
                       </g>
                       <g transform="translate(0,174)">
                         <path
                           d="M206.416 0H0V58H206.416L226 29L206.416 0Z"
                           fill="#F1D11D"
                         />
-                        <text x="18" y="38" fill="white">D</text>
+                        <text x="18" y="38" fill="white">
+                          D
+                        </text>
                       </g>
                       <g transform="translate(0,232)">
                         <path
                           d="M229.416 0H0V58H229.416L249 29L229.416 0Z"
                           fill="#F27C11"
                         />
-                        <text x="18" y="38" fill="white">E</text>
+                        <text x="18" y="38" fill="white">
+                          E
+                        </text>
                       </g>
                       <g transform="translate(0,290)">
                         <path
                           d="M252.416 0H0V58H252.416L272 29L252.416 0Z"
                           fill="#E93B19"
                         />
-                        <text x="18" y="38" fill="white">F</text>
+                        <text x="18" y="38" fill="white">
+                          F
+                        </text>
                       </g>
                       <g transform="translate(0,348)">
                         <path
                           d="M276.416 0H0V58H276.416L296 29L276.416 0Z"
                           fill="#B91C1C"
                         />
-                        <text x="18" y="38" fill="white">G</text>
+                        <text x="18" y="38" fill="white">
+                          G
+                        </text>
                       </g>
                     </g>
                   </svg>
@@ -134,8 +155,12 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
               Étiquette énergétique
             </p>
             <ul className="text-sm list-disc list-inside text-foreground dark:text-black">
-              <li>{initialCEP !== undefined ? `${initialCEP} kWh/m²/an` : "–"}</li>
-              <li>{initialEGES !== undefined ? `${initialEGES} kgCO₂/m²/an` : "–"}</li>
+              <li>
+                {initialCEP !== undefined ? `${initialCEP} kWh/m²/an` : "–"}
+              </li>
+              <li>
+                {initialEGES !== undefined ? `${initialEGES} kgCO₂/m²/an` : "–"}
+              </li>
             </ul>
           </div>
         </div>
@@ -143,10 +168,13 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
           <div className="flex justify-between items-center border-b pb-2">
             <span>Isolation</span>
             {(() => {
-              const note = iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Note;
+              const note =
+                energyResults?.performanceEnergetique?.murs?.EtatInitial?.Note;
               const badge = getPerfBadge(note);
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}
+                >
                   {badge.label}
                 </span>
               );
@@ -155,10 +183,14 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
           <div className="flex justify-between items-center border-b pb-2">
             <span>Chauffage</span>
             {(() => {
-              const note = getChauffageNote(iziResponse?.performanceEnergetique?.chauffage);
+              const note = getChauffageNote(
+                energyResults?.performanceEnergetique?.chauffage,
+              );
               const badge = getPerfBadge(note);
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}
+                >
                   {badge.label}
                 </span>
               );
@@ -167,10 +199,14 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
           <div className="flex justify-between items-center">
             <span>Ventilation</span>
             {(() => {
-              const note = iziResponse?.performanceEnergetique?.ventilation?.EtatInitial?.Note;
+              const note =
+                energyResults?.performanceEnergetique?.ventilation?.EtatInitial
+                  ?.Note;
               const badge = getPerfBadge(note);
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}
+                >
                   {badge.label}
                 </span>
               );
@@ -179,10 +215,16 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
         </div>
         <div className="bg-gray-900 dark:bg-gray-100 w-full text-white dark:text-gray-900 rounded-b-[16px] mt-6 p-4 flex justify-around text-sm font-semibold">
           <span>
-            Avant : {hasCosts ? `${costs.monthlyBefore.toLocaleString("fr-FR")}€/mois` : "—"}
+            Avant :{" "}
+            {hasCosts
+              ? `${costs.monthlyBefore.toLocaleString("fr-FR")}€/mois`
+              : "—"}
           </span>
           <span className="text-end">
-            Après : {hasCosts ? `${costs.monthlyAfter.toLocaleString("fr-FR")}€/mois` : "—"}
+            Après :{" "}
+            {hasCosts
+              ? `${costs.monthlyAfter.toLocaleString("fr-FR")}€/mois`
+              : "—"}
           </span>
         </div>
       </div>
@@ -190,4 +232,4 @@ const EnergyCurrentCard: React.FC<EnergyCurrentCardProps> = ({
   );
 };
 
-export default EnergyCurrentCard; 
+export default EnergyCurrentCard;

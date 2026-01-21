@@ -1,10 +1,12 @@
-import { ProjectType } from '@/types/project.types';
+import { ProjectType } from "@/types/project.types";
 
 interface DocumentHeaderProps {
   currentProjectDisplayed: ProjectType;
 }
 
-export const DocumentHeader = ({ currentProjectDisplayed }: DocumentHeaderProps) => (
+export const DocumentHeader = ({
+  currentProjectDisplayed,
+}: DocumentHeaderProps) => (
   <div className="w-full bg-violet-500 text-white p-6 flex justify-between items-start">
     <div className="w-32">
       <img
@@ -20,8 +22,12 @@ export const DocumentHeader = ({ currentProjectDisplayed }: DocumentHeaderProps)
       </div>
       <div className="flex gap-2">
         <span className="font-bold">Année de construction :</span>
-        <span>{currentProjectDisplayed?.iziResponse?.inputQr?.["L'année de construction du logement :"]?.[0]}</span>
+        <span>
+          {currentProjectDisplayed?.energyResults?.inputQr?.[
+            "L'année de construction du logement :"
+          ]?.[0] || "Non renseigné"}
+        </span>
       </div>
     </div>
   </div>
-); 
+);

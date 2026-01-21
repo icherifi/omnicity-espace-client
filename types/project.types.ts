@@ -9,9 +9,9 @@ export interface EnergyResults {
   etiquette?: string;
 }
 
-export interface IziResponse extends EnergyResults {
+// Interface simplifiée pour les réponses mock
+export interface MockEnergyResponse extends EnergyResults {
   bouquets: (EnergyMix | null)[];
-  inputQr: any;
   sessionId: string;
   etiquetteInitial: string;
   etiquetteEGESInitial: string;
@@ -25,6 +25,11 @@ export interface IziResponse extends EnergyResults {
     ventilation: any;
     plancherHaut: any;
   };
+  inputQr?: any;
+  dpeNumber?: string;
+  dpeData?: any;
+  address?: string;
+  timestamp?: string;
 }
 
 export interface EnergyMix extends EnergyResults {
@@ -52,7 +57,7 @@ export interface EnergyMix extends EnergyResults {
 
 export interface WorkResultProps {
   bouquet: EnergyMix;
-  initialState: IziResponse;
+  initialState: MockEnergyResponse;
 }
 
 // TODO: typer dpeData
@@ -60,7 +65,7 @@ export interface Dpe {
   id: string;
   created_at: string;
   id_project: string;
-  iziResponse: any;
+  energyResults: any;
   sessionId: string;
   dpeData: any;
 }
@@ -95,7 +100,7 @@ export interface ProjectType {
   lastName: string;
   contract_type?: string;
   imageFullPath?: string;
-  iziResponse?: IziResponse;
+  energyResults?: MockEnergyResponse;
   energyMixChoice?: EnergyMix;
 }
 
@@ -122,6 +127,7 @@ export interface StandardProjectFormData {
 
 export interface DpeInformation {
   dpeNumber: string;
+  address?: string;
   fiscalIncome: string;
   householdSize: string;
   occupancyStatus: string;

@@ -8,18 +8,30 @@ import {
 import EnergyRating from "@/components/energy/components/EnergyRating";
 import EnergyPerformanceBadge from "@/components/energy/components/EnergyPerformanceBadge";
 import Image from "next/image";
-import { ProjectType } from '@/types/project.types';
+import { ProjectType, MockEnergyResponse } from "@/types/project.types";
 
 function PropertyState({ project }: { project: ProjectType }) {
   if (!project) {
     return <div>Chargement du projet...</div>;
   }
 
+  // Utiliser les données énergétiques
+  const energyData = project.energyResults as MockEnergyResponse;
+
   return (
     <div className="flex flex-col items-center justify-center space-x-2">
       <div className="flex items-center p-4 pt-0 2xl:flex-row flex-col">
         <EnergyRating
-          energyRatingValue={project.actualEnergyRating?.toLowerCase() as "a" | "b" | "c" | "d" | "e" | "f" | "g"}
+          energyRatingValue={
+            project.actualEnergyRating?.toLowerCase() as
+              | "a"
+              | "b"
+              | "c"
+              | "d"
+              | "e"
+              | "f"
+              | "g"
+          }
         />
 
         <div className="flex justify-between items-center space-x-4 rounded-md border p-4">
@@ -29,8 +41,8 @@ function PropertyState({ project }: { project: ProjectType }) {
             </p>
 
             <ul className="pt-2 pl-6 list-disc">
-              <li>{project.iziResponse?.CEP} kWh/m²/an</li>
-              <li>{project.iziResponse?.EGES} kgCO2/m²/an</li>
+              <li>{energyData?.CEP || "N/A"} kWh/m²/an</li>
+              <li>{energyData?.EGES || "N/A"} kgCO2/m²/an</li>
             </ul>
           </div>
         </div>
@@ -47,14 +59,14 @@ function PropertyState({ project }: { project: ProjectType }) {
                 Isolation & menuiserie:{" "}
                 <EnergyPerformanceBadge
                   state={
-                      project.iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Note
+                    energyData?.performanceEnergetique?.murs?.EtatInitial?.Note
                   }
                 />
               </span>{" "}
             </AccordionTrigger>
             <AccordionContent>
               <ul>
-                {project.iziResponse?.performanceEnergetique?.murs?.EtatInitial && (
+                {energyData?.performanceEnergetique?.murs?.EtatInitial && (
                   <li className="flex items-center py-0.5">
                     <Image
                       className="mr-2"
@@ -63,7 +75,10 @@ function PropertyState({ project }: { project: ProjectType }) {
                       height={16}
                       alt="wall icon"
                     />
-                    {project.iziResponse?.performanceEnergetique?.murs?.EtatInitial?.Label}
+                    {
+                      energyData?.performanceEnergetique?.murs?.EtatInitial
+                        ?.Label
+                    }
                   </li>
                 )}
 
@@ -75,10 +90,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                     height={16}
                     alt="window icon"
                   />
-                  {
-                    project.iziResponse?.performanceEnergetique?.vitrages?.EtatInitial
-                      ?.Label
-                  }
+                  {energyData?.performanceEnergetique?.vitrages?.EtatInitial
+                    ?.Label || "Menuiseries"}
                 </li>
               </ul>
             </AccordionContent>
@@ -89,28 +102,15 @@ function PropertyState({ project }: { project: ProjectType }) {
                 Chauffage:{" "}
                 <EnergyPerformanceBadge
                   state={
-                    Math.round(
-                      ["ApCh1", "ApCh2", "ECS"]
-                        .map(
-                          (key) =>
-                            project.iziResponse?.performanceEnergetique?.chauffage
-                              ?.EtatInitial?.[key]?.Note
-                        )
-                        .filter((note) => note !== null)
-                        .reduce((acc, note) => acc + (note || 0), 0) /
-                        ["ApCh1", "ApCh2", "ECS"].filter(
-                          (key) =>
-                            project.iziResponse?.performanceEnergetique?.chauffage
-                              ?.EtatInitial?.[key]?.Note !== null
-                        ).length
-                    ) as 1 | 2 | 3
+                    (energyData?.performanceEnergetique?.chauffage?.EtatInitial
+                      ?.ApCh1?.Note || 2) as 1 | 2 | 3
                   }
                 />
               </span>
             </AccordionTrigger>
             <AccordionContent>
               <ul>
-                {project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
+                {energyData?.performanceEnergetique?.chauffage?.EtatInitial
                   ?.ApCh1 && (
                   <li className="flex items-center py-0.5">
                     <Image
@@ -120,13 +120,11 @@ function PropertyState({ project }: { project: ProjectType }) {
                       height={16}
                       alt="heating icon"
                     />
-                    {
-                      project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
-                        ?.ApCh1?.Label
-                    }
+                    {energyData?.performanceEnergetique?.chauffage?.EtatInitial
+                      ?.ApCh1?.Label || "Système de chauffage"}
                   </li>
                 )}
-                {project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
+                {energyData?.performanceEnergetique?.chauffage?.EtatInitial
                   ?.ECS && (
                   <li className="flex items-center py-0.5">
                     <Image
@@ -136,10 +134,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                       height={16}
                       alt="water icon"
                     />
-                    {
-                      project.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial
-                        ?.ECS?.Label
-                    }
+                    {energyData?.performanceEnergetique?.chauffage?.EtatInitial
+                      ?.ECS?.Label || "Production d'eau chaude"}
                   </li>
                 )}
               </ul>
@@ -151,8 +147,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                 Ventilation:{" "}
                 <EnergyPerformanceBadge
                   state={
-                    project.iziResponse?.performanceEnergetique?.ventilation?.EtatInitial
-                      ?.Note
+                    energyData?.performanceEnergetique?.ventilation?.EtatInitial
+                      ?.Note || 2
                   }
                 />
               </span>
@@ -167,10 +163,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                     height={16}
                     alt="ventilation icon"
                   />
-                  {
-                    project.iziResponse?.performanceEnergetique?.ventilation?.EtatInitial
-                      ?.Label
-                  }
+                  {energyData?.performanceEnergetique?.ventilation?.EtatInitial
+                    ?.Label || "Système de ventilation"}
                 </li>
               </ul>
             </AccordionContent>

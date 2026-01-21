@@ -30,7 +30,7 @@ function ProjectDetails() {
   const [showDetail, setShowDetail] = React.useState(false);
 
   if (!currentProjectDisplayed?.id) {
-    return <p>Chargement du projet...</p>;  
+    return <p>Chargement du projet...</p>;
   }
 
   const router = useRouter();
@@ -46,18 +46,22 @@ function ProjectDetails() {
             </CardTitle>
             <CardDescription>
               {currentProjectDisplayed!.created_at &&
-                new Date(currentProjectDisplayed!.created_at).toLocaleDateString(
-                  "fr-FR",
-                  {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }
-                )}
+                new Date(
+                  currentProjectDisplayed!.created_at,
+                ).toLocaleDateString("fr-FR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
             </CardDescription>
           </div>
           <div className="ml-auto flex items-center gap-1">
-            <Button size="sm" variant="outline" className="h-8 gap-1" onClick={() => setShowDetail(true)}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1"
+              onClick={() => setShowDetail(true)}
+            >
               <File className="h-3.5 w-3.5" />
               <span className="xl:whitespace-nowrap max-[1500px]:hidden">
                 Exporter devis
@@ -71,10 +75,17 @@ function ProjectDetails() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setShowDetail(true)} className="min-[1500px]:hidden">
+                <DropdownMenuItem
+                  onClick={() => setShowDetail(true)}
+                  className="min-[1500px]:hidden"
+                >
                   Exporter
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push(`/projects/${currentProjectDisplayed.id}`)}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.push(`/projects/${currentProjectDisplayed.id}`)
+                  }
+                >
                   Voir
                 </DropdownMenuItem>
                 <DropdownMenuItem>Modifier</DropdownMenuItem>
@@ -94,13 +105,27 @@ function ProjectDetails() {
                 <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                   <EnergyRating
                     energyRatingValue={
-                      (currentProjectDisplayed?.iziResponse?.etiquetteInitial?.toLowerCase()!) as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      currentProjectDisplayed?.energyResults?.etiquetteInitial?.toLowerCase()! as
+                        | "a"
+                        | "b"
+                        | "c"
+                        | "d"
+                        | "e"
+                        | "f"
+                        | "g"
                     }
                     state="Actuel"
                   />
                   <EnergyRating
                     energyRatingValue={
-                      (currentProjectDisplayed?.targetedEnergyRating.toLowerCase()!) as "a" | "b" | "c" | "d" | "e" | "f" | "g" 
+                      currentProjectDisplayed?.targetedEnergyRating.toLowerCase()! as
+                        | "a"
+                        | "b"
+                        | "c"
+                        | "d"
+                        | "e"
+                        | "f"
+                        | "g"
                     }
                     state="Visé"
                   />
@@ -122,9 +147,9 @@ function ProjectDetails() {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Sans aides</span>
               <span>
-                {currentProjectDisplayed?.energyMixChoice?.coutTotal 
+                {currentProjectDisplayed?.energyMixChoice?.coutTotal
                   ? `${Math.round(currentProjectDisplayed.energyMixChoice.coutTotal).toLocaleString("fr-FR")}€`
-                  : 'Non disponible'}
+                  : "Non disponible"}
               </span>
             </li>
             <li className="flex items-center justify-between font-semibold">
@@ -132,7 +157,7 @@ function ProjectDetails() {
               <span>
                 {currentProjectDisplayed?.energyMixChoice?.resteACharge
                   ? `${Math.round(currentProjectDisplayed.energyMixChoice.resteACharge).toLocaleString("fr-FR")}€`
-                  : 'Non disponible'}
+                  : "Non disponible"}
               </span>
             </li>
           </ul>
