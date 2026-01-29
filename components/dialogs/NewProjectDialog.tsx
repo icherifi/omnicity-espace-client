@@ -189,6 +189,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
     if (!commonCompleted) return "Création d'un nouveau projet";
     if (hasDpe === null) return "Diagnostic de Performance Énergétique";
     if (hasDpe === false) return "Estimation par adresse";
+    if (hasDpe === true) return "Analyse DPE";
     if (isEnergyFormDisplayed) {
       if (energyFormCompleted) return "Création du projet";
       return "Formulaire énergétique";
@@ -205,6 +206,8 @@ function NewProjectDialog(props: NewProjectDialogProps) {
       return "Avez-vous un Diagnostic de Performance Énergétique (DPE) pour votre logement ?";
     if (hasDpe === false)
       return "Notre technologie permet d'estimer la performance énergétique simplement avec l'adresse.";
+    if (hasDpe === true)
+      return "Saisissez votre numéro DPE pour récupérer automatiquement les informations de votre logement.";
     if (isEnergyFormDisplayed) {
       if (energyFormCompleted) return "Votre projet est prêt à être créé.";
       return "Complétez ce formulaire pour gérer la partie électrique de votre projet.";

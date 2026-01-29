@@ -14,7 +14,12 @@ import { useDashboardContext } from "@/contexts/dashboard.context";
 import { useProjectsContext } from "@/contexts/projects.context";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { generateMockResultsByDpe } from "@/utils/mockData";
+import {
+  fetchDpeData,
+  KelvinDpeData,
+  runCompleteSimulation,
+} from "@/utils/kelvinApi";
+import DpeResults from "@/components/forms/DpeResults";
 
 interface Props {
   onError?: (error: string) => void;
@@ -41,7 +46,11 @@ export default function NewProjectDpeNumberForm({
 
   const [isLoading, setIsLoading] = useState(false);
   const [dpeData, setDpeData] = useState<any>(null);
+  const [kelvinDpeData, setKelvinDpeData] = useState<KelvinDpeData | null>(
+    null,
+  );
   const [showEnergySolutions, setShowEnergySolutions] = useState(false);
+  const [showDpeResults, setShowDpeResults] = useState(false);
   const [dpeNumber, setDpeNumber] = useState<string>("");
   const [validationError, setValidationError] = useState<string>("");
   const [isPasting, setIsPasting] = useState(false);
@@ -56,13 +65,15 @@ export default function NewProjectDpeNumberForm({
       const formData = getDpeFormData();
       const dpeNumber = overrideDpeNumber || formData.dpeInformation.dpeNumber;
 
-      // Générer directement les données mockées basées sur le DPE
-      const mockData = generateMockResultsByDpe(dpeNumber);
+      // Récupérer les vraies données DPE via l'API Kelvin
+      const dpeApiData = await fetchDpeData(dpeNumber);
 
-      // Passer directement aux solutions énergétiques avec les données mockées
-      setDpeData(mockData);
-      setShowEnergySolutions(true);
-      setIsEnergyLabelSolutionsDisplayed(true);
+      if (dpeApiData) {
+        setKelvinDpeData(dpeApiData);
+        setShowDpeResults(true);
+      } else {
+        onError?.("DPE non trouvé. Vérifiez le numéro saisi.");
+      }
     } catch (e: any) {
       console.error("Erreur dans handleDpeSubmit", e);
       onError?.(
@@ -89,6 +100,35 @@ export default function NewProjectDpeNumberForm({
     setValidationError("");
     onFieldChange("dpeInformation.dpeNumber", cleanedDpeNumber);
     await handleDpeSubmit(cleanedDpeNumber);
+  };
+
+  const handleConfirmDpeResults = async (dpeData: KelvinDpeData) => {
+    try {
+      setIsLoading(true);
+
+      console.log("🎯 Confirmation DPE et lancement simulation complète");
+
+      // Lancer la simulation complète Kelvin
+      const completeSimulationData = await runCompleteSimulation(dpeData);
+
+      setDpeData(completeSimulationData);
+      setShowDpeResults(false);
+      setShowEnergySolutions(true);
+      setIsEnergyLabelSolutionsDisplayed(true);
+    } catch (e: any) {
+      console.error("Erreur lors de la simulation complète:", e);
+      onError?.(
+        e.message ||
+          "Une erreur est survenue lors de la simulation énergétique",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackToDpeForm = () => {
+    setShowDpeResults(false);
+    setKelvinDpeData(null);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,6 +202,17 @@ export default function NewProjectDpeNumberForm({
           bouquets: dpeData.energyResults?.bouquets || [],
           dpeData: dpeData.dpeData,
         }}
+      />
+    );
+  }
+
+  if (showDpeResults && kelvinDpeData) {
+    return (
+      <DpeResults
+        dpeData={kelvinDpeData}
+        onConfirm={handleConfirmDpeResults}
+        onBack={handleBackToDpeForm}
+        loading={isLoading}
       />
     );
   }
