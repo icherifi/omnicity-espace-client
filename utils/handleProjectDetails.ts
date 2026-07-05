@@ -149,8 +149,13 @@ export const updateProjectImage = async (
 export const updateProject = async (
   projectId: string,
   updatedData: any,
-  token: string,
 ): Promise<boolean> => {
+  const token = await getToken();
+  if (!token) {
+    console.error("Utilisateur non authentifié");
+    return false;
+  }
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,

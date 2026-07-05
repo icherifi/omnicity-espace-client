@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useProjectForm } from "@/hooks/useProjectForm";
 import { ProjectService } from "@/services/project.service";
-import { useEnergyFormContext } from "@/contexts/energyForm.context";
+import { useSimulationResultsContext } from "@/contexts/simulationResults.context";
 import EnergyMixSolutions, {
   EnergyMixSolutionsType,
 } from "@/components/energy/EnergyMixSolutions";
@@ -20,6 +20,8 @@ import {
   runCompleteSimulation,
 } from "@/utils/kelvinApi";
 import DpeResults from "@/components/forms/DpeResults";
+import KelvinMapComponent from "@/components/forms/KelvinMapComponent";
+import { useKelvinSimulation } from "@/hooks/useKelvinSimulation";
 
 interface Props {
   onError?: (error: string) => void;
@@ -51,13 +53,25 @@ export default function NewProjectDpeNumberForm({
   );
   const [showEnergySolutions, setShowEnergySolutions] = useState(false);
   const [showDpeResults, setShowDpeResults] = useState(false);
+  const [showMapSelection, setShowMapSelection] = useState(false);
   const [dpeNumber, setDpeNumber] = useState<string>("");
   const [validationError, setValidationError] = useState<string>("");
   const [isPasting, setIsPasting] = useState(false);
+  const [selectedMapData, setSelectedMapData] = useState<{
+    latitude?: number;
+    longitude?: number;
+    banId?: string;
+    address?: any;
+  }>({});
 
-  const { setIsEnergyLabelSolutionsDisplayed } = useEnergyFormContext();
+  const { setIsEnergyLabelSolutionsDisplayed } = useSimulationResultsContext();
   const { refreshProjects, projects } = useProjectsContext();
   const { setCurrentProjectDisplayed } = useDashboardContext();
+  const {
+    loading: simulationLoading,
+    runSimulation,
+    formatResultsForEnergyMix,
+  } = useKelvinSimulation();
 
   const handleDpeSubmit = async (overrideDpeNumber?: string) => {
     try {
@@ -103,20 +117,69 @@ export default function NewProjectDpeNumberForm({
   };
 
   const handleConfirmDpeResults = async (dpeData: KelvinDpeData) => {
+    console.log("🎯 Confirmation DPE, passage à la sélection de parcelle");
+
+    // Passer à l'étape carte pour sélectionner la parcelle
+    setShowDpeResults(false);
+    setShowMapSelection(true);
+  };
+
+  const handleBackToDpeForm = () => {
+    setShowDpeResults(false);
+    setKelvinDpeData(null);
+  };
+
+  const handleMapSelection = (data: {
+    latitude?: number;
+    longitude?: number;
+    banId?: string;
+    address?: any;
+  }) => {
+    setSelectedMapData(data);
+  };
+
+  const handleConfirmMapSelection = async () => {
+    if (
+      !selectedMapData.latitude ||
+      !selectedMapData.longitude ||
+      !selectedMapData.banId ||
+      !kelvinDpeData
+    ) {
+      onError?.("Veuillez sélectionner un bâtiment sur la carte");
+      return;
+    }
+
     try {
       setIsLoading(true);
 
-      console.log("🎯 Confirmation DPE et lancement simulation complète");
+      console.log("🎯 Lancement simulation avec données DPE et coordonnées");
 
-      // Lancer la simulation complète Kelvin
-      const completeSimulationData = await runCompleteSimulation(dpeData);
+      // Exécuter la simulation avec les coordonnées
+      const rawResults = await runSimulation({
+        latitude: selectedMapData.latitude,
+        longitude: selectedMapData.longitude,
+        banId: selectedMapData.banId,
+        address: selectedMapData.address,
+        inputAddress: kelvinDpeData.address,
+      });
 
-      setDpeData(completeSimulationData);
-      setShowDpeResults(false);
+      // Formater les résultats pour EnergyMixSolutions
+      const formattedResults = formatResultsForEnergyMix(
+        rawResults,
+        kelvinDpeData.address,
+        selectedMapData,
+      );
+
+      setDpeData(formattedResults);
+      setShowMapSelection(false);
       setShowEnergySolutions(true);
       setIsEnergyLabelSolutionsDisplayed(true);
+
+      console.log(
+        "✅ Simulation terminée, affichage des solutions énergétiques",
+      );
     } catch (e: any) {
-      console.error("Erreur lors de la simulation complète:", e);
+      console.error("Erreur lors de la simulation:", e);
       onError?.(
         e.message ||
           "Une erreur est survenue lors de la simulation énergétique",
@@ -126,9 +189,16 @@ export default function NewProjectDpeNumberForm({
     }
   };
 
-  const handleBackToDpeForm = () => {
-    setShowDpeResults(false);
-    setKelvinDpeData(null);
+  const handleBackToMap = () => {
+    setShowEnergySolutions(false);
+    setShowMapSelection(true);
+    setIsEnergyLabelSolutionsDisplayed(false);
+  };
+
+  const handleBackToDpeResults = () => {
+    setShowMapSelection(false);
+    setShowDpeResults(true);
+    setSelectedMapData({});
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,58 +221,25 @@ export default function NewProjectDpeNumberForm({
     setTimeout(() => setIsPasting(false), 100);
   };
 
-  const handleCreateProject = async (
-    selectedBouquet: EnergyMix,
-    selectedStrategy: EnergyMixSolutionsType,
-  ) => {
-    try {
-      const formData = getDpeFormData();
-      const storedId =
-        typeof window !== "undefined"
-          ? localStorage.getItem("newProjectId")
-          : null;
-      let projectId: string;
-
-      if (storedId) {
-        projectId = await ProjectService.updateProjectFromDpe(
-          storedId!,
-          formData,
-          selectedBouquet,
-          selectedStrategy,
-        );
-      } else {
-        projectId = await ProjectService.createProjectFromDpe(
-          formData,
-          selectedBouquet,
-          selectedStrategy,
-        );
-        // Stocker pour suite
-        localStorage.setItem("newProjectId", projectId);
-      }
-
-      refreshProjects();
-      await new Promise((res) => setTimeout(res, 100));
-      const newProject = projects.find((p) => p.id === projectId);
-      if (newProject) setCurrentProjectDisplayed(newProject);
-
-      onSuccess?.();
-    } catch (e: any) {
-      console.error("Erreur dans handleCreateProject", e);
-      onError?.(
-        e.message || "Une erreur est survenue lors de la création du projet",
-      );
-    }
-  };
-
   if (showEnergySolutions && dpeData) {
     return (
-      <EnergyMixSolutions
-        onFinish={handleCreateProject}
-        initialData={{
-          bouquets: dpeData.energyResults?.bouquets || [],
-          dpeData: dpeData.dpeData,
-        }}
-      />
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 p-4 border-b">
+          <button
+            onClick={handleBackToMap}
+            className="text-primary hover:text-primary/80 font-medium"
+            disabled={isLoading}
+          >
+            ← Retour à la sélection de parcelle
+          </button>
+        </div>
+        <EnergyMixSolutions
+          initialData={{
+            bouquets: dpeData.energyResults?.bouquets || [],
+            dpeData: dpeData.dpeData,
+          }}
+        />
+      </div>
     );
   }
 
@@ -213,6 +250,19 @@ export default function NewProjectDpeNumberForm({
         onConfirm={handleConfirmDpeResults}
         onBack={handleBackToDpeForm}
         loading={isLoading}
+      />
+    );
+  }
+
+  if (showMapSelection && kelvinDpeData) {
+    return (
+      <KelvinMapComponent
+        address={kelvinDpeData.address}
+        selectedData={selectedMapData}
+        loading={simulationLoading || isLoading}
+        onSelectionChange={handleMapSelection}
+        onConfirmSelection={handleConfirmMapSelection}
+        onBackToAddress={handleBackToDpeResults}
       />
     );
   }

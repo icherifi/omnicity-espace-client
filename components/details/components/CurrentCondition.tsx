@@ -1,5 +1,9 @@
 import { getEnergyLabelColor } from "../utils";
-import { ProjectType, MockEnergyResponse } from "@/types/project.types";
+import { ProjectType } from "@/types/project.types";
+import {
+  getEnergyMetrics,
+  overallEnergyLabel,
+} from "@/app/sections/dashboard/utils";
 
 interface CurrentConditionProps {
   currentProjectDisplayed: ProjectType;
@@ -8,9 +12,9 @@ interface CurrentConditionProps {
 export const CurrentCondition = ({
   currentProjectDisplayed,
 }: CurrentConditionProps) => {
-  // Utiliser les données énergétiques
-  const energyData =
-    currentProjectDisplayed.energyResults as MockEnergyResponse;
+  const metrics = getEnergyMetrics(currentProjectDisplayed);
+  const initialLabel =
+    overallEnergyLabel(metrics.initialCEP, metrics.initialEGES) || "G";
 
   return (
     <div className="bg-muted mb-8 rounded-2xl p-4 sm:p-6">
@@ -22,18 +26,18 @@ export const CurrentCondition = ({
           <h3 className="text-lg font-semibold mb-2">Étiquette énergétique</h3>
           <div className="flex items-center gap-4">
             <div
-              className={`text-white font-bold px-4 py-2 rounded ${getEnergyLabelColor(energyData?.etiquetteInitial || "G")}`}
+              className={`text-white font-bold px-4 py-2 rounded ${getEnergyLabelColor(initialLabel)}`}
             >
-              {energyData?.etiquetteInitial || "G"}
+              {initialLabel}
             </div>
             <div>
-              {energyData?.CEP ? (
+              {metrics.initialCEP ? (
                 <>
                   <p className="text-foreground">
-                    {energyData.CEP} à {energyData.CEP + 89} kwh/m2/an
+                    {metrics.initialCEP} kWh/m2/an
                   </p>
                   <p className="text-foreground">
-                    {energyData.EGES} à {energyData.EGES + 29} kgCO2/m2/an
+                    {metrics.initialEGES} kgCO2/m2/an
                   </p>
                 </>
               ) : (

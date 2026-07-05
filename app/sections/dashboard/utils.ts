@@ -1,5 +1,6 @@
 import { ProjectType } from "@/types/project.types";
 import type { EnergyRating } from "@/components/projects/components/DpeBar";
+import type { InitialState } from "@/types/simulation.types";
 
 export interface EnergyMetrics {
   initialCEP: number | undefined;
@@ -10,130 +11,155 @@ export interface EnergyMetrics {
   gainGES: number; // rapport 0-1, 0 si inconnu
 }
 
+export interface InitialStateDiagnostics {
+  constructionYear: number | undefined;
+  livingArea: number | undefined;
+  numberOfLevels: number | undefined;
+  hasGarage: boolean;
+  wallMaterial: string | undefined;
+  generatorType: string | undefined;
+  generatorEnergy: string | undefined;
+  hotWaterType: string | undefined;
+  hotWaterEnergy: string | undefined;
+  ventsType: string | undefined;
+  hasVents: boolean;
+  sharedWalls: boolean;
+  closeToHistoricalMonument: boolean;
+  confidenceScore: number | undefined;
+  energyLossPercentage: {
+    walls: number | undefined;
+    openings: number | undefined;
+    lowFloor: number | undefined;
+    highFloor: number | undefined;
+  };
+}
+
 /**
  * Calcule les métriques CEP / GES avant et après travaux.
- * – Utilise en priorité les données DPE (valeurs déjà exprimées par m²).
- * – Sinon retombe sur les valeurs énergétiques.
+ * Priorités:
+ * 1. Utilise initial_state.annual_energy_consumption si disponible (valeur CEP fiable du diagnostic)
+ * 2. Sinon, rétro-calcule depuis energyMixChoice + gain
+ * 3. Pour EGES: utilise energyMixChoice ou retour à undefined
  */
 export function getEnergyMetrics(project: ProjectType): EnergyMetrics {
-  const dpeData = project.dpe?.dpeData;
-  const hasDpe = !!dpeData;
+  const mix = project.energyMixChoice;
+  const initialState = project.initial_state;
 
-  let initialCEP: number | undefined;
-  let initialEGES: number | undefined;
-  let targetCEP: number | undefined;
-  let targetEGES: number | undefined;
+  const targetCEP = mix?.CEP;
+  const targetEGES = mix?.EGES;
 
-  if (hasDpe) {
-    const dpeConsoAvant = parseFloat(
-      dpeData?.conso?.conso5UsagesAvantTravaux ?? "",
-    );
-    const dpeGesAvant = parseFloat(
-      dpeData?.conso?.emissionGes5UsagesAvantTravaux ?? "",
-    );
-    if (!isNaN(dpeConsoAvant)) initialCEP = Math.round(dpeConsoAvant);
-    if (!isNaN(dpeGesAvant)) initialEGES = Math.round(dpeGesAvant);
+  // Prioritize initial_state.annual_energy_consumption as the authoritative CEP value
+  let initialCEP =
+    initialState?.annual_energy_consumption !== undefined
+      ? Math.round(initialState.annual_energy_consumption)
+      : undefined;
 
-    const dpeConsoApres = parseFloat(
-      dpeData?.travaux?.pack?.conso5UsagesApresTravaux ?? "",
-    );
-    const dpeGesApres = parseFloat(
-      dpeData?.travaux?.pack?.emissionGes5UsagesApresTravaux ?? "",
-    );
-    if (!isNaN(dpeConsoApres)) targetCEP = Math.round(dpeConsoApres);
-    if (!isNaN(dpeGesApres)) targetEGES = Math.round(dpeGesApres);
-  }
-
-  if (initialCEP === undefined) initialCEP = project.energyResults?.CEP;
-  if (initialEGES === undefined) initialEGES = project.energyResults?.EGES;
-
-  if (targetCEP === undefined || targetEGES === undefined) {
-    const gainRaw = Number(project.energyMixChoice?.pourcentageGainCEP);
+  // If no initial_state CEP, fall back to retro-calculation
+  if (initialCEP === undefined && targetCEP !== undefined) {
+    const gainRaw = Number(mix?.pourcentageGainCEP);
     const gain = gainRaw > 1 ? gainRaw / 100 : gainRaw;
-    if (targetCEP === undefined && initialCEP !== undefined)
-      targetCEP = Math.round(initialCEP * (1 - gain));
-    if (targetEGES === undefined && initialEGES !== undefined)
-      targetEGES = Math.round(initialEGES * (1 - gain));
+    if (gain > 0 && gain < 1) {
+      initialCEP = Math.round(targetCEP / (1 - gain));
+    }
   }
+
+  // EGES: only from energyMixChoice, no diagnostic source available
+  let initialEGES: number | undefined = undefined;
+  if (
+    targetEGES !== undefined &&
+    targetCEP !== undefined &&
+    initialCEP !== undefined
+  ) {
+    const gainCEP = (initialCEP - targetCEP) / initialCEP;
+    if (gainCEP > 0) {
+      initialEGES = Math.round(targetEGES / (1 - gainCEP));
+    }
+  }
+
+  const gainRaw = Number(mix?.pourcentageGainCEP);
+  const gain = gainRaw > 1 ? gainRaw / 100 : gainRaw;
 
   const gainCEP =
-    initialCEP && targetCEP ? (initialCEP - targetCEP) / initialCEP : 0;
+    initialCEP && targetCEP ? (initialCEP - targetCEP) / initialCEP : gain;
   const gainGES =
-    initialEGES && targetEGES ? (initialEGES - targetEGES) / initialEGES : 0;
+    initialEGES && targetEGES ? (initialEGES - targetEGES) / initialEGES : gain;
 
   return { initialCEP, initialEGES, targetCEP, targetEGES, gainCEP, gainGES };
 }
 
 /**
- * Calcule les dépenses énergétiques avant/après travaux (€/an)
- * – Utilise les coûts du DPE quand ils existent.
- * – Applique le gain CEP (consommation) sur chaque poste pour estimer l'après.
+ * Extrait les informations de diagnostic du initial_state.
+ * Retourne des valeurs lisibles avec fallbacks.
  */
-export function computeEnergyCosts(project: ProjectType) {
-  const dpeCosts = project.dpe?.dpeData?.couts as any | undefined;
-  const before = {
-    chauffage: Number(dpeCosts?.chauffage) || 0,
-    ecs: Number(dpeCosts?.ecs) || 0,
-    eclairage: Number(dpeCosts?.eclairage) || 0,
-    auxiliaires: Number(dpeCosts?.auxiliaires) || 0,
-  };
-  const totalBefore = Object.values(before).reduce((s, n) => s + n, 0);
-
-  // --- NOUVEAU : calcul du facteur réel si DPE ---
-  let factor = 1;
-  let gainCep = 0;
-  let gainGes = 0;
-  const dpeData = project.dpe?.dpeData;
-  const avantStr = dpeData?.conso?.conso5UsagesAvantTravaux;
-  const apresStr = dpeData?.travaux?.pack?.conso5UsagesApresTravaux;
-  const avant = avantStr ? parseFloat(avantStr) : undefined;
-  const apres = apresStr ? parseFloat(apresStr) : undefined;
-  if (avant && apres !== undefined && avant > 0) {
-    factor = apres / avant;
-    gainCep = 1 - factor;
-  } else {
-    // fallback : gainCEP du bouquet
-    const metrics = getEnergyMetrics(project);
-    gainCep = metrics.gainCEP;
-    factor = 1 - gainCep;
+export function getInitialStateDiagnostics(
+  initialState: InitialState | undefined,
+): InitialStateDiagnostics {
+  if (!initialState) {
+    return {
+      constructionYear: undefined,
+      livingArea: undefined,
+      numberOfLevels: undefined,
+      hasGarage: false,
+      wallMaterial: undefined,
+      generatorType: undefined,
+      generatorEnergy: undefined,
+      hotWaterType: undefined,
+      hotWaterEnergy: undefined,
+      ventsType: undefined,
+      hasVents: false,
+      sharedWalls: false,
+      closeToHistoricalMonument: false,
+      confidenceScore: undefined,
+      energyLossPercentage: {
+        walls: undefined,
+        openings: undefined,
+        lowFloor: undefined,
+        highFloor: undefined,
+      },
+    };
   }
-
-  // --- GES ---
-  let factorGes = 1;
-  const avantGesStr = dpeData?.conso?.emissionGes5UsagesAvantTravaux;
-  const apresGesStr = dpeData?.travaux?.pack?.emissionGes5UsagesApresTravaux;
-  const avantGes = avantGesStr ? parseFloat(avantGesStr) : undefined;
-  const apresGes = apresGesStr ? parseFloat(apresGesStr) : undefined;
-  if (avantGes && apresGes !== undefined && avantGes > 0) {
-    factorGes = apresGes / avantGes;
-    gainGes = 1 - factorGes;
-  } else {
-    // fallback : gainGES du bouquet
-    const metrics = getEnergyMetrics(project);
-    gainGes = metrics.gainGES;
-    factorGes = 1 - gainGes;
-  }
-
-  const after = {
-    chauffage: Math.round(before.chauffage * factor),
-    ecs: Math.round(before.ecs * factor),
-    eclairage: Math.round(before.eclairage * factor),
-    auxiliaires: Math.round(before.auxiliaires * factor),
-  };
-  const totalAfter = Object.values(after).reduce((s, n) => s + n, 0);
-
-  const monthlyBefore = Math.round(totalBefore / 12);
-  const monthlyAfter = Math.round(totalAfter / 12);
 
   return {
-    before,
-    after,
-    totalBefore,
-    totalAfter,
-    monthlyBefore,
-    monthlyAfter,
-    gainCep,
-    gainGes,
+    constructionYear: initialState.construction_year,
+    livingArea: initialState.living_area,
+    numberOfLevels: initialState.house_number_of_levels,
+    hasGarage: initialState.garage || false,
+    wallMaterial: initialState.wall_material,
+    generatorType: initialState.generator_type,
+    generatorEnergy: initialState.generator_energy,
+    hotWaterType: initialState.hot_water_type,
+    hotWaterEnergy: initialState.hot_water_energy,
+    ventsType: initialState.vents_type,
+    hasVents: initialState.has_vents || false,
+    sharedWalls: initialState.shared_walls || false,
+    closeToHistoricalMonument:
+      initialState.close_to_historical_monument || false,
+    confidenceScore: initialState.confidence_score,
+    energyLossPercentage: {
+      walls: initialState.energy_loss_percentage?.walls,
+      openings: initialState.energy_loss_percentage?.openings,
+      lowFloor: initialState.energy_loss_percentage?.low_floor,
+      highFloor: initialState.energy_loss_percentage?.high_floor,
+    },
+  };
+}
+
+/**
+ * Retourne des coûts à zéro — les données de coûts DPE ne sont plus disponibles.
+ * Le gainCep/gainGes est dérivé des métriques énergétiques.
+ */
+export function computeEnergyCosts(project: ProjectType) {
+  const metrics = getEnergyMetrics(project);
+  const zero = { chauffage: 0, ecs: 0, eclairage: 0, auxiliaires: 0 };
+  return {
+    before: zero,
+    after: zero,
+    totalBefore: 0,
+    totalAfter: 0,
+    monthlyBefore: 0,
+    monthlyAfter: 0,
+    gainCep: metrics.gainCEP,
+    gainGes: metrics.gainGES,
   };
 }
 
@@ -169,17 +195,6 @@ export function getPerfBadge(note: number | undefined) {
     label: "-",
     color: "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300",
   };
-}
-
-export function getChauffageNote(chauffage: any) {
-  const keys = ["ApCh1", "ApCh2", "ECS"];
-  const notes = keys
-    .map((key) => chauffage?.EtatInitial?.[key]?.Note)
-    .filter((n) => n != null);
-  if (!notes.length) return undefined;
-  return Math.round(
-    notes.reduce((a: number, b: number) => a + b, 0) / notes.length,
-  );
 }
 
 // --------------------------- Étiquette énergétique ---------------------------

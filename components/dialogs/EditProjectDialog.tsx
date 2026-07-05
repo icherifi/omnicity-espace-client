@@ -1,12 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { updateProject } from "@/utils/handleProjectDetails";
 import { getToken } from "@/utils/supabase/client";
 import { ProjectType } from "@/types/project.types";
@@ -23,32 +34,17 @@ const statusOptions = [
   { value: "archived", label: "Archivé" },
 ];
 
-const contractTypeOptions = [
-  { value: "mandat_simple", label: "Mandat simple" },
-  { value: "mandat_exclusif", label: "Mandat exclusif" },
-];
-
-const occupancyStatusOptions = [
-  { value: "primaryOwner", label: "Propriétaire résidence principale" },
-  { value: "secondaryOwner", label: "Propriétaire résidence secondaire" },
-  { value: "ownerTenant", label: "Propriétaire bailleur" },
-  { value: "tenant", label: "Locataire" },
-];
-
-export default function EditProjectDialog({ project, onClose, onUpdated }: EditProjectDialogProps) {
+export default function EditProjectDialog({
+  project,
+  onClose,
+  onUpdated,
+}: EditProjectDialogProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
   const [description, setDescription] = useState("");
   const [state, setState] = useState("");
-  const [contractType, setContractType] = useState("");
-  const [size, setSize] = useState("");
-  const [roomsNumber, setRoomsNumber] = useState("");
-  const [floorsNumber, setFloorsNumber] = useState("");
-  const [baseValue, setBaseValue] = useState("");
-  const [fiscalIncome, setFiscalIncome] = useState("");
-  const [householdSize, setHouseholdSize] = useState("");
-  const [occupancyStatus, setOccupancyStatus] = useState("");
+  const [baseValue, setBaseValue] = useState<string>("");
   const open = project !== null;
 
   useEffect(() => {
@@ -58,14 +54,7 @@ export default function EditProjectDialog({ project, onClose, onUpdated }: EditP
       setAddress(project.address || "");
       setDescription(project.description || "");
       setState(project.state || "inprogress");
-      setContractType(project.contract_type || "");
-      setSize(project.features?.size || "");
-      setRoomsNumber(project.features?.roomsNumber || "");
-      setFloorsNumber(project.features?.floorsNumber || "");
-      setBaseValue(project.features?.baseValue || "");
-      setFiscalIncome(project.features?.fiscalIncome || "");
-      setHouseholdSize(project.features?.householdSize || "");
-      setOccupancyStatus(project.features?.occupancyStatus || "");
+      setBaseValue(project.baseValue?.toString() || "");
     }
   }, [project]);
 
@@ -80,23 +69,10 @@ export default function EditProjectDialog({ project, onClose, onUpdated }: EditP
       address,
       description,
       state,
-      contract_type: contractType,
-      features: {
-        size,
-        roomsNumber,
-        floorsNumber,
-        baseValue,
-        fiscalIncome,
-        householdSize,
-        occupancyStatus,
-      },
+      baseValue: Number(baseValue) || 0,
     };
 
-    const success = await updateProject(
-      project.id.toString(),
-      updatedData,
-      token
-    );
+    const success = await updateProject(project.id.toString(), updatedData);
     if (success) {
       onUpdated();
       onClose();
@@ -154,100 +130,14 @@ export default function EditProjectDialog({ project, onClose, onUpdated }: EditP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contractType">Type de contrat</Label>
-            <Select value={contractType} onValueChange={setContractType}>
-              <SelectTrigger id="contractType">
-                <SelectValue placeholder="Sélectionner un type de contrat" />
-              </SelectTrigger>
-              <SelectContent>
-                {contractTypeOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Caractéristiques du bien */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="size">Surface (m²)</Label>
-              <Input
-                id="size"
-                placeholder="Surface"
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="roomsNumber">Nombre de pièces</Label>
-              <Input
-                id="roomsNumber"
-                placeholder="Nombre de pièces"
-                value={roomsNumber}
-                onChange={(e) => setRoomsNumber(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="floorsNumber">Nombre d'étages</Label>
-              <Input
-                id="floorsNumber"
-                placeholder="Nombre d'étages"
-                value={floorsNumber}
-                onChange={(e) => setFloorsNumber(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Informations financières */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="baseValue">Valeur du bien (€)</Label>
-              <Input
-                id="baseValue"
-                placeholder="Valeur du bien"
-                value={baseValue}
-                onChange={(e) => setBaseValue(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="fiscalIncome">Revenus fiscaux (€)</Label>
-              <Input
-                id="fiscalIncome"
-                placeholder="Revenus fiscaux"
-                value={fiscalIncome}
-                onChange={(e) => setFiscalIncome(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Informations du ménage */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="householdSize">Taille du ménage</Label>
-              <Input
-                id="householdSize"
-                placeholder="Taille du ménage"
-                value={householdSize}
-                onChange={(e) => setHouseholdSize(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="occupancyStatus">Statut d'occupation</Label>
-              <Select value={occupancyStatus} onValueChange={setOccupancyStatus}>
-                <SelectTrigger id="occupancyStatus">
-                  <SelectValue placeholder="Sélectionner un statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  {occupancyStatusOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Label htmlFor="baseValue">Valeur estimée du bien (€)</Label>
+            <Input
+              id="baseValue"
+              type="number"
+              placeholder="Valeur estimée du bien"
+              value={baseValue}
+              onChange={(e) => setBaseValue(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
@@ -267,7 +157,9 @@ export default function EditProjectDialog({ project, onClose, onUpdated }: EditP
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>Annuler</Button>
+            <Button variant="outline" onClick={onClose}>
+              Annuler
+            </Button>
             <Button onClick={handleSubmit}>Enregistrer</Button>
           </div>
         </div>

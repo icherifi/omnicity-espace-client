@@ -1,16 +1,70 @@
 export type EnergyRating = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
-export interface EnergyResults {
+export interface EnergyMix {
   CEP: number;
   EGES: number;
   confort: number;
   etiquetteEnergetique: string;
   etiquetteEGES?: string;
   etiquette?: string;
+  pourcentageGainCEP: number;
+  valeurVerte: number;
+  coutTotal: number;
+  montantAides: number;
+  resteACharge: number;
+  detailsPrix?: { nom: string; prix: number }[];
+  renoMenuiserie?: boolean;
+  renovationMurs?: boolean;
+  renoComblesPerdus?: boolean;
+  renoPorteFenetres?: boolean;
+  renoComblesAmenages?: boolean;
+  renoPlancherBasSousSol?: boolean;
+  renoPlancherBasTerrePlein?: boolean;
+  renoIsolationToitureTerrasse?: boolean;
+  renoPlancherBasVideSanitaire?: boolean;
+  appareilChauffage1?: string | null;
+  appareilChauffage2?: string | null;
+  typeVentilationExterieur?: string | null;
+  remplacementEauChaudeSanitaire?: string | null;
+  categoriesAides?: string;
 }
 
-// Interface simplifiée pour les réponses mock
-export interface MockEnergyResponse extends EnergyResults {
+export interface ProjectType {
+  id: string;
+  address: string;
+  created_at?: string;
+  targetedEnergyRating: EnergyRating;
+  baseValue: number;
+  stateOfPlay: string;
+  costEstimation: {
+    withAid: number;
+    withoutAid: number;
+  };
+  state: "draft" | "inprogress" | "completed" | "archived";
+  id_design: string | null;
+  created_by: string;
+  description: string;
+  firstName: string;
+  lastName: string;
+  author?: string | null;
+  imageFullPath?: string | null;
+  strategy?: string;
+  id_energy_choices?: number;
+  energyMixChoice?: EnergyMix;
+  initial_state?: InitialState;
+}
+
+// ---------------------------------------------------------------------------
+// Simulation flow types (Kelvin API results — not stored in the project)
+// ---------------------------------------------------------------------------
+
+export interface MockEnergyResponse {
+  CEP: number;
+  EGES: number;
+  confort: number;
+  etiquetteEnergetique: string;
+  etiquetteEGES?: string;
+  etiquette?: string;
   bouquets: (EnergyMix | null)[];
   sessionId: string;
   etiquetteInitial: string;
@@ -32,76 +86,9 @@ export interface MockEnergyResponse extends EnergyResults {
   timestamp?: string;
 }
 
-export interface EnergyMix extends EnergyResults {
-  pourcentageGainCEP: number;
-  valeurVerte: number;
-  coutTotal: number;
-  montantAides: number;
-  resteACharge: number;
-  detailsPrix?: any[];
-  renoMenuiserie?: boolean;
-  renovationMurs?: boolean;
-  renoComblesPerdus?: boolean;
-  renoPorteFenetres?: boolean;
-  renoComblesAmenages?: boolean;
-  renoPlancherBasSousSol?: boolean;
-  renoPlancherBasTerrePlein?: boolean;
-  renoIsolationToitureTerrasse?: boolean;
-  renoPlancherBasVideSanitaire?: boolean;
-  appareilChauffage1?: string;
-  appareilChauffage2?: string;
-  typeVentilationExterieur?: string;
-  remplacementEauChaudeSanitaire?: null;
-  categoriesAides?: string;
-}
-
 export interface WorkResultProps {
   bouquet: EnergyMix;
   initialState: MockEnergyResponse;
-}
-
-// TODO: typer dpeData
-export interface Dpe {
-  id: string;
-  created_at: string;
-  id_project: string;
-  energyResults: any;
-  sessionId: string;
-  dpeData: any;
-}
-
-export interface ProjectType {
-  id: string;
-  address: string;
-  created_at?: string;
-  actualEnergyRating: EnergyRating;
-  targetedEnergyRating: EnergyRating;
-  dpe?: Dpe;
-  features: {
-    size: string;
-    roomsNumber: string;
-    floorsNumber: string;
-    baseValue?: string;
-    fiscalIncome?: string;
-    householdSize?: string;
-    occupancyStatus?: string;
-  };
-  stateOfPlay: string;
-  costEstimation: {
-    withAid: number;
-    withoutAid: number;
-  };
-  state: "draft" | "inprogress" | "completed" | "archived";
-  id_bouquet: string;
-  id_design: string | null;
-  created_by: string;
-  description: string;
-  firstName: string;
-  lastName: string;
-  contract_type?: string;
-  imageFullPath?: string;
-  energyResults?: MockEnergyResponse;
-  energyMixChoice?: EnergyMix;
 }
 
 export interface GeneralInformation {
@@ -116,13 +103,7 @@ export interface StandardProjectFormData {
   projectName: string;
   projectAddress?: string;
   projectDescription?: string;
-  generalInformation: GeneralInformation;
-  contractType?: string;
-  fiscalIncome?: string;
-  householdSize?: string;
-  baseValue?: string;
-  occupancyStatus?: string;
-  image?: File | null;
+  baseValue?: number;
 }
 
 export interface DpeInformation {
@@ -131,15 +112,13 @@ export interface DpeInformation {
   fiscalIncome: string;
   householdSize: string;
   occupancyStatus: string;
-  baseValue: string;
+  baseValue: number;
 }
 
 export interface DpeProjectFormData {
   firstName: string;
   lastName: string;
   projectName: string;
-  dpeInformation: DpeInformation;
   projectDescription?: string;
-  contract_type?: string;
-  image?: File | null;
+  dpeInformation: DpeInformation;
 }

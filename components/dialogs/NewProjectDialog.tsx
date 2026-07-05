@@ -15,7 +15,7 @@ import NewProjectCommonForm from "../forms/newProjectCommonForm/NewProjectCommon
 import NewProjectDpeNumberForm from "../forms/newProjectDpeNumberForm/NewProjectDpeNumberForm";
 import AddressOnlyForm from "../forms/AddressOnlyForm";
 import { useNewProjectStandardFormContext } from "@/contexts/newProjectStandardForm.context";
-import { useEnergyFormContext } from "@/contexts/energyForm.context";
+import { useSimulationResultsContext } from "@/contexts/simulationResults.context";
 import { useSidebarContext } from "@/contexts/sidebar.context";
 import { useProjectsContext } from "@/contexts/projects.context";
 import { useDashboardContext } from "@/contexts/dashboard.context";
@@ -37,16 +37,13 @@ function NewProjectDialog(props: NewProjectDialogProps) {
   const [creationSuccess, setCreationSuccess] = useState(false);
   const [open, setOpen] = useState(false);
   const {
-    setIsEnergyFormDisplayed,
-    setEnergyFormCompleted,
-    setEnergyFormGotOpened,
     setPostalCode,
     setShowPostalCode,
     setIsEnergyLabelSolutionsDisplayed,
     isEnergyLabelSolutionsDisplayed,
-    isEnergyFormDisplayed,
-    energyFormCompleted,
-  } = useEnergyFormContext();
+    setSimulationCompleted,
+    simulationCompleted,
+  } = useSimulationResultsContext();
   const { resetProjectStandardForm } = useNewProjectStandardFormContext();
   const { setSection } = useSidebarContext();
   const { projects, refreshProjects } = useProjectsContext();
@@ -95,31 +92,14 @@ function NewProjectDialog(props: NewProjectDialogProps) {
           lastName: proj.lastName,
           projectName: "",
           projectAddress: proj.address,
-          projectDescription: proj.description,
-          generalInformation: {
-            size: String(proj.features?.size ?? ""),
-            roomsNumber: Number(proj.features?.roomsNumber ?? 0),
-            floorsNumber: Number(proj.features?.floorsNumber ?? 0),
-          },
-          contractType: proj.contract_type,
-          fiscalIncome: proj.features?.fiscalIncome ?? "",
-          householdSize: proj.features?.householdSize ?? "",
-          baseValue: proj.features?.baseValue ?? "",
-          occupancyStatus: "primaryOwner",
-          image: null,
+          baseValue: proj.baseValue ?? 0,
         };
 
         // Appliquer les valeurs au context via setters
         formCtx.setFirstName(draftData.firstName || "");
         formCtx.setLastName(draftData.lastName || "");
         formCtx.setProjectAddress(draftData.projectAddress || "");
-        formCtx.setProjectDescription(draftData.projectDescription || "");
-        formCtx.setContractType(draftData.contractType || "");
-        formCtx.setProjectGeneralInformation(draftData.generalInformation);
-        formCtx.setFiscalIncome(draftData.fiscalIncome || "");
-        formCtx.setHouseholdSize(draftData.householdSize || "");
-        formCtx.setBaseValue(draftData.baseValue || "");
-        formCtx.setOccupancyStatus(draftData.occupancyStatus || "primaryOwner");
+        formCtx.setBaseValue(draftData.baseValue || 0);
       }
     }
   }, [props.draftProjectId]);
@@ -129,9 +109,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
     setHasDpe(null);
     setCommonCompleted(false);
     resetProjectStandardForm();
-    setIsEnergyFormDisplayed(false);
-    setEnergyFormCompleted(false);
-    setEnergyFormGotOpened(false);
+    setSimulationCompleted(false);
     setIsEnergyLabelSolutionsDisplayed(false);
     setPostalCode("");
     setShowPostalCode(true);
@@ -150,9 +128,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
   const handleBackToCommonForm = () => {
     setHasDpe(null);
     setCommonCompleted(false);
-    setIsEnergyFormDisplayed(false);
-    setEnergyFormCompleted(false);
-    setEnergyFormGotOpened(false);
+    setSimulationCompleted(false);
     setIsEnergyLabelSolutionsDisplayed(false);
     setPostalCode("");
     setShowPostalCode(true);
@@ -167,10 +143,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
   const getCurrentStep = () => {
     if (!commonCompleted) return 0;
     if (hasDpe === null) return 1;
-    if (isEnergyFormDisplayed) {
-      if (energyFormCompleted) return 3;
-      return 2;
-    }
+    if (simulationCompleted) return 3;
     return 2;
   };
 
@@ -178,7 +151,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
     if (!commonCompleted) return 0;
     if (hasDpe === null) return 1;
     if (hasDpe) {
-      if (energyFormCompleted) return 3;
+      if (simulationCompleted) return 3;
       return 2;
     }
     return 2;
@@ -190,10 +163,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
     if (hasDpe === null) return "Diagnostic de Performance Énergétique";
     if (hasDpe === false) return "Estimation par adresse";
     if (hasDpe === true) return "Analyse DPE";
-    if (isEnergyFormDisplayed) {
-      if (energyFormCompleted) return "Création du projet";
-      return "Formulaire énergétique";
-    }
+    if (simulationCompleted) return "Création du projet";
     return "Nouveau projet";
   };
 
@@ -208,10 +178,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
       return "Notre technologie permet d'estimer la performance énergétique simplement avec l'adresse.";
     if (hasDpe === true)
       return "Saisissez votre numéro DPE pour récupérer automatiquement les informations de votre logement.";
-    if (isEnergyFormDisplayed) {
-      if (energyFormCompleted) return "Votre projet est prêt à être créé.";
-      return "Complétez ce formulaire pour gérer la partie électrique de votre projet.";
-    }
+    if (simulationCompleted) return "Votre projet est prêt à être créé.";
     return "C'est ici que tout commence, complétez le formulaire, on s'occupe du reste.";
   };
 
@@ -436,6 +403,7 @@ function NewProjectDialog(props: NewProjectDialogProps) {
               />
             ) : (
               <AddressOnlyForm
+                projectId={draftProjectId || undefined}
                 onError={(error) => setError(error)}
                 onSuccess={handleSuccess}
                 onQuit={handleBackToCommonForm}

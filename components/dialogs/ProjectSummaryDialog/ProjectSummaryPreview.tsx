@@ -39,17 +39,16 @@ const ProjectRecapPreview = React.forwardRef<
     );
   }
 
-  const dpeNumber =
-    project.dpe?.dpeData?.features?.numeroDpe || "Non disponible";
+  const dpeNumber = "Non disponible";
   const address = project.address || "Non disponible";
-  const typeBien = project.dpe?.dpeData?.typeBien || "Non disponible";
-  const surface = project.features?.size || "Non disponible";
+  const typeBien = "Non disponible";
+  const surface = "Non disponible";
 
   // ----- Étiquettes et métriques -----
   const metrics = getEnergyMetrics(project);
   const initialLabel =
     overallEnergyLabel(metrics.initialCEP, metrics.initialEGES) ||
-    project.energyResults?.etiquetteInitial ||
+    project.targetedEnergyRating ||
     "-";
   const targetLabel =
     overallEnergyLabel(metrics.targetCEP, metrics.targetEGES) ||
@@ -88,8 +87,8 @@ const ProjectRecapPreview = React.forwardRef<
   const categoriesAides = project.energyMixChoice?.categoriesAides;
   const catInfo = getAidCategoryInfo(categoriesAides || "");
 
-  const valeurActuelle = project.features?.baseValue
-    ? Number(project.features.baseValue)
+  const valeurActuelle = project.baseValue
+    ? Number(project.baseValue)
     : undefined;
   const valeurVerteRate = project.energyMixChoice?.valeurVerte ?? 0;
   const valeurApres = valeurActuelle
@@ -97,7 +96,8 @@ const ProjectRecapPreview = React.forwardRef<
     : undefined;
 
   // ----- Équipements (notes) -----
-  const perf = project.energyResults?.performanceEnergetique;
+  // performanceEnergetique n'est plus disponible dans le nouveau backend
+  const perf: any = null;
   const mursNote = perf?.murs?.EtatInitial?.Note;
   const plancherNote = perf?.plancherBas?.EtatInitial?.Note;
   const plafondNote = perf?.plancherHaut?.EtatInitial?.Note;
@@ -152,9 +152,7 @@ const ProjectRecapPreview = React.forwardRef<
             </div>
             <div className="mt-10 flex flex-col justify-center items-center w-40">
               <MiniGESLabel
-                rating={
-                  (project.energyResults?.etiquetteEGESInitial || "G") as any
-                }
+                rating={(ratingFromGes(metrics.initialEGES) || "G") as any}
                 className="scale-150"
               />
               <span className="text-xs mt-2 text-gray-900">GES</span>

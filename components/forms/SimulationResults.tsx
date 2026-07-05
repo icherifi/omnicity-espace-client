@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import EnergyMixSolutions from "@/components/energy/EnergyMixSolutions";
+import { useSimulationResultsContext } from "@/contexts/simulationResults.context";
 
 interface SimulationResultsProps {
   address: string;
@@ -14,7 +15,8 @@ interface SimulationResultsProps {
   };
   simulationResults: any;
   onBackToMap: () => void;
-  onFinish: (selectedBouquet: any, selectedStrategy: any) => void;
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
 }
 
 export default function SimulationResults({
@@ -22,8 +24,42 @@ export default function SimulationResults({
   selectedData,
   simulationResults,
   onBackToMap,
-  onFinish,
+  onSuccess,
+  onError,
 }: SimulationResultsProps) {
+  const {
+    setSimulationResults,
+    setSelectedAddress,
+    setSelectedData,
+    setSimulationCompleted,
+  } = useSimulationResultsContext();
+
+  // Update context when component receives new data
+  useEffect(() => {
+    if (simulationResults) {
+      setSimulationResults(simulationResults);
+      setSimulationCompleted(true);
+    }
+    if (address) {
+      setSelectedAddress(address);
+    }
+    if (selectedData) {
+      setSelectedData(selectedData);
+    }
+    console.log("SimulationResults component updated context with new data:", {
+      simulationResults,
+      address,
+      selectedData,
+    });
+  }, [
+    simulationResults,
+    address,
+    selectedData,
+    setSimulationResults,
+    setSelectedAddress,
+    setSelectedData,
+    setSimulationCompleted,
+  ]);
   return (
     <div className="w-full space-y-4">
       <div className="text-center space-y-2 mb-6">
@@ -41,11 +77,9 @@ export default function SimulationResults({
 
       {simulationResults?.bouquets && simulationResults.bouquets.length > 0 ? (
         <EnergyMixSolutions
-          initialData={{
-            bouquets: simulationResults.bouquets,
-            dpeData: simulationResults,
-          }}
-          onFinish={onFinish}
+          bouquets={simulationResults.bouquets}
+          onSuccess={onSuccess}
+          onError={onError}
         />
       ) : (
         <div className="text-center p-8 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">

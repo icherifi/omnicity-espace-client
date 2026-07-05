@@ -54,30 +54,11 @@ export class ProjectService {
       address: data.projectAddress,
       description: data.projectDescription,
       state: options?.draft ? "draft" : "inprogress",
-      id_bouquet: options?.idBouquet ?? null,
-      features: {
-        ...data.generalInformation,
-        baseValue: data.baseValue,
-        fiscalIncome: data.fiscalIncome,
-        householdSize: data.householdSize,
-        occupancyStatus: data.occupancyStatus,
-      },
-      contract_type: data.contractType,
+      baseValue: data.baseValue,
     };
 
     const newProjectResponse = await handleNewProject(projectPayload, token);
     const projectId = newProjectResponse.data[0].id;
-
-    if (data.image) {
-      const imageFullPath = await handleImageChange(
-        data.image,
-        token,
-        projectId,
-      );
-      if (imageFullPath) {
-        await updateProjectImage(projectId, imageFullPath, token);
-      }
-    }
 
     // Sauvegarder les résultats énergétiques (mock data ou résultats d'adresse)
     if (
@@ -130,22 +111,9 @@ export class ProjectService {
       lastName: formData.lastName,
       address: formData.dpeInformation.address || "Adresse générée depuis DPE",
       state: "inprogress",
-      id_bouquet: null,
       description:
         formData.projectDescription || "Créé à partir du formulaire DPE",
-      contract_type: formData.contract_type,
-      features: {
-        size: mockDpeResults.dpeData?.caracteristiques?.taille || 100,
-        roomsNumber:
-          mockDpeResults.dpeData?.caracteristiques?.nombrePieces || 4,
-        floorsNumber:
-          mockDpeResults.dpeData?.caracteristiques?.nombreEtages || 2,
-        baseValue: formData.dpeInformation.baseValue,
-        fiscalIncome: formData.dpeInformation.fiscalIncome,
-        householdSize: formData.dpeInformation.householdSize,
-        occupancyStatus: formData.dpeInformation.occupancyStatus,
-        numeroDpe: formData.dpeInformation.dpeNumber,
-      },
+      baseValue: formData.dpeInformation.baseValue,
     };
 
     const newProjectResponse = await handleNewProject(projectPayload, token);
@@ -181,18 +149,7 @@ export class ProjectService {
       console.error("Error saving DPE energy data:", error);
     }
 
-    await saveEnergyChoice(generateUUID(), selectedStrategy, selectedBouquet);
-
-    if (formData.image) {
-      const imageFullPath = await handleImageChange(
-        formData.image,
-        token,
-        projectId,
-      );
-      if (imageFullPath) {
-        await updateProjectImage(projectId, imageFullPath, token);
-      }
-    }
+    await saveEnergyChoice(selectedStrategy, selectedBouquet);
 
     return projectId;
   }
@@ -214,32 +171,12 @@ export class ProjectService {
       lastName: data.lastName,
       address: data.projectAddress,
       description: data.projectDescription,
-      id_bouquet: options?.idBouquet ?? undefined,
       // Si on complète le formulaire énergie, on passe le projet en cours
       state: options?.energyFormCompleted ? "inprogress" : undefined,
-      features: {
-        ...data.generalInformation,
-        baseValue: data.baseValue,
-        fiscalIncome: data.fiscalIncome,
-        householdSize: data.householdSize,
-        occupancyStatus: data.occupancyStatus,
-      },
-      contract_type: data.contractType,
+      baseValue: data.baseValue,
     };
 
-    await updateProject(projectId, projectPayload, token);
-
-    // Handle image update if provided
-    if (data.image) {
-      const imageFullPath = await handleImageChange(
-        data.image,
-        token,
-        projectId,
-      );
-      if (imageFullPath) {
-        await updateProjectImage(projectId, imageFullPath, token);
-      }
-    }
+    await updateProject(projectId, projectPayload);
 
     // Sauvegarder les résultats énergétiques (mock data ou résultats d'adresse)
     if (
@@ -293,25 +230,12 @@ export class ProjectService {
       lastName: formData.lastName,
       address: formData.dpeInformation.address || "Adresse générée depuis DPE",
       state: "inprogress",
-      id_bouquet: undefined,
       description:
         formData.projectDescription || "Créé à partir du formulaire DPE",
-      contract_type: formData.contract_type,
-      features: {
-        size: mockDpeResults.dpeData?.caracteristiques?.taille || 100,
-        roomsNumber:
-          mockDpeResults.dpeData?.caracteristiques?.nombrePieces || 4,
-        floorsNumber:
-          mockDpeResults.dpeData?.caracteristiques?.nombreEtages || 2,
-        baseValue: formData.dpeInformation.baseValue,
-        fiscalIncome: formData.dpeInformation.fiscalIncome,
-        householdSize: formData.dpeInformation.householdSize,
-        occupancyStatus: formData.dpeInformation.occupancyStatus,
-        numeroDpe: formData.dpeInformation.dpeNumber,
-      },
+      baseValue: formData.dpeInformation.baseValue,
     };
 
-    await updateProject(projectId, projectPayload, token);
+    await updateProject(projectId, projectPayload);
 
     // Sauvegarder les données DPE mock
     const mockDpeData = {
@@ -344,17 +268,6 @@ export class ProjectService {
     }
 
     await saveEnergyChoice(generateUUID(), selectedStrategy, selectedBouquet);
-
-    if (formData.image) {
-      const imageFullPath = await handleImageChange(
-        formData.image,
-        token,
-        projectId,
-      );
-      if (imageFullPath) {
-        await updateProjectImage(projectId, imageFullPath, token);
-      }
-    }
 
     return projectId;
   }

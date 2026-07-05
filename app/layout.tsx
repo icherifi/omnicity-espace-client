@@ -3,7 +3,7 @@ import "../app/globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import NewProjectStandardFormContextProvider from "@/contexts/newProjectStandardForm.context";
-import EnergyFormContextProvider from "@/contexts/energyForm.context";
+import SimulationResultsContextProvider from "@/contexts/simulationResults.context";
 import DashboardContextProvider from "@/contexts/dashboard.context";
 import DesignPageContextProvider from "@/contexts/designPage.context";
 import { UnityContextProvider } from "./design/components/unityContext";
@@ -27,26 +27,26 @@ export default function RootLayout({
   return (
     <ProjectsContextProvider>
       <NewProjectStandardFormContextProvider>
-        <EnergyFormContextProvider>
+        <SimulationResultsContextProvider>
           <SidebarContextProvider>
-          <DashboardContextProvider>
-            <DesignPageContextProvider>
-              <UnityContextProvider>
-                <html lang="fr">
-                  <body
-                    className={cn(
-                      "min-h-screen antialiased bg-body-gradient",
-                      bricolage.className
-                    )}
-                  >
-                    <Providers>{children}</Providers>
-                  </body>
-                </html>
-              </UnityContextProvider>
-            </DesignPageContextProvider>
-          </DashboardContextProvider>
+            <DashboardContextProvider>
+              <DesignPageContextProvider>
+                <UnityContextProvider>
+                  <html lang="fr">
+                    <body
+                      className={cn(
+                        "min-h-screen antialiased bg-body-gradient",
+                        bricolage.className,
+                      )}
+                    >
+                      <Providers>{children}</Providers>
+                    </body>
+                  </html>
+                </UnityContextProvider>
+              </DesignPageContextProvider>
+            </DashboardContextProvider>
           </SidebarContextProvider>
-        </EnergyFormContextProvider>
+        </SimulationResultsContextProvider>
       </NewProjectStandardFormContextProvider>
     </ProjectsContextProvider>
   );

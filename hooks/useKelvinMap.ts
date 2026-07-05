@@ -25,8 +25,12 @@ declare global {
   }
 }
 
-export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) {
+export function useKelvinMap({
+  address,
+  onSelectionChange,
+}: UseKelvinMapProps) {
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const kelvinMapRef = useRef<any>(null);
 
   // Géocodage d'adresse via notre API locale
@@ -61,6 +65,12 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
   }, []);
 
   const initializeMap = useCallback(async () => {
+    // Éviter les réinitialisations multiples
+    if (isInitialized || kelvinMapRef.current) {
+      console.log("Carte déjà initialisée, abandon");
+      return;
+    }
+
     try {
       console.log("Initialisation de la carte Kelvin avec géocodage...");
 
@@ -79,15 +89,21 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
           latitude: coordinates.latitude.toString(),
           longitude: coordinates.longitude.toString(),
         };
-        console.log("Position initiale configurée:", kelvinConfig.initialPosition);
+        console.log(
+          "Position initiale configurée:",
+          kelvinConfig.initialPosition,
+        );
       } else {
-        console.log("Aucune coordonnée trouvée, utilisation des paramètres par défaut");
+        console.log(
+          "Aucune coordonnée trouvée, utilisation des paramètres par défaut",
+        );
       }
 
       const kelvinMap = window.kelvin.map.init(kelvinConfig);
 
       if (kelvinMap) {
         kelvinMapRef.current = kelvinMap;
+        setIsInitialized(true);
         console.log("Carte Kelvin initialisée avec succès");
 
         // Écouter l'événement de chargement de la carte
@@ -102,7 +118,9 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
                   latitude: coordinates.latitude.toString(),
                   longitude: coordinates.longitude.toString(),
                 });
-                console.log("Navigation vers la position de l'adresse effectuée");
+                console.log(
+                  "Navigation vers la position de l'adresse effectuée",
+                );
               } catch (error) {
                 console.error("Erreur lors de la navigation:", error);
               }
@@ -127,7 +145,10 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
               address: parsedPayload.address,
             });
           } catch (error) {
-            console.error("Erreur lors du parsing des données de sélection:", error);
+            console.error(
+              "Erreur lors du parsing des données de sélection:",
+              error,
+            );
           }
         });
 
@@ -140,7 +161,10 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
         throw new Error("Échec de l'initialisation de la carte Kelvin");
       }
     } catch (error) {
-      console.error("Erreur lors de l'initialisation de la carte kelvin:", error);
+      console.error(
+        "Erreur lors de l'initialisation de la carte kelvin:",
+        error,
+      );
       throw error;
     }
   }, [address, geocodeAddress, onSelectionChange]);
@@ -155,7 +179,8 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
 
       const script = document.createElement("script");
       script.id = "kelvin-script";
-      script.src = "https://unpkg.com/kelvin@0.0.7/lib/index.js";
+      script.src =
+        "https://cdn.jsdelivr.net/npm/kelvin-js@0.0.7/dist/kelvin-map-iframe-v0.0.5.min.js";
       script.onload = () => {
         console.log("Script kelvin chargé avec succès");
         setScriptLoaded(true);
@@ -178,6 +203,7 @@ export function useKelvinMap({ address, onSelectionChange }: UseKelvinMapProps) 
   return {
     scriptLoaded,
     initializeMap,
+    isInitialized,
     kelvinMapRef,
   };
 }

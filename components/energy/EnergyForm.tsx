@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useEnergyFormContext } from "@/contexts/energyForm.context";
+import { useSimulationResultsContext } from "@/contexts/simulationResults.context";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useProjectForm } from "@/hooks/useProjectForm";
@@ -11,7 +11,7 @@ export default function EnergyForm({ onQuit }: { onQuit?: () => void }) {
   const [error, setError] = useState<string>();
   const [address, setAddress] = useState("");
 
-  const { setIsEnergyLabelSolutionsDisplayed } = useEnergyFormContext();
+  const { setIsEnergyLabelSolutionsDisplayed } = useSimulationResultsContext();
 
   const { getStandardFormData } = useProjectForm("standard");
   const standardData = getStandardFormData();

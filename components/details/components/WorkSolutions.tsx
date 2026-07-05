@@ -9,10 +9,9 @@ interface WorkSolutionsProps {
 export const WorkSolutions = ({
   currentProjectDisplayed,
 }: WorkSolutionsProps) => {
-  const bouquets =
-    currentProjectDisplayed?.energyResults?.bouquets.filter(
-      (bouquet) => bouquet !== null,
-    ) || [];
+  const bouquets = currentProjectDisplayed?.energyMixChoice
+    ? [currentProjectDisplayed.energyMixChoice]
+    : [];
 
   const gridClassName = cn("grid gap-4 sm:gap-6 mx-auto", {
     "grid-cols-1 max-w-md": bouquets.length === 1,

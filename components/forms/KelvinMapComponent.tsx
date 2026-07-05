@@ -32,16 +32,16 @@ export default function KelvinMapComponent({
   onBackToAddress,
 }: KelvinMapComponentProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const { scriptLoaded, initializeMap } = useKelvinMap({
+  const { scriptLoaded, initializeMap, isInitialized } = useKelvinMap({
     address,
     onSelectionChange,
   });
 
   useEffect(() => {
-    if (scriptLoaded) {
+    if (scriptLoaded && !isInitialized) {
       initializeMap();
     }
-  }, [scriptLoaded, initializeMap]);
+  }, [scriptLoaded, isInitialized, initializeMap]);
 
   return (
     <div className="w-full min-h-screen space-y-4">

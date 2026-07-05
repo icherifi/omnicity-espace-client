@@ -51,22 +51,28 @@ import {
   calculateNewPage,
   calculateProjectPage,
 } from "@/app/sections/projects/utils";
-import { overallEnergyLabel, getEnergyMetrics } from "@/app/sections/dashboard/utils";
+import {
+  overallEnergyLabel,
+  getEnergyMetrics,
+} from "@/app/sections/dashboard/utils";
 
 interface ProjectsTableProps {
   navigateToProjectId?: string;
 }
 
-export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProps) {
+export default function ProjectsTable({
+  navigateToProjectId,
+}: ProjectsTableProps) {
   const { projects, refreshProjects } = useProjectsContext();
-  const { currentProjectDisplayed } =
-    useDashboardContext();
+  const { currentProjectDisplayed } = useDashboardContext();
   const { navigateToProject } = useAppRouter();
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 300);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingProject, setEditingProject] = useState<ProjectType | null>(null);
+  const [editingProject, setEditingProject] = useState<ProjectType | null>(
+    null,
+  );
   const [menuProjectId, setMenuProjectId] = useState<string | null>(null);
   const projectsPerPage = 6;
 
@@ -74,10 +80,10 @@ export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProp
     searchInput: debouncedSearch,
     statusFilter,
   });
-  
+
   const { totalPages, startIndex, paginatedProjects } = paginateProjects(
     filtered,
-    { currentPage, projectsPerPage }
+    { currentPage, projectsPerPage },
   );
 
   useEffect(() => {
@@ -91,11 +97,17 @@ export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProp
         navigateToProjectId,
         projects,
         { searchInput: debouncedSearch, statusFilter },
-        projectsPerPage
+        projectsPerPage,
       );
       setCurrentPage(targetPage);
     }
-  }, [navigateToProjectId, projects, debouncedSearch, statusFilter, projectsPerPage]);
+  }, [
+    navigateToProjectId,
+    projects,
+    debouncedSearch,
+    statusFilter,
+    projectsPerPage,
+  ]);
 
   const onArchiveProject = (projectId: string) => {
     handleProjectArchive(projectId, refreshProjects);
@@ -107,7 +119,7 @@ export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProp
 
   const onRowClick = (project: ProjectType) => {
     if (menuProjectId !== null) return;
-    
+
     // Utiliser le nouveau système de routing
     navigateToProject(project.id);
   };
@@ -194,14 +206,16 @@ export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProp
       <div className="rounded-xl overflow-hidden border shadow bg-white dark:bg-gray-900">
         <Table>
           <TableHeader>
-            <TableRow
-              className="bg-gray-900 dark:bg-gray-800 hover:bg-gray-850 text-white"
-            >
-              <TableHead className="px-4 py-3 text-white font-bold text-lg w-1/3 min-w-[220px]">Client</TableHead>
+            <TableRow className="bg-gray-900 dark:bg-gray-800 hover:bg-gray-850 text-white">
+              <TableHead className="px-4 py-3 text-white font-bold text-lg w-1/3 min-w-[220px]">
+                Client
+              </TableHead>
               <TableHead className="px-4 py-3 text-white font-bold text-lg hidden lg:table-cell">
                 Prix de vente
               </TableHead>
-              <TableHead className="px-4 py-3 text-center text-white font-bold text-lg w-1/4 min-w-[180px] hidden lg:table-cell">DPE Projeté</TableHead>
+              <TableHead className="px-4 py-3 text-center text-white font-bold text-lg w-1/4 min-w-[180px] hidden lg:table-cell">
+                DPE Projeté
+              </TableHead>
               <TableHead className="px-4 py-3 text-center text-white font-bold text-lg hidden lg:table-cell">
                 Statut
               </TableHead>
@@ -213,7 +227,8 @@ export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProp
               <TableRow
                 key={project.id}
                 data-state={
-                  currentProjectDisplayed && currentProjectDisplayed.id === project.id
+                  currentProjectDisplayed &&
+                  currentProjectDisplayed.id === project.id
                     ? "selected"
                     : undefined
                 }
@@ -236,33 +251,44 @@ export default function ProjectsTable({ navigateToProjectId }: ProjectsTableProp
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 font-bold text-lg hidden lg:table-cell text-gray-900 dark:text-white">
-                  {formatSalePrice(Number(project.features.baseValue))}
+                  {formatSalePrice(Number(project.baseValue))}
                 </TableCell>
                 <TableCell className="px-4 py-3 w-1/4 min-w-[180px] hidden lg:table-cell">
                   <DpeBar
-                    currentRating={
-                      (() => {
-                        const metrics = getEnergyMetrics(project);
-                        return overallEnergyLabel(metrics.initialCEP, metrics.initialEGES) || project.actualEnergyRating;
-                      })()
-                    }
-                    targetRating={
-                      (() => {
-                        const metrics = getEnergyMetrics(project);
-                        return overallEnergyLabel(metrics.targetCEP, metrics.targetEGES) || project.targetedEnergyRating!;
-                      })()
-                    }
+                    currentRating={(() => {
+                      const metrics = getEnergyMetrics(project);
+                      return (
+                        overallEnergyLabel(
+                          metrics.initialCEP,
+                          metrics.initialEGES,
+                        ) || project.actualEnergyRating
+                      );
+                    })()}
+                    targetRating={(() => {
+                      const metrics = getEnergyMetrics(project);
+                      return (
+                        overallEnergyLabel(
+                          metrics.targetCEP,
+                          metrics.targetEGES,
+                        ) || project.targetedEnergyRating!
+                      );
+                    })()}
                   />
                 </TableCell>
                 <TableCell className="px-4 py-3 text-center hidden lg:table-cell">
-                  <Badge variant={project.state} className="mt-4 mb-4 text-gray-900 dark:text-white">
+                  <Badge
+                    variant={project.state}
+                    className="mt-4 mb-4 text-gray-900 dark:text-white"
+                  >
                     {getStatusText(project.state)}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right">
                   <DropdownMenu
                     open={menuProjectId === project.id}
-                    onOpenChange={(o) => setMenuProjectId(o ? project.id : null)}
+                    onOpenChange={(o) =>
+                      setMenuProjectId(o ? project.id : null)
+                    }
                   >
                     <DropdownMenuTrigger asChild>
                       <Button

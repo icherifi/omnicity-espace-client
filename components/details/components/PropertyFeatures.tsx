@@ -1,16 +1,18 @@
-import { ProjectType } from '@/types/project.types';
-import { Home, Calendar, Flame } from 'lucide-react';
+import { ProjectType } from "@/types/project.types";
+import { Home, Calendar, Flame } from "lucide-react";
 
 interface PropertyFeaturesProps {
   currentProjectDisplayed: ProjectType;
 }
 
-export const PropertyFeatures = ({ currentProjectDisplayed }: PropertyFeaturesProps) => (
+export const PropertyFeatures = ({
+  currentProjectDisplayed,
+}: PropertyFeaturesProps) => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     {[
       {
-        label: "Surface habitable",
-        value: `${currentProjectDisplayed.features.size} m²`,
+        label: "Valeur du bien",
+        value: `${currentProjectDisplayed.baseValue.toLocaleString()} €`,
         icon: <Home className="h-5 w-5 text-primary" />,
       },
       {
@@ -27,9 +29,7 @@ export const PropertyFeatures = ({ currentProjectDisplayed }: PropertyFeaturesPr
       <div key={index} className="bg-muted rounded-2xl p-6">
         <div className="flex flex-col">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              {item.icon}
-            </div>
+            <div className="p-2 bg-primary/10 rounded-lg">{item.icon}</div>
             <span className="text-sm text-muted-foreground">{item.label}</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{item.value}</p>
@@ -37,4 +37,4 @@ export const PropertyFeatures = ({ currentProjectDisplayed }: PropertyFeaturesPr
       </div>
     ))}
   </div>
-); 
+);

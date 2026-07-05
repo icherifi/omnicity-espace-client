@@ -8,29 +8,27 @@ import {
 import EnergyRating from "@/components/energy/components/EnergyRating";
 import EnergyPerformanceBadge from "@/components/energy/components/EnergyPerformanceBadge";
 import Image from "next/image";
-import { ProjectType, MockEnergyResponse } from "@/types/project.types";
+import { ProjectType } from "@/types/project.types";
+import {
+  getEnergyMetrics,
+  overallEnergyLabel,
+} from "@/app/sections/dashboard/utils";
 
 function PropertyState({ project }: { project: ProjectType }) {
   if (!project) {
     return <div>Chargement du projet...</div>;
   }
 
-  // Utiliser les données énergétiques
-  const energyData = project.energyResults as MockEnergyResponse;
+  const metrics = getEnergyMetrics(project);
+  const currentLabel =
+    overallEnergyLabel(metrics.initialCEP, metrics.initialEGES) || "g";
 
   return (
     <div className="flex flex-col items-center justify-center space-x-2">
       <div className="flex items-center p-4 pt-0 2xl:flex-row flex-col">
         <EnergyRating
           energyRatingValue={
-            project.actualEnergyRating?.toLowerCase() as
-              | "a"
-              | "b"
-              | "c"
-              | "d"
-              | "e"
-              | "f"
-              | "g"
+            currentLabel as "a" | "b" | "c" | "d" | "e" | "f" | "g"
           }
         />
 
@@ -41,8 +39,8 @@ function PropertyState({ project }: { project: ProjectType }) {
             </p>
 
             <ul className="pt-2 pl-6 list-disc">
-              <li>{energyData?.CEP || "N/A"} kWh/m²/an</li>
-              <li>{energyData?.EGES || "N/A"} kgCO2/m²/an</li>
+              <li>{metrics.initialCEP || "N/A"} kWh/m²/an</li>
+              <li>{metrics.initialEGES || "N/A"} kgCO2/m²/an</li>
             </ul>
           </div>
         </div>

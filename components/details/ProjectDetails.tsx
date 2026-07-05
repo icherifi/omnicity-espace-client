@@ -105,14 +105,9 @@ function ProjectDetails() {
                 <div className="flex justify-center items-center flex-col min-[1765px]:flex-row">
                   <EnergyRating
                     energyRatingValue={
-                      currentProjectDisplayed?.energyResults?.etiquetteInitial?.toLowerCase()! as
-                        | "a"
-                        | "b"
-                        | "c"
-                        | "d"
-                        | "e"
-                        | "f"
-                        | "g"
+                      (currentProjectDisplayed?.energyMixChoice?.etiquetteEnergetique?.toLowerCase() ||
+                        currentProjectDisplayed?.targetedEnergyRating?.toLowerCase() ||
+                        "g") as "a" | "b" | "c" | "d" | "e" | "f" | "g"
                     }
                     state="Actuel"
                   />

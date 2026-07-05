@@ -102,32 +102,8 @@ const travauxList = (bouquet: EnergyMix) => {
 export function EnergyLabelTypeCard({
   energyLabelSolutionsType,
   bouquet,
-  initialState,
   isSelected,
 }: EnergyLabelTypeCardProps) {
-  let dpe: string = "-";
-
-  // Vérifier si on a des données DPE pour calculer l'étiquette
-  const cepAfterStr =
-    initialState?.dpeData?.travaux?.pack?.conso5UsagesApresTravaux;
-  const gesAfterStr =
-    initialState?.dpeData?.travaux?.pack?.emissionGes5UsagesApresTravaux;
-
-  // Si on a des données DPE, calculer l'étiquette à partir de ces données
-  if (cepAfterStr !== undefined && gesAfterStr !== undefined) {
-    const cepAfter = parseFloat(cepAfterStr);
-    const gesAfter = parseFloat(gesAfterStr);
-    const calculated = overallEnergyLabel(
-      isNaN(cepAfter) ? undefined : cepAfter,
-      isNaN(gesAfter) ? undefined : gesAfter,
-    );
-    // Désactivable en l'égalant à bouquet.etiquette
-    if (calculated) dpe = calculated;
-  } else {
-    // Pour les projets standard sans données DPE, utiliser l'étiquette calculée
-    dpe = bouquet.etiquette || "-";
-  }
-
   const travaux = travauxList(bouquet);
   const totalTravaux = bouquet.coutTotal
     ? Math.floor(bouquet.coutTotal).toLocaleString("fr-FR")
@@ -184,9 +160,9 @@ export function EnergyLabelTypeCard({
       </div>
       <div className="flex items-center gap-3 mb-4 mt-2">
         <span
-          className={`rounded-[12px] px-4 py-1 font-bold text-lg ${getDPEColor(dpe)}`}
+          className={`rounded-[12px] px-4 py-1 font-bold text-lg ${getDPEColor(bouquet.etiquette || "")}`}
         >
-          {dpe}
+          {bouquet.etiquette}
         </span>
         <span className="font-medium text-gray-700 dark:text-gray-300 text-md">
           DPE Visé

@@ -22,11 +22,7 @@ export const DocumentHeader = ({
       </div>
       <div className="flex gap-2">
         <span className="font-bold">Année de construction :</span>
-        <span>
-          {currentProjectDisplayed?.energyResults?.inputQr?.[
-            "L'année de construction du logement :"
-          ]?.[0] || "Non renseigné"}
-        </span>
+        <span>Non renseigné</span>
       </div>
     </div>
   </div>
