@@ -51,7 +51,7 @@ export const PROJECT_STEPS: ProjectStep[] = [
     description: "Évaluation de la performance énergétique actuelle",
     percentage: 25,
     isCompleted: (project: ProjectType) => {
-      return !!(project.energyResults || project.dpe?.dpeData);
+      return !!project.energyMixChoice;
     },
     nextStepAction: "Effectuer le diagnostic énergétique",
     isRequired: true,
@@ -62,7 +62,7 @@ export const PROJECT_STEPS: ProjectStep[] = [
     description: "Analyse détaillée des consommations et émissions",
     percentage: 40,
     isCompleted: (project: ProjectType) => {
-      return !!(project.energyResults?.CEP && project.energyResults?.EGES);
+      return !!(project.energyMixChoice?.CEP && project.energyMixChoice?.EGES);
     },
     nextStepAction: "Analyser les données énergétiques",
     isRequired: true,

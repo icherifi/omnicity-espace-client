@@ -10,19 +10,7 @@ const HORIZON = 20;
 const CO2_PARIS_LISBONNE = 390; // kg CO2 par vol/passager
 
 export const CarbonImpact = ({ project }: CarbonImpactProps) => {
-  const surface = Number(project.dpe?.dpeData?.surfaceHabitable) || 0;
-
-  const dpeData = project.dpe?.dpeData;
-  const dpeGesBeforeTotal = dpeData?.conso?.emissionGes5UsagesAvantTravaux
-    ? parseFloat(dpeData.conso.emissionGes5UsagesAvantTravaux)
-    : undefined;
-  const dpeGesAfterTotal = dpeData?.travaux?.pack
-    ?.emissionGes5UsagesApresTravaux
-    ? parseFloat(dpeData.travaux.pack.emissionGes5UsagesApresTravaux)
-    : undefined;
-
-  const hasDpeInitial = dpeGesBeforeTotal !== undefined;
-  const hasDpeAfter = dpeGesAfterTotal !== undefined;
+  const surface = 0; // Surface habitable not available in ProjectType
 
   const gainRaw = Number(project.energyMixChoice?.pourcentageGainCEP) || 0;
   const gain = gainRaw > 1 ? gainRaw / 100 : gainRaw;
@@ -30,17 +18,9 @@ export const CarbonImpact = ({ project }: CarbonImpactProps) => {
   let egesBeforeM2 = 0;
   let egesAfterM2 = 0;
 
-  if (hasDpeInitial) {
-    egesBeforeM2 = Math.round(dpeGesBeforeTotal!);
-  } else {
-    egesBeforeM2 = Math.round(Number(project.energyResults?.EGES) || 0);
-  }
-
-  if (hasDpeAfter) {
-    egesAfterM2 = Math.round(dpeGesAfterTotal!);
-  } else {
-    egesAfterM2 = Math.round(egesBeforeM2 * (1 - gain));
-  }
+  // Use energyMixChoice EGES values when available
+  egesBeforeM2 = Math.round(Number(project.energyMixChoice?.EGES) || 0);
+  egesAfterM2 = Math.round(egesBeforeM2 * (1 - gain));
 
   const gesBeforeKg = egesBeforeM2 * surface;
   const gesAfterKg = egesAfterM2 * surface;

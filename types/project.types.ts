@@ -1,5 +1,7 @@
 export type EnergyRating = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
+import type { InitialState } from "./simulation.types";
+
 export interface EnergyMix {
   CEP: number;
   EGES: number;
@@ -51,6 +53,7 @@ export interface ProjectType {
   strategy?: string;
   id_energy_choices?: number;
   energyMixChoice?: EnergyMix;
+  energyResults?: MockEnergyResponse;
   initial_state?: InitialState;
 }
 

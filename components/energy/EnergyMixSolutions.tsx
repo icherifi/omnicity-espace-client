@@ -84,6 +84,7 @@ export function EnergyMixSolutions({
     setSelectedBouquet,
     selectedStrategy,
     setSelectedStrategy,
+    initialState,
   } = useSimulationResultsContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -277,6 +278,7 @@ export function EnergyMixSolutions({
                   <EnergyLabelTypeCard
                     energyLabelSolutionsType={option.type}
                     bouquet={bouquet!}
+                    initialState={initialState}
                     isSelected={isSelected}
                   />
                 </div>
