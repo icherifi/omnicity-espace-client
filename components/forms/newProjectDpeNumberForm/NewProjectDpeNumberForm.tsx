@@ -233,12 +233,7 @@ export default function NewProjectDpeNumberForm({
             ← Retour à la sélection de parcelle
           </button>
         </div>
-        <EnergyMixSolutions
-          initialData={{
-            bouquets: dpeData.energyResults?.bouquets || [],
-            dpeData: dpeData.dpeData,
-          }}
-        />
+        <EnergyMixSolutions bouquets={dpeData.energyResults?.bouquets || []} />
       </div>
     );
   }

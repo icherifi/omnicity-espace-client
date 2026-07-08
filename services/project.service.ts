@@ -267,7 +267,7 @@ export class ProjectService {
       console.error("Error saving DPE energy data:", error);
     }
 
-    await saveEnergyChoice(generateUUID(), selectedStrategy, selectedBouquet);
+    await saveEnergyChoice(selectedStrategy, selectedBouquet);
 
     return projectId;
   }

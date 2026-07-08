@@ -50,21 +50,21 @@ export const CurrentCondition = ({
           <h3 className="text-lg font-semibold mb-2">Confort</h3>
           <div className="flex items-center gap-2">
             <span className="text-foreground">
-              {energyData?.confort === 3
+              {currentProjectDisplayed.energyMixChoice?.confort === 3
                 ? "😊"
-                : energyData?.confort === 2
+                : currentProjectDisplayed.energyMixChoice?.confort === 2
                   ? "😐"
-                  : energyData?.confort === 1
+                  : currentProjectDisplayed.energyMixChoice?.confort === 1
                     ? "😔"
                     : "❓"}
             </span>
             <span className="text-foreground">
               Confort{" "}
-              {energyData?.confort === 3
+              {currentProjectDisplayed.energyMixChoice?.confort === 3
                 ? "bon"
-                : energyData?.confort === 2
+                : currentProjectDisplayed.energyMixChoice?.confort === 2
                   ? "moyen"
-                  : energyData?.confort === 1
+                  : currentProjectDisplayed.energyMixChoice?.confort === 1
                     ? "faible"
                     : "non évalué"}
             </span>

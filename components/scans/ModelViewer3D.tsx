@@ -18,7 +18,17 @@ import {
   Maximize2,
   Calculator,
   HelpCircle,
+  FileDown,
+  Building2,
 } from "lucide-react";
+import {
+  exportRoomToDxf,
+  downloadBlob as downloadDxfBlob,
+} from "./exporters/DxfExporter";
+import {
+  exportScanToIFC,
+  downloadBlob as downloadIfcBlob,
+} from "./exporters/IfcExporter";
 import { Button } from "@/components/ui/button";
 
 interface ModelViewerProps {
@@ -47,6 +57,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     [number, number, number] | undefined
   >();
   const [roomAreaData, setRoomAreaData] = useState<RoomAreaData[]>([]);
+  const [exportingDxf, setExportingDxf] = useState(false);
+  const [exportingIfc, setExportingIfc] = useState(false);
 
   const roomCalculatorRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +72,28 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
       newSelectedWalls.add(wallIndex);
     }
     setSelectedWalls(newSelectedWalls);
+  };
+
+  const handleExportDxf = () => {
+    if (!scanData) return;
+    setExportingDxf(true);
+    try {
+      const blob = exportRoomToDxf(scanData);
+      downloadDxfBlob(blob, `${scanData.name || "RoomPlan"}.dxf`);
+    } finally {
+      setExportingDxf(false);
+    }
+  };
+
+  const handleExportIfc = async () => {
+    if (!scanData) return;
+    setExportingIfc(true);
+    try {
+      const blob = await exportScanToIFC(scanData);
+      downloadIfcBlob(blob, `${scanData.name || "RoomPlan"}.ifc`);
+    } finally {
+      setExportingIfc(false);
+    }
   };
 
   const handleAreaCalculationComplete = (data: RoomAreaData[]) => {
@@ -160,8 +194,34 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 Calculate Room Areas
               </Button>
 
+              {/* Export buttons */}
+              <div className="flex items-center gap-2 ml-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportDxf}
+                  disabled={exportingDxf}
+                  className="flex items-center gap-2"
+                  title="Export floor plan as DXF (AutoCAD)"
+                >
+                  <FileDown className="h-4 w-4" />
+                  {exportingDxf ? "Exporting…" : "Export DXF"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportIfc}
+                  disabled={exportingIfc}
+                  className="flex items-center gap-2"
+                  title="Export BIM model as IFC4 (Revit / ArchiCAD)"
+                >
+                  <Building2 className="h-4 w-4" />
+                  {exportingIfc ? "Exporting…" : "Export IFC"}
+                </Button>
+              </div>
+
               {/* Statistics */}
-              <div className="text-sm text-zinc-600 ml-auto">
+              <div className="text-sm text-zinc-600">
                 {stats.walls} walls, {stats.doors} doors, {stats.windows}{" "}
                 windows, {stats.objects} objects
               </div>

@@ -57,14 +57,16 @@ function PropertyState({ project }: { project: ProjectType }) {
                 Isolation & menuiserie:{" "}
                 <EnergyPerformanceBadge
                   state={
-                    energyData?.performanceEnergetique?.murs?.EtatInitial?.Note
+                    project.energyResults?.performanceEnergetique?.murs
+                      ?.EtatInitial?.Note
                   }
                 />
               </span>{" "}
             </AccordionTrigger>
             <AccordionContent>
               <ul>
-                {energyData?.performanceEnergetique?.murs?.EtatInitial && (
+                {project.energyResults?.performanceEnergetique?.murs
+                  ?.EtatInitial && (
                   <li className="flex items-center py-0.5">
                     <Image
                       className="mr-2"
@@ -74,8 +76,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                       alt="wall icon"
                     />
                     {
-                      energyData?.performanceEnergetique?.murs?.EtatInitial
-                        ?.Label
+                      project.energyResults?.performanceEnergetique?.murs
+                        ?.EtatInitial?.Label
                     }
                   </li>
                 )}
@@ -88,8 +90,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                     height={16}
                     alt="window icon"
                   />
-                  {energyData?.performanceEnergetique?.vitrages?.EtatInitial
-                    ?.Label || "Menuiseries"}
+                  {project.energyResults?.performanceEnergetique?.vitrages
+                    ?.EtatInitial?.Label || "Menuiseries"}
                 </li>
               </ul>
             </AccordionContent>
@@ -100,16 +102,16 @@ function PropertyState({ project }: { project: ProjectType }) {
                 Chauffage:{" "}
                 <EnergyPerformanceBadge
                   state={
-                    (energyData?.performanceEnergetique?.chauffage?.EtatInitial
-                      ?.ApCh1?.Note || 2) as 1 | 2 | 3
+                    (project.energyResults?.performanceEnergetique?.chauffage
+                      ?.EtatInitial?.ApCh1?.Note || 2) as 1 | 2 | 3
                   }
                 />
               </span>
             </AccordionTrigger>
             <AccordionContent>
               <ul>
-                {energyData?.performanceEnergetique?.chauffage?.EtatInitial
-                  ?.ApCh1 && (
+                {project.energyResults?.performanceEnergetique?.chauffage
+                  ?.EtatInitial?.ApCh1 && (
                   <li className="flex items-center py-0.5">
                     <Image
                       className="mr-2"
@@ -118,12 +120,12 @@ function PropertyState({ project }: { project: ProjectType }) {
                       height={16}
                       alt="heating icon"
                     />
-                    {energyData?.performanceEnergetique?.chauffage?.EtatInitial
-                      ?.ApCh1?.Label || "Système de chauffage"}
+                    {project.energyResults?.performanceEnergetique?.chauffage
+                      ?.EtatInitial?.ApCh1?.Label || "Système de chauffage"}
                   </li>
                 )}
-                {energyData?.performanceEnergetique?.chauffage?.EtatInitial
-                  ?.ECS && (
+                {project.energyResults?.performanceEnergetique?.chauffage
+                  ?.EtatInitial?.ECS && (
                   <li className="flex items-center py-0.5">
                     <Image
                       className="mr-2"
@@ -132,8 +134,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                       height={16}
                       alt="water icon"
                     />
-                    {energyData?.performanceEnergetique?.chauffage?.EtatInitial
-                      ?.ECS?.Label || "Production d'eau chaude"}
+                    {project.energyResults?.performanceEnergetique?.chauffage
+                      ?.EtatInitial?.ECS?.Label || "Production d'eau chaude"}
                   </li>
                 )}
               </ul>
@@ -145,8 +147,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                 Ventilation:{" "}
                 <EnergyPerformanceBadge
                   state={
-                    energyData?.performanceEnergetique?.ventilation?.EtatInitial
-                      ?.Note || 2
+                    project.energyResults?.performanceEnergetique?.ventilation
+                      ?.EtatInitial?.Note || 2
                   }
                 />
               </span>
@@ -161,8 +163,8 @@ function PropertyState({ project }: { project: ProjectType }) {
                     height={16}
                     alt="ventilation icon"
                   />
-                  {energyData?.performanceEnergetique?.ventilation?.EtatInitial
-                    ?.Label || "Système de ventilation"}
+                  {project.energyResults?.performanceEnergetique?.ventilation
+                    ?.EtatInitial?.Label || "Système de ventilation"}
                 </li>
               </ul>
             </AccordionContent>
