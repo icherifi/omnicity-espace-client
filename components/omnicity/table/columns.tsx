@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { ProjectType } from '@/types/project.types';
+import { ProjectType } from "@/types/project.types";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { DataTableRowActions } from "./data-table-row-actions";
@@ -18,8 +18,8 @@ export const columns: ColumnDef<ProjectType>[] = [
         <Image
           src={
             process.env.NEXT_PUBLIC_SUPABASE_URL +
-            "/storage/v1/object/public/" +
-            row.original.imageFullPath! || "/placeholder.svg"
+              "/storage/v1/object/public/" +
+              row.original.imageFullPath! || "/placeholder.svg"
           }
           height={64}
           width={64}
@@ -34,8 +34,12 @@ export const columns: ColumnDef<ProjectType>[] = [
     header: "Nom",
     cell: ({ row }) => (
       <div>
-        <div className="text-gray-900 dark:text-white">{row.original.firstName} {row.original.lastName}</div>
-        <div className="text-sm text-gray-500 dark:text-gray-400">{row.original.address}</div>
+        <div className="text-gray-900 dark:text-white">
+          {row.original.firstName} {row.original.lastName}
+        </div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          {row.original.address}
+        </div>
       </div>
     ),
   },
@@ -66,7 +70,9 @@ export const columns: ColumnDef<ProjectType>[] = [
   {
     accessorKey: "firstName",
     header: "Auteur",
-    cell: ({ row }) => <span className="text-gray-900 dark:text-white">{`${row.original.firstName} ${row.original.lastName}`}</span>,
+    cell: ({ row }) => (
+      <span className="text-gray-900 dark:text-white">{`${row.original.firstName} ${row.original.lastName}`}</span>
+    ),
     meta: { responsiveHidden: true },
   },
   {
@@ -81,10 +87,10 @@ export const columns: ColumnDef<ProjectType>[] = [
     ),
   },
   {
-    accessorKey: "id_bouquet",
+    accessorKey: "energyMixChoice",
     header: "Energy",
     cell: ({ row }) =>
-      row.original.id_bouquet ? (
+      row.original.energyMixChoice ? (
         <CheckCircleIcon className="h-6 w-6 text-green-500 dark:text-green-400" />
       ) : (
         <XCircleIcon className="h-6 w-6 text-red-500 dark:text-red-400" />

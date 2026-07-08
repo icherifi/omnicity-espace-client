@@ -237,7 +237,7 @@ export default function ProjectsTable({
               >
                 <TableCell className="px-4 py-3 flex items-center gap-2 w-1/3 min-w-[220px]">
                   <Image
-                    src={getProjectImageUrl(project.imageFullPath)}
+                    src={getProjectImageUrl(project.imageFullPath || undefined)}
                     alt="avatar"
                     width={64}
                     height={64}
@@ -261,7 +261,7 @@ export default function ProjectsTable({
                         overallEnergyLabel(
                           metrics.initialCEP,
                           metrics.initialEGES,
-                        ) || project.actualEnergyRating
+                        ) || "G"
                       );
                     })()}
                     targetRating={(() => {

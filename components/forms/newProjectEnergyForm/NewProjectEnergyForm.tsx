@@ -27,6 +27,7 @@ export default function NewProjectEnergyForm({
     setSimulationCompleted,
     sessionId,
     isEnergyLabelSolutionsDisplayed,
+    simulationResults,
   } = useSimulationResultsContext();
 
   const { refreshProjects, projects } = useProjectsContext();
@@ -104,7 +105,7 @@ export default function NewProjectEnergyForm({
   }, [simulationCompleted, handleSubmit]);
 
   return isEnergyLabelSolutionsDisplayed ? (
-    <EnergyMixSolutions />
+    <EnergyMixSolutions bouquets={simulationResults?.bouquets || []} />
   ) : (
     <EnergyForm onQuit={onQuit} />
   );
