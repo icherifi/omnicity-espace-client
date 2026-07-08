@@ -29,43 +29,31 @@ export default function ImportPage() {
               <div className="p-4 bg-white shadow-md rounded-md mt-2 w-full">
                 <h2 className="text-lg font-bold">Caractéristiques</h2>
                 <ul>
-                  <li>Taille : {currentProjectDisplayed!.features.size}</li>
                   <li>
-                    Nb de pièces :{" "}
-                    {currentProjectDisplayed!.features.roomsNumber}
+                    Valeur du bien :{" "}
+                    {currentProjectDisplayed!.baseValue.toLocaleString()} €
                   </li>
-                  <li>
-                    Nb d'étages :{" "}
-                    {currentProjectDisplayed!.features.floorsNumber}
-                  </li>
+                  <li>Adresse : {currentProjectDisplayed!.address}</li>
                 </ul>
               </div>
               <div className="p-4 bg-white shadow-md rounded-md mt-2 w-full">
                 <h2 className="text-lg font-bold">Caractéristiques</h2>
                 <ul>
-                  <li>Taille : {currentProjectDisplayed!.features.size}</li>
                   <li>
-                    Nb de pièces :{" "}
-                    {currentProjectDisplayed!.features.roomsNumber}
+                    Valeur du bien :{" "}
+                    {currentProjectDisplayed!.baseValue.toLocaleString()} €
                   </li>
-                  <li>
-                    Nb d'étages :{" "}
-                    {currentProjectDisplayed!.features.floorsNumber}
-                  </li>
+                  <li>Adresse : {currentProjectDisplayed!.address}</li>
                 </ul>
               </div>
               <div className="p-4 bg-white shadow-md rounded-md mt-2 w-full">
                 <h2 className="text-lg font-bold">Caractéristiques</h2>
                 <ul>
-                  <li>Taille : {currentProjectDisplayed!.features.size}</li>
                   <li>
-                    Nb de pièces :{" "}
-                    {currentProjectDisplayed!.features.roomsNumber}
+                    Valeur du bien :{" "}
+                    {currentProjectDisplayed!.baseValue.toLocaleString()} €
                   </li>
-                  <li>
-                    Nb d'étages :{" "}
-                    {currentProjectDisplayed!.features.floorsNumber}
-                  </li>
+                  <li>Adresse : {currentProjectDisplayed!.address}</li>
                 </ul>
               </div>
             </CardContent>

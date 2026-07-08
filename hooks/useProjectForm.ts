@@ -1,6 +1,9 @@
 import { useState, useCallback } from "react";
 import { useNewProjectStandardFormContext } from "@/contexts/newProjectStandardForm.context";
-import { StandardProjectFormData, DpeProjectFormData } from "@/types/project.types";
+import {
+  StandardProjectFormData,
+  DpeProjectFormData,
+} from "@/types/project.types";
 import { validateField } from "@/components/forms/newProjectEnergyForm/utils";
 
 export type ProjectFormType = "standard" | "dpe";
@@ -62,13 +65,22 @@ export const useProjectForm = (type: ProjectFormType) => {
           setContractType(value);
           break;
         case "generalInformation.size":
-          setProjectGeneralInformation({ ...projectGeneralInformation, size: value });
+          setProjectGeneralInformation({
+            ...projectGeneralInformation,
+            size: value,
+          });
           break;
         case "generalInformation.roomsNumber":
-          setProjectGeneralInformation({ ...projectGeneralInformation, roomsNumber: Number(value) });
+          setProjectGeneralInformation({
+            ...projectGeneralInformation,
+            roomsNumber: Number(value),
+          });
           break;
         case "generalInformation.floorsNumber":
-          setProjectGeneralInformation({ ...projectGeneralInformation, floorsNumber: Number(value) });
+          setProjectGeneralInformation({
+            ...projectGeneralInformation,
+            floorsNumber: Number(value),
+          });
           break;
         case "dpeInformation.dpeNumber":
           setDpeNumber(value);
@@ -89,7 +101,20 @@ export const useProjectForm = (type: ProjectFormType) => {
           break;
       }
     },
-    [setFirstName, setLastName, setProjectName, setProjectAddress, setProjectDescription, setProjectGeneralInformation, projectGeneralInformation, setContractType, setFiscalIncome, setHouseholdSize, setBaseValue, setOccupancyStatus]
+    [
+      setFirstName,
+      setLastName,
+      setProjectName,
+      setProjectAddress,
+      setProjectDescription,
+      setProjectGeneralInformation,
+      projectGeneralInformation,
+      setContractType,
+      setFiscalIncome,
+      setHouseholdSize,
+      setBaseValue,
+      setOccupancyStatus,
+    ],
   );
 
   const onImageChange = (file: File | null) => {
@@ -99,10 +124,10 @@ export const useProjectForm = (type: ProjectFormType) => {
   const isFormValid = () => {
     // Vérifier qu'il n'y a pas d'erreurs de validation
     const hasValidationErrors = Object.values(errors).some((e) => e !== "");
-    
+
     // Vérifier que les champs requis ne sont pas vides
     const hasRequiredFieldsEmpty = !firstName?.trim() || !lastName?.trim();
-    
+
     return !hasValidationErrors && !hasRequiredFieldsEmpty;
   };
 
@@ -112,17 +137,7 @@ export const useProjectForm = (type: ProjectFormType) => {
     projectName,
     projectAddress,
     projectDescription,
-    generalInformation: {
-      size: projectGeneralInformation.size as unknown as string,
-      roomsNumber: projectGeneralInformation.roomsNumber as number,
-      floorsNumber: projectGeneralInformation.floorsNumber as number,
-    },
-    contractType,
-    fiscalIncome,
-    householdSize,
     baseValue,
-    occupancyStatus,
-    image,
   });
 
   const getDpeFormData = (): DpeProjectFormData => ({
@@ -137,8 +152,6 @@ export const useProjectForm = (type: ProjectFormType) => {
       occupancyStatus,
       baseValue,
     },
-    contract_type: contractType,
-    image,
   });
 
   return {
@@ -150,4 +163,4 @@ export const useProjectForm = (type: ProjectFormType) => {
     getStandardFormData,
     getDpeFormData,
   };
-}; 
+};

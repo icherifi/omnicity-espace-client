@@ -3,7 +3,7 @@ import { getToken } from "./supabase/client";
 
 export const deleteProject = async (
   projectId: string,
-  token: string
+  token: string,
 ): Promise<boolean> => {
   try {
     const response = await fetch(
@@ -14,7 +14,7 @@ export const deleteProject = async (
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       throw new Error("Failed to delete project");
@@ -28,7 +28,7 @@ export const deleteProject = async (
 
 export const archiveProject = async (
   projectId: string,
-  token: string
+  token: string,
 ): Promise<boolean> => {
   try {
     const response = await fetch(
@@ -40,7 +40,7 @@ export const archiveProject = async (
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ state: "archived" }),
-      }
+      },
     );
     if (!response.ok) {
       throw new Error("Failed to archive project");
@@ -66,7 +66,7 @@ export const getScans = async (projectId: string): Promise<any[] | null> => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -83,7 +83,7 @@ export const getScans = async (projectId: string): Promise<any[] | null> => {
 export const handleImageChange = async (
   file: File,
   token: string,
-  projectId: string
+  projectId: string,
 ): Promise<string | null> => {
   try {
     if (!file) return null;
@@ -100,7 +100,7 @@ export const handleImageChange = async (
           Authorization: `Bearer ${token}`,
         },
         body: formData,
-      }
+      },
     );
 
     if (!response.ok) {
@@ -121,7 +121,7 @@ export const handleImageChange = async (
 export const updateProjectImage = async (
   projectId: string,
   imageFullPath: string,
-  token: string
+  token: string,
 ) => {
   try {
     const response = await fetch(
@@ -133,7 +133,7 @@ export const updateProjectImage = async (
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ imageFullPath: imageFullPath }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -149,8 +149,13 @@ export const updateProjectImage = async (
 export const updateProject = async (
   projectId: string,
   updatedData: any,
-  token: string
 ): Promise<boolean> => {
+  const token = await getToken();
+  if (!token) {
+    console.error("Utilisateur non authentifié");
+    return false;
+  }
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
@@ -161,7 +166,7 @@ export const updateProject = async (
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedData),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -177,7 +182,7 @@ export const updateProject = async (
 
 export const handleNewProject = async (
   projectData: any,
-  token: string
+  token: string,
 ): Promise<{ message: string; data: { id: string }[] }> => {
   try {
     const response = await fetch(
@@ -189,7 +194,7 @@ export const handleNewProject = async (
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify([projectData]),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -205,35 +210,9 @@ export const handleNewProject = async (
   }
 };
 
-export async function saveIziResponseToBackend(
-  iziResponse: any,
-  projectId: string,
-  token: string
-) {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          id: iziResponse.sessionId,
-          id_project: projectId,
-          izi_response: iziResponse,
-        }),
-      }
-    );
-    console.log("Response from back-end after form save", response);
-  } catch (error) {
-    console.error("Error saving IZI response to backend:", error);
-    throw error;
-  }
-}
-
-export const fetchProjects = async (setProjects: Dispatch<SetStateAction<any[]>>) => {
+export const fetchProjects = async (
+  setProjects: Dispatch<SetStateAction<any[]>>,
+) => {
   const token = await getToken();
   if (!token) {
     console.error("You are not authenticated");
@@ -241,13 +220,16 @@ export const fetchProjects = async (setProjects: Dispatch<SetStateAction<any[]>>
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

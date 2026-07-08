@@ -37,8 +37,8 @@ interface NewProjectStandardFormType {
   setFiscalIncome: Dispatch<SetStateAction<string>>;
   householdSize: string;
   setHouseholdSize: Dispatch<SetStateAction<string>>;
-  baseValue: string;
-  setBaseValue: Dispatch<SetStateAction<string>>;
+  baseValue: number;
+  setBaseValue: Dispatch<SetStateAction<number>>;
   occupancyStatus: string;
   setOccupancyStatus: Dispatch<SetStateAction<string>>;
   image: File | null;
@@ -46,9 +46,8 @@ interface NewProjectStandardFormType {
   resetProjectStandardForm: () => void;
 }
 
-export const NewProjectStandardFormContext = createContext<NewProjectStandardFormType | null>(
-  null
-);
+export const NewProjectStandardFormContext =
+  createContext<NewProjectStandardFormType | null>(null);
 
 const initialState = {
   firstName: "",
@@ -59,7 +58,7 @@ const initialState = {
   contractType: "",
   fiscalIncome: "",
   householdSize: "",
-  baseValue: "",
+  baseValue: 0,
   occupancyStatus: "primaryOwner",
   image: null as File | null,
   projectDate: undefined,
@@ -77,20 +76,22 @@ export default function NewProjectStandardFormContextProvider({
   const [lastName, setLastName] = useState(initialState.lastName);
   const [projectName, setProjectName] = useState(initialState.projectName);
   const [projectAddress, setProjectAddress] = useState(
-    initialState.projectAddress
+    initialState.projectAddress,
   );
   const [projectDescription, setProjectDescription] = useState(
-    initialState.projectDescription
+    initialState.projectDescription,
   );
   const [contractType, setContractType] = useState(initialState.contractType);
   const [projectDate, setProjectDate] = useState<Date | undefined>(
-    initialState.projectDate
+    initialState.projectDate,
   );
   const [fiscalIncome, setFiscalIncome] = useState(initialState.fiscalIncome);
-  const [householdSize, setHouseholdSize] = useState(initialState.householdSize);
+  const [householdSize, setHouseholdSize] = useState(
+    initialState.householdSize,
+  );
   const [baseValue, setBaseValue] = useState(initialState.baseValue);
   const [occupancyStatus, setOccupancyStatus] = useState(
-    initialState.occupancyStatus
+    initialState.occupancyStatus,
   );
   const [image, setImage] = useState<File | null>(initialState.image);
   const [projectGeneralInformation, setProjectGeneralInformation] =
@@ -152,7 +153,7 @@ export function useNewProjectStandardFormContext() {
   const context = useContext(NewProjectStandardFormContext);
   if (!context) {
     throw new Error(
-      "useNewProjectStandardFormContext must be used within NewProjectStandardFormContextProvider"
+      "useNewProjectStandardFormContext must be used within NewProjectStandardFormContextProvider",
     );
   }
   return context;

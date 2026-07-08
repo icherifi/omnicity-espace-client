@@ -45,7 +45,7 @@ interface Step {
   nextStep?: Step;
 }
 
-interface EnergyFormContext {
+interface EnergyFormContextType {
   isEnergyFormDisplayed: boolean;
   setIsEnergyFormDisplayed: (isDisplayed: boolean) => void;
   energyFormGotOpened: boolean;
@@ -65,12 +65,18 @@ interface EnergyFormContext {
   energyFormCompleted: boolean;
   setEnergyFormCompleted: (energyFormCompleted: boolean) => void;
   isEnergyLabelSolutionsDisplayed: boolean;
-  setIsEnergyLabelSolutionsDisplayed: (isEnergyLabelSolutionsDisplayed: boolean) => void;
+  setIsEnergyLabelSolutionsDisplayed: (
+    isEnergyLabelSolutionsDisplayed: boolean,
+  ) => void;
 }
 
-const EnergyFormContext = createContext<EnergyFormContext | null>(null);
+const EnergyFormContext = createContext<EnergyFormContextType | null>(null);
 
-export default function EnergyFormContextProvider({ children }: { children: React.ReactNode }) {
+export default function EnergyFormContextProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isEnergyFormDisplayed, setIsEnergyFormDisplayed] = useState(false);
   const [energyFormGotOpened, setEnergyFormGotOpened] = useState(false);
   const [sessionId, setSessionId] = useState<string>("");
@@ -81,8 +87,9 @@ export default function EnergyFormContextProvider({ children }: { children: Reac
   const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
   const [answerState, setAnswerState] = useState<any>(null);
   const [energyFormCompleted, setEnergyFormCompleted] = useState(false);
-  const [isEnergyLabelSolutionsDisplayed, setIsEnergyLabelSolutionsDisplayed] = useState(false);
-  
+  const [isEnergyLabelSolutionsDisplayed, setIsEnergyLabelSolutionsDisplayed] =
+    useState(false);
+
   return (
     <EnergyFormContext.Provider
       value={{
@@ -105,7 +112,7 @@ export default function EnergyFormContextProvider({ children }: { children: Reac
         energyFormCompleted,
         setEnergyFormCompleted,
         isEnergyLabelSolutionsDisplayed,
-        setIsEnergyLabelSolutionsDisplayed
+        setIsEnergyLabelSolutionsDisplayed,
       }}
     >
       {children}

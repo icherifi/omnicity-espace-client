@@ -1,19 +1,25 @@
 "use client";
 
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getPerfBadge, getChauffageNote } from "../utils";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+
+const GOOD_BADGE = {
+  label: "Bien",
+  color: "text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900",
+};
+const NO_BADGE = {
+  label: "-",
+  color: "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300",
+};
+
+function getTargetBadge(renovated: boolean | undefined) {
+  return renovated ? GOOD_BADGE : NO_BADGE;
+}
 
 interface EnergyTargetCardProps {
   targetLabel: string;
   targetCEP?: number;
   targetEGES?: number;
-  iziResponse: any;
   energyMixChoice?: any;
   isEnergyDataAvailable: boolean;
 }
@@ -22,7 +28,6 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
   targetLabel,
   targetCEP,
   targetEGES,
-  iziResponse,
   energyMixChoice,
   isEnergyDataAvailable,
 }) => {
@@ -31,7 +36,9 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
       className={`flex-1 flex flex-col border-black dark:border-gray-600 border border-solid bg-card shadow-sm rounded-[16px] p-0 ${!isEnergyDataAvailable ? "opacity-40 grayscale pointer-events-none" : ""}`}
     >
       <CardHeader className="pb-4 px-6 pt-6">
-        <CardTitle className="text-2xl font-bold text-foreground">Visé</CardTitle>
+        <CardTitle className="text-2xl font-bold text-foreground">
+          Visé
+        </CardTitle>
       </CardHeader>
       <div className="p-0 flex-1 flex flex-col">
         <div className="bg-green-100 dark:bg-green-400 mx-6 rounded-xl p-6 flex flex-col justify-around items-center gap-2 mb-6 2xl:flex-row h-[200px]">
@@ -43,8 +50,12 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
               Étiquette énergétique
             </p>
             <ul className="text-sm list-disc list-inside text-foreground dark:text-black">
-              <li>{targetCEP !== undefined ? `${targetCEP} kWh/m²/an` : "–"}</li>
-              <li>{targetEGES !== undefined ? `${targetEGES} kgCO₂/m²/an` : "–"}</li>
+              <li>
+                {targetCEP !== undefined ? `${targetCEP} kWh/m²/an` : "–"}
+              </li>
+              <li>
+                {targetEGES !== undefined ? `${targetEGES} kgCO₂/m²/an` : "–"}
+              </li>
             </ul>
           </div>
         </div>
@@ -52,13 +63,19 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
           <div className="flex justify-between items-center border-b pb-2">
             <span>Isolation</span>
             {(() => {
-              const note = iziResponse?.performanceEnergetique?.murs?.EtatApresTravaux?.Note;
-              const badge = {
-                label: "Bien",
-                color: "text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900",
-              };
+              const renovated =
+                energyMixChoice?.renovationMurs ||
+                energyMixChoice?.renoComblesPerdus ||
+                energyMixChoice?.renoComblesAmenages ||
+                energyMixChoice?.renoIsolationToitureTerrasse ||
+                energyMixChoice?.renoPlancherBasSousSol ||
+                energyMixChoice?.renoPlancherBasTerrePlein ||
+                energyMixChoice?.renoPlancherBasVideSanitaire;
+              const badge = getTargetBadge(renovated);
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}
+                >
                   {badge.label}
                 </span>
               );
@@ -67,13 +84,14 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
           <div className="flex justify-between items-center border-b pb-2">
             <span>Chauffage</span>
             {(() => {
-              const note = getChauffageNote(iziResponse?.performanceEnergetique?.chauffage);
-              const badge = {
-                label: "Bien",
-                color: "text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900",
-              };
+              const renovated =
+                !!energyMixChoice?.appareilChauffage1 ||
+                !!energyMixChoice?.appareilChauffage2;
+              const badge = getTargetBadge(renovated);
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}
+                >
                   {badge.label}
                 </span>
               );
@@ -82,13 +100,12 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
           <div className="flex justify-between items-center">
             <span>Ventilation</span>
             {(() => {
-              const note = iziResponse?.performanceEnergetique?.ventilation?.EtatApresTravaux?.Note;
-              const badge = {
-                label: "Bien",
-                color: "text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900",
-              };
+              const renovated = !!energyMixChoice?.typeVentilationExterieur;
+              const badge = getTargetBadge(renovated);
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.color}`}
+                >
                   {badge.label}
                 </span>
               );
@@ -108,4 +125,4 @@ const EnergyTargetCard: React.FC<EnergyTargetCardProps> = ({
   );
 };
 
-export default EnergyTargetCard; 
+export default EnergyTargetCard;

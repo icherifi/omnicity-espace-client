@@ -19,7 +19,6 @@ import { useTheme } from "@/contexts/theme.context";
 import { createClient } from "@/utils/supabase/client";
 import {
   getEnergyMetrics,
-  computeEnergyCosts,
   getAidCoveragePercentage,
   overallEnergyLabel,
 } from "./utils";
@@ -44,25 +43,8 @@ export default function DashboardSection({
   const { projects } = useProjectsContext();
   const { navigateToProjectEnergy } = useAppRouter();
   const [openRecap, setOpenRecap] = React.useState(false);
-
-  const { targetedEnergyRating, iziResponse } = currentProjectDisplayed as any;
-
-  const avanc = getCompletionPercentage(currentProjectDisplayed as ProjectType);
   const router = useRouter();
-
   const { theme, setTheme } = useTheme();
-
-  const metrics = getEnergyMetrics(currentProjectDisplayed as ProjectType);
-  const { initialCEP, initialEGES, targetCEP, targetEGES } = metrics;
-  const costs = computeEnergyCosts(currentProjectDisplayed as ProjectType);
-  const hasCosts = costs.totalBefore > 0;
-
-  const currentLabel =
-    overallEnergyLabel(initialCEP, initialEGES) ||
-    iziResponse?.etiquetteInitial ||
-    "-";
-  const targetLabel =
-    overallEnergyLabel(targetCEP, targetEGES) || targetedEnergyRating || "-";
 
   const handleLogout = async () => {
     await createClient().auth.signOut();
@@ -89,10 +71,24 @@ export default function DashboardSection({
     );
   }
 
-  const isEnergyDataAvailable =
-    !!iziResponse || !!(currentProjectDisplayed as any)?.dpe?.dpeData;
+  const { targetedEnergyRating } = currentProjectDisplayed as any;
+
+  const avanc = getCompletionPercentage(currentProjectDisplayed as ProjectType);
+
+  const metrics = getEnergyMetrics(currentProjectDisplayed as ProjectType);
+  const { initialCEP, initialEGES, targetCEP, targetEGES } = metrics;
+
+  const currentLabel = overallEnergyLabel(initialCEP, initialEGES) || "-";
+  const targetLabel =
+    (currentProjectDisplayed as any).energyMixChoice?.etiquetteEnergetique ||
+    (currentProjectDisplayed as any).energyMixChoice?.etiquette ||
+    targetedEnergyRating ||
+    overallEnergyLabel(targetCEP, targetEGES) ||
+    "-";
+
   const isEnergyMixAvailable = !!(currentProjectDisplayed as any)
     .energyMixChoice;
+  const isEnergyDataAvailable = isEnergyMixAvailable;
   const isDraft =
     currentProjectDisplayed.state === "draft" ||
     (!isEnergyDataAvailable && !isEnergyMixAvailable);
@@ -161,16 +157,14 @@ export default function DashboardSection({
               currentLabel={currentLabel}
               initialCEP={initialCEP}
               initialEGES={initialEGES}
-              costs={costs}
-              hasCosts={hasCosts}
-              iziResponse={iziResponse}
               isEnergyDataAvailable={isEnergyDataAvailable}
+              initial_state={currentProjectDisplayed.initial_state}
+              address={currentProjectDisplayed.address}
             />
             <EnergyTargetCard
               targetLabel={targetLabel}
               targetCEP={targetCEP}
               targetEGES={targetEGES}
-              iziResponse={iziResponse}
               energyMixChoice={currentProjectDisplayed.energyMixChoice}
               isEnergyDataAvailable={isEnergyDataAvailable}
             />

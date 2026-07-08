@@ -1,12 +1,14 @@
-import { IsolationIcons } from './icons/IsolationIcons';
-import { ChauffageIcons } from './icons/ChauffageIcons';
-import { VentilationIcon } from './icons/VentilationIcon';
-import { ProjectType } from '@/types/project.types';
+import { IsolationIcons } from "./icons/IsolationIcons";
+import { ChauffageIcons } from "./icons/ChauffageIcons";
+import { VentilationIcon } from "./icons/VentilationIcon";
+import { ProjectType } from "@/types/project.types";
 interface BuildingDetailsProps {
   currentProjectDisplayed: ProjectType;
 }
 
-export const BuildingDetails = ({ currentProjectDisplayed }: BuildingDetailsProps) => (
+export const BuildingDetails = ({
+  currentProjectDisplayed,
+}: BuildingDetailsProps) => (
   <div className="grid grid-cols-3 gap-8 bg-gray-50 rounded-2xl py-4 sm:p-6">
     <div>
       <h3 className="font-semibold mb-4">Isolation & menuiserie</h3>
@@ -27,7 +29,8 @@ export const BuildingDetails = ({ currentProjectDisplayed }: BuildingDetailsProp
           {ChauffageIcons.AppareilPrincipal}
           <span>Appareil principal</span>
         </div>
-        {currentProjectDisplayed.iziResponse?.performanceEnergetique?.chauffage?.EtatInitial?.ApCh2?.Label && (
+        {currentProjectDisplayed.energyResults?.performanceEnergetique
+          ?.chauffage?.EtatInitial?.ApCh2?.Label && (
           <div className="flex items-center gap-2">
             {ChauffageIcons.AppareilSecondaire}
             <span>Appareil secondaire</span>
@@ -50,4 +53,4 @@ export const BuildingDetails = ({ currentProjectDisplayed }: BuildingDetailsProp
       </div>
     </div>
   </div>
-); 
+);

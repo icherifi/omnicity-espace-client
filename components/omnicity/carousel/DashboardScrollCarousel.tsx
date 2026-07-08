@@ -58,7 +58,7 @@ function DashboardScrollCarousel() {
       if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
         return;
       }
-      
+
       event.preventDefault();
       const direction = event.deltaX > 0 ? 1 : -1;
       throttledScroll(direction);
@@ -116,7 +116,10 @@ function DashboardScrollCarousel() {
                   }`}
                 >
                   <CardContent className="flex flex-col items-center justify-center p-2">
-                    <Carousel className="max-w-40 max-h-48" opts={{ loop: true }}>
+                    <Carousel
+                      className="max-w-40 max-h-48"
+                      opts={{ loop: true }}
+                    >
                       <CarouselContent>
                         {Array.from({ length: 3 }).map((_, index) => {
                           const imageNumber = i * 3 + index + 1;
@@ -147,10 +150,8 @@ function DashboardScrollCarousel() {
                     </CardTitle>
                     <CardDescription className="text-center mt-4 text-gray-700 dark:text-gray-300">
                       <span className="font-semibold mt-4">
-                        {project.features?.roomsNumber} pièce
-                        {Number(project.features?.roomsNumber) > 1 && "s"} &bull;
-                        {` `} {project.features?.size}m² &bull;
-                        {` `} {project.features?.floorsNumber} étages
+                        Valeur estimée:{" "}
+                        {Number(project.baseValue).toLocaleString()}€
                       </span>
                     </CardDescription>
                   </CardContent>
