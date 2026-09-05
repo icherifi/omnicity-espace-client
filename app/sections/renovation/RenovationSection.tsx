@@ -20,6 +20,9 @@ import {
   exampleScanData,
   type Scan,
 } from "@/components/scans/threeJSUtils";
+import AIStagingPanel from "./components/AIStagingPanel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sparkles } from "lucide-react";
 
 interface ScanDocument {
   id: string;
@@ -303,8 +306,22 @@ export default function RenovationSection() {
           )}
 
           {/* Viewer 3D - prend tout l'espace restant */}
-          <div className="flex-1 relative p-4">
-            <Plan displayMode="full" />
+          <div className="flex-1 relative overflow-hidden">
+            <Tabs defaultValue="plan" className="h-full flex flex-col">
+              <TabsList className="mx-4 mt-4 w-fit">
+                <TabsTrigger value="plan">Plan</TabsTrigger>
+                <TabsTrigger value="staging" className="gap-1">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Aménagement IA
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="plan" className="flex-1 p-4 mt-0">
+                <Plan displayMode="full" />
+              </TabsContent>
+              <TabsContent value="staging" className="flex-1 mt-0">
+                <AIStagingPanel />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       )}
