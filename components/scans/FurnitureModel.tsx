@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -24,7 +24,11 @@ export const FurnitureModel: React.FC<{
   position: [number, number, number];
   rotationYDegrees: number;
   apiBaseUrl: string;
-}> = ({ itemNo, position, rotationYDegrees, apiBaseUrl }) => {
+  /** Fires once after this model has actually mounted (i.e. its GLTF fetch/decode
+   * already resolved via Suspense) - used by the headless render page to know
+   * when every async piece of the scene is done, not just this one. */
+  onSettled?: () => void;
+}> = ({ itemNo, position, rotationYDegrees, apiBaseUrl, onSettled }) => {
   const url = `${apiBaseUrl}/api/ikea/model/${itemNo}`;
   const { scene } = useGLTF(url, "/draco/");
 
@@ -37,6 +41,9 @@ export const FurnitureModel: React.FC<{
       adjustedPosition: [position[0], position[1] + yOffset, position[2]] as [number, number, number],
     };
   }, [scene, position]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => onSettled?.(), []);
 
   return (
     <primitive

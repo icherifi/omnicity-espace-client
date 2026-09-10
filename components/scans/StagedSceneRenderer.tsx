@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { RoomShell } from "./RoomShell";
 import { FloorMesh } from "./FloorMesh";
 import { FurnitureModel } from "./FurnitureModel";
+import { LoadErrorBoundary } from "./LoadErrorBoundary";
 import { computeRoomShellInfo } from "./roomBounds";
 import { Scan, Transform } from "./useTransform";
 import { StagingAction } from "./stagingTypes";
@@ -45,15 +46,41 @@ function isFurnitureAction(
  * and wall color applied directly as a material property. Used both for the real
  * viewer and (via the hidden /internal/staging-render route) for Claude's own
  * headless self-check screenshot - same component, same result either way.
+ *
+ * `onReady` fires once every async piece (floor texture, each furniture model)
+ * has settled - loaded OR failed, a broken model must not hang it forever. The
+ * headless render page uses this to know when it's safe to screenshot.
  */
 export const StagedSceneRenderer: React.FC<{
   scanData: Scan;
   actions: StagingAction[];
   apiBaseUrl: string;
-}> = ({ scanData, actions, apiBaseUrl }) => {
+  onReady?: () => void;
+}> = ({ scanData, actions, apiBaseUrl, onReady }) => {
   const room = computeRoomShellInfo(scanData);
   const floorMaterial = findFloorMaterial(actions);
   const furnitureActions = actions.filter(isFurnitureAction);
+
+  const totalAsync = (floorMaterial ? 1 : 0) + furnitureActions.length;
+  const settledCount = useRef(0);
+  const firedReady = useRef(false);
+
+  const markSettled = (error?: unknown) => {
+    if (error) console.error("[StagedSceneRenderer] a scene resource failed to load:", error);
+    settledCount.current += 1;
+    if (settledCount.current >= totalAsync && !firedReady.current) {
+      firedReady.current = true;
+      onReady?.();
+    }
+  };
+
+  useEffect(() => {
+    if (totalAsync === 0 && !firedReady.current) {
+      firedReady.current = true;
+      onReady?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="w-full h-full">
@@ -69,25 +96,34 @@ export const StagedSceneRenderer: React.FC<{
         />
 
         {floorMaterial && (
-          <FloorMesh
-            room={room}
-            material={{
-              diffuse_path: floorMaterial.diffuse_path,
-              normal_path: floorMaterial.normal_path,
-              roughness_path: floorMaterial.roughness_path,
-              tile_size_cm: floorMaterial.tile_size_cm,
-            }}
-          />
+          <LoadErrorBoundary onError={markSettled}>
+            <Suspense fallback={null}>
+              <FloorMesh
+                room={room}
+                material={{
+                  diffuse_path: floorMaterial.diffuse_path,
+                  normal_path: floorMaterial.normal_path,
+                  roughness_path: floorMaterial.roughness_path,
+                  tile_size_cm: floorMaterial.tile_size_cm,
+                }}
+                onSettled={() => markSettled()}
+              />
+            </Suspense>
+          </LoadErrorBoundary>
         )}
 
         {furnitureActions.map((action, i) => (
-          <FurnitureModel
-            key={`${action.item_no}-${i}`}
-            itemNo={action.item_no}
-            position={action.position ?? [0, 0, 0]}
-            rotationYDegrees={action.rotation_y_degrees ?? 0}
-            apiBaseUrl={apiBaseUrl}
-          />
+          <LoadErrorBoundary key={`${action.item_no}-${i}`} onError={markSettled}>
+            <Suspense fallback={null}>
+              <FurnitureModel
+                itemNo={action.item_no}
+                position={action.position ?? [0, 0, 0]}
+                rotationYDegrees={action.rotation_y_degrees ?? 0}
+                apiBaseUrl={apiBaseUrl}
+                onSettled={() => markSettled()}
+              />
+            </Suspense>
+          </LoadErrorBoundary>
         ))}
 
         <OrbitControls enablePan enableZoom enableRotate target={[0, 0, 0]} />

@@ -10,10 +10,11 @@ import { FloorMaterialInfo, RoomShellInfo } from "./stagingTypes";
  * math: a plane spanning the room's floor bounds, textured with repeat computed
  * from the material's real-world tile size.
  */
-export const FloorMesh: React.FC<{ room: RoomShellInfo; material: FloorMaterialInfo }> = ({
-  room,
-  material,
-}) => {
+export const FloorMesh: React.FC<{
+  room: RoomShellInfo;
+  material: FloorMaterialInfo;
+  onSettled?: () => void;
+}> = ({ room, material, onSettled }) => {
   const [diffuseMap, normalMap, roughnessMap] = useLoader(THREE.TextureLoader, [
     material.diffuse_path,
     material.normal_path,
@@ -39,6 +40,9 @@ export const FloorMesh: React.FC<{ room: RoomShellInfo; material: FloorMaterialI
       tex.needsUpdate = true;
     }
   }, [diffuseMap, normalMap, roughnessMap, repeatX, repeatZ]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => onSettled?.(), []);
 
   return (
     <mesh position={[centerX, floorY, centerZ]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
