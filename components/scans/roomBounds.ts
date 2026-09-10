@@ -20,6 +20,18 @@ function entityWorldBox(entity: Transform): THREE.Box3 {
   return box;
 }
 
+/** Mirrors roomShellService.ts's entityWorldPolygon - maps an entity's local-frame
+ * polygonCorners through its own transform, dropped to [worldX, worldZ]. Floors
+ * carry a real (often non-rectangular) contour; walls/doors/windows don't. */
+function entityWorldPolygon(entity: Transform): [number, number][] {
+  const corners = entity.polygonCorners ?? [];
+  const matrix = new THREE.Matrix4().fromArray(entity.transform);
+  return corners.map(([x, y, z]) => {
+    const world = new THREE.Vector3(x, y, z).applyMatrix4(matrix);
+    return [world.x, world.z] as [number, number];
+  });
+}
+
 export function computeRoomShellInfo(scanData: Scan): RoomShellInfo {
   const entities = [
     ...(scanData.walls ?? []),
@@ -37,5 +49,8 @@ export function computeRoomShellInfo(scanData: Scan): RoomShellInfo {
     wall_object_names: (scanData.walls ?? []).map((w) => w.identifier ?? ""),
     floor_object_names: [],
     ceiling_object_names: [],
+    floor_polygons: (scanData.floors ?? [])
+      .map((f) => entityWorldPolygon(f))
+      .filter((p) => p.length >= 3),
   };
 }

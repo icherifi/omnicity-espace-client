@@ -1,15 +1,30 @@
 "use client";
 
 import React, { Suspense, useEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Environment, OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
 import { RoomShell } from "./RoomShell";
 import { FloorMesh } from "./FloorMesh";
 import { FurnitureModel } from "./FurnitureModel";
+import { ScannedObjectFallback } from "./ScannedObjectFallback";
 import { LoadErrorBoundary } from "./LoadErrorBoundary";
 import { computeRoomShellInfo } from "./roomBounds";
 import { Scan, Transform } from "./useTransform";
 import { StagingAction } from "./stagingTypes";
+
+/** Original scan objects a staging run never replaced (no IKEA equivalent - built-in
+ * kitchen/bathroom fixtures) - anything NOT referenced by a replace action's
+ * replaces_roomplan_identifier should still render, just not as a real IKEA model. */
+function untouchedObjects(scanData: Scan, actions: StagingAction[]): Transform[] {
+  const replacedIds = new Set(
+    actions
+      .filter((a): a is Extract<StagingAction, { type: "replace" }> => a.type === "replace")
+      .map((a) => a.replaces_roomplan_identifier)
+      .filter((id): id is string => !!id)
+  );
+  return (scanData.objects ?? []).filter((obj) => !obj.identifier || !replacedIds.has(obj.identifier));
+}
 
 function resolveWallColor(actions: StagingAction[], wall: Transform): string | undefined {
   let color: string | undefined;
@@ -39,6 +54,30 @@ function isFurnitureAction(
   return action.type === "place" || action.type === "replace";
 }
 
+/** Centers/frames the camera on the room's real bounds instead of a hardcoded
+ * position that's wrong for any room not sitting near the world origin - mirrors
+ * ThreeJSRenderer.tsx's own CameraController pattern. */
+const CameraRig: React.FC<{ boundsMin: [number, number, number]; boundsMax: [number, number, number] }> = ({
+  boundsMin,
+  boundsMax,
+}) => {
+  const { camera } = useThree();
+  useEffect(() => {
+    const center = new THREE.Vector3(
+      (boundsMin[0] + boundsMax[0]) / 2,
+      (boundsMin[1] + boundsMax[1]) / 2,
+      (boundsMin[2] + boundsMax[2]) / 2
+    );
+    const span = Math.max(boundsMax[0] - boundsMin[0], boundsMax[2] - boundsMin[2], 3);
+    const offset = new THREE.Vector3(1, 0.9, 1).multiplyScalar(span * 0.6 + 2);
+    camera.position.copy(center).add(offset);
+    camera.up.set(0, 1, 0);
+    camera.lookAt(center);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [camera, ...boundsMin, ...boundsMax]);
+  return null;
+};
+
 /**
  * Composes the staged scene live from data instead of loading one exported 3D
  * file: room shell (same rendering as the "Plan" tab), a floor plane textured per
@@ -60,6 +99,7 @@ export const StagedSceneRenderer: React.FC<{
   const room = computeRoomShellInfo(scanData);
   const floorMaterial = findFloorMaterial(actions);
   const furnitureActions = actions.filter(isFurnitureAction);
+  const fallbackObjects = untouchedObjects(scanData, actions);
 
   const totalAsync = (floorMaterial ? 1 : 0) + furnitureActions.length;
   const settledCount = useRef(0);
@@ -82,12 +122,20 @@ export const StagedSceneRenderer: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const roomCenter: [number, number, number] = [
+    (room.bounds_min[0] + room.bounds_max[0]) / 2,
+    (room.bounds_min[1] + room.bounds_max[1]) / 2,
+    (room.bounds_min[2] + room.bounds_max[2]) / 2,
+  ];
+
   return (
     <div className="w-full h-full">
-      <Canvas camera={{ position: [10, 10, 10], fov: 50 }}>
+      <Canvas shadows camera={{ position: [10, 10, 10], fov: 50 }}>
+        <CameraRig boundsMin={room.bounds_min} boundsMax={room.bounds_max} />
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
         <pointLight position={[-10, -10, -5]} intensity={0.3} />
+        <Environment preset="apartment" />
 
         <RoomShell
           scanData={scanData}
@@ -126,7 +174,11 @@ export const StagedSceneRenderer: React.FC<{
           </LoadErrorBoundary>
         ))}
 
-        <OrbitControls enablePan enableZoom enableRotate target={[0, 0, 0]} />
+        {fallbackObjects.map((obj, i) => (
+          <ScannedObjectFallback key={`fallback-${obj.identifier ?? i}`} transform={obj} is3D />
+        ))}
+
+        <OrbitControls enablePan enableZoom enableRotate target={roomCenter} />
       </Canvas>
     </div>
   );

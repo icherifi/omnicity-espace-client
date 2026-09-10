@@ -34,6 +34,12 @@ export const FurnitureModel: React.FC<{
 
   const { instance, adjustedPosition } = useMemo(() => {
     const clone = scene.clone(true);
+    clone.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
     const box = new THREE.Box3().setFromObject(clone);
     const yOffset = box.isEmpty() ? 0 : -box.min.y;
     return {

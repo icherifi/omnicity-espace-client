@@ -5,11 +5,19 @@ export interface Transform {
   transform: number[];
   dimensions: number[];
   identifier?: string;
+  parentIdentifier?: string | null;
+  /** Local-frame [x, y, 0] points tracing the entity's own flat outline - populated
+   * on floors (a real, often non-rectangular contour), empty on walls/doors/windows. */
+  polygonCorners?: number[][];
+  /** RoomPlan's category is a single-key record whose key IS the category name
+   * (e.g. `{ "stove": {} }`) - only populated on `objects` entries. */
+  category?: Record<string, unknown>;
 }
 
 export interface Scan {
   name: string;
   walls?: Transform[];
+  floors?: Transform[];
   doors?: Transform[];
   openings?: Transform[];
   windows?: Transform[];
