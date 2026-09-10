@@ -7,17 +7,24 @@ import { startStaging, getStagingState, type ScanStagingState } from "@/utils/ha
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Loader2 } from "lucide-react";
-import USDZViewer from "./USDZViewer";
+import { StagedSceneRenderer } from "@/components/scans/StagedSceneRenderer";
+import { Scan } from "@/components/scans/useTransform";
 
 const POLL_INTERVAL_MS = 8000;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:6300";
 
-interface RawScan extends ScanStagingState {
-  usdz_path: string | null;
+function parseScanData(serialized: ScanStagingState["serialized"]): Scan | null {
+  if (!serialized) return null;
+  try {
+    return (typeof serialized === "string" ? JSON.parse(serialized) : serialized) as unknown as Scan;
+  } catch {
+    return null;
+  }
 }
 
 export default function AIStagingPanel() {
   const { currentProjectDisplayed } = useDashboardContext();
-  const [scan, setScan] = useState<RawScan | null>(null);
+  const [scan, setScan] = useState<ScanStagingState | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -82,19 +89,20 @@ export default function AIStagingPanel() {
     );
   }
 
-  if (!scan || !scan.usdz_path) {
+  if (!scan || !scan.serialized) {
     return (
       <Card className="p-8 text-center">
         <Sparkles className="h-12 w-12 mx-auto text-gray-400 mb-4" />
         <h3 className="text-lg font-semibold mb-2">Aucun scan disponible</h3>
         <p className="text-gray-600 dark:text-gray-400">
-          Un scan 3D (USDZ) est nécessaire pour lancer l'aménagement automatique.
+          Un scan 3D est nécessaire pour lancer l'aménagement automatique.
         </p>
       </Card>
     );
   }
 
   const status = scan.staging_status;
+  const scanData = status === "done" ? parseScanData(scan.serialized) : null;
 
   return (
     <div className="h-full flex flex-col gap-4 p-4">
@@ -130,7 +138,7 @@ export default function AIStagingPanel() {
         </Card>
       )}
 
-      {status === "done" && scan.staged_usdz_path && (
+      {status === "done" && scanData && (
         <div className="h-full flex flex-col gap-3">
           {scan.staging_summary?.notes && (
             <Card>
@@ -140,10 +148,10 @@ export default function AIStagingPanel() {
             </Card>
           )}
           <div className="flex-1 relative min-h-[400px]">
-            <USDZViewer
-              documentPath={scan.staged_usdz_path}
-              documentName="Aménagement proposé"
-              showZoomButtons
+            <StagedSceneRenderer
+              scanData={scanData}
+              actions={scan.staging_summary?.actions ?? []}
+              apiBaseUrl={API_BASE_URL}
             />
           </div>
           <div className="flex justify-end">

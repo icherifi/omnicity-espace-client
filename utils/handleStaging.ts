@@ -1,11 +1,8 @@
 import { getToken } from "./supabase/client";
+import { StagingAction } from "@/components/scans/stagingTypes";
 
 export type StagingStatus = "none" | "pending" | "processing" | "done" | "error";
-
-export interface StagingAction {
-  type: "place" | "replace" | "wall_color" | "floor_material";
-  [key: string]: unknown;
-}
+export type { StagingAction };
 
 export interface StagingSummary {
   actions: StagingAction[];
@@ -17,9 +14,12 @@ export interface StagingSummary {
 export interface ScanStagingState {
   id: number;
   staging_status: StagingStatus;
-  staged_usdz_path: string | null;
   staging_summary: StagingSummary | null;
   staged_at: string | null;
+  /** Raw RoomPlan JSON - jsonb column, comes back either already-parsed or as a
+   * string depending on the query path, same as elsewhere in this codebase
+   * (see threeJSUtils.fetchScanData). Parse defensively either way. */
+  serialized: string | Record<string, unknown> | null;
 }
 
 /** POST /api/scans/:id/stage — kicks off automated staging, returns immediately (status becomes "processing"). */
