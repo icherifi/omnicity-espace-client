@@ -12,6 +12,7 @@ import { LoadErrorBoundary } from "./LoadErrorBoundary";
 import { computeRoomShellInfo } from "./roomBounds";
 import { Scan, Transform } from "./useTransform";
 import { StagingAction } from "./stagingTypes";
+import { CameraSpec } from "./stagingCameraViews";
 
 /** Original scan objects a staging run never replaced (no IKEA equivalent - built-in
  * kitchen/bathroom fixtures) - anything NOT referenced by a replace action's
@@ -54,15 +55,33 @@ function isFurnitureAction(
   return action.type === "place" || action.type === "replace";
 }
 
-/** Centers/frames the camera on the room's real bounds instead of a hardcoded
- * position that's wrong for any room not sitting near the world origin - mirrors
- * ThreeJSRenderer.tsx's own CameraController pattern. */
-const CameraRig: React.FC<{ boundsMin: [number, number, number]; boundsMax: [number, number, number] }> = ({
-  boundsMin,
-  boundsMax,
-}) => {
+/**
+ * Positions the camera. With an explicit `camera` spec (the multi-view headless
+ * render grid), uses it exactly. Otherwise centers/frames on the room's real
+ * bounds instead of a hardcoded position that's wrong for any room not sitting
+ * near the world origin - mirrors ThreeJSRenderer.tsx's own CameraController
+ * pattern. This is the ONLY thing an explicit `camera` prop changes - every other
+ * call site (the real end-user viewer included) never passes one and is
+ * unaffected.
+ */
+const CameraRig: React.FC<{
+  boundsMin: [number, number, number];
+  boundsMax: [number, number, number];
+  camera?: CameraSpec;
+}> = ({ boundsMin, boundsMax, camera: spec }) => {
   const { camera } = useThree();
   useEffect(() => {
+    if (spec) {
+      camera.position.set(...spec.position);
+      camera.up.set(...(spec.up ?? [0, 1, 0]));
+      const perspectiveCamera = camera as THREE.PerspectiveCamera;
+      if (spec.fov !== undefined && perspectiveCamera.isPerspectiveCamera) {
+        perspectiveCamera.fov = spec.fov;
+        perspectiveCamera.updateProjectionMatrix();
+      }
+      camera.lookAt(new THREE.Vector3(...(spec.target ?? [0, 0, 0])));
+      return;
+    }
     const center = new THREE.Vector3(
       (boundsMin[0] + boundsMax[0]) / 2,
       (boundsMin[1] + boundsMax[1]) / 2,
@@ -74,7 +93,7 @@ const CameraRig: React.FC<{ boundsMin: [number, number, number]; boundsMax: [num
     camera.up.set(0, 1, 0);
     camera.lookAt(center);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [camera, ...boundsMin, ...boundsMax]);
+  }, [camera, spec, ...boundsMin, ...boundsMax]);
   return null;
 };
 
@@ -95,7 +114,11 @@ export const StagedSceneRenderer: React.FC<{
   actions: StagingAction[];
   apiBaseUrl: string;
   onReady?: () => void;
-}> = ({ scanData, actions, apiBaseUrl, onReady }) => {
+  /** Overrides the default bounds-framed camera - used by the headless multi-view
+   * self-check render. Omitted (the real end-user viewer's call site) = unchanged
+   * default framing. */
+  camera?: CameraSpec;
+}> = ({ scanData, actions, apiBaseUrl, onReady, camera }) => {
   const room = computeRoomShellInfo(scanData);
   const floorMaterial = findFloorMaterial(actions);
   const furnitureActions = actions.filter(isFurnitureAction);
@@ -122,7 +145,7 @@ export const StagedSceneRenderer: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const roomCenter: [number, number, number] = [
+  const roomCenter: [number, number, number] = camera?.target ?? [
     (room.bounds_min[0] + room.bounds_max[0]) / 2,
     (room.bounds_min[1] + room.bounds_max[1]) / 2,
     (room.bounds_min[2] + room.bounds_max[2]) / 2,
@@ -131,7 +154,7 @@ export const StagedSceneRenderer: React.FC<{
   return (
     <div className="w-full h-full">
       <Canvas shadows camera={{ position: [10, 10, 10], fov: 50 }}>
-        <CameraRig boundsMin={room.bounds_min} boundsMax={room.bounds_max} />
+        <CameraRig boundsMin={room.bounds_min} boundsMax={room.bounds_max} camera={camera} />
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
         <pointLight position={[-10, -10, -5]} intensity={0.3} />

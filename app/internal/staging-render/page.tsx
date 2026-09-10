@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StagedSceneRenderer } from "@/components/scans/StagedSceneRenderer";
 import { Scan } from "@/components/scans/useTransform";
 import { StagingAction } from "@/components/scans/stagingTypes";
+import { computeViews } from "@/components/scans/stagingCameraViews";
 
 interface RenderPayload {
   scanData: Scan;
@@ -33,16 +34,40 @@ export default function StagingRenderPage() {
     return <div>loading payload...</div>;
   }
 
+  return <StagingRenderGrid payload={payload} />;
+}
+
+/** One StagedSceneRenderer mount per view (top-down + perspective), laid out in a
+ * grid Playwright screenshots per-element - simpler and more reliable than
+ * re-navigating or re-screenshotting the same Canvas N times. Generalizes the
+ * single-flag readiness gate to "every view's onReady fired". */
+function StagingRenderGrid({ payload }: { payload: RenderPayload }) {
+  const views = computeViews(payload.scanData);
+  const readyCount = useRef(0);
+  const [allReady, setAllReady] = useState(false);
+
+  const markViewReady = () => {
+    readyCount.current += 1;
+    if (readyCount.current >= views.length) setAllReady(true);
+  };
+
+  useEffect(() => {
+    if (allReady) document.documentElement.dataset.renderReady = "true";
+  }, [allReady]);
+
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <StagedSceneRenderer
-        scanData={payload.scanData}
-        actions={payload.actions}
-        apiBaseUrl={API_BASE_URL}
-        onReady={() => {
-          document.documentElement.dataset.renderReady = "true";
-        }}
-      />
+    <div style={{ width: "100vw", height: "100vh", display: "grid", gridTemplateColumns: `repeat(${views.length}, 1fr)` }}>
+      {views.map((view) => (
+        <div key={view.key} data-view={view.key} style={{ width: "100%", height: "100%" }}>
+          <StagedSceneRenderer
+            scanData={payload.scanData}
+            actions={payload.actions}
+            apiBaseUrl={API_BASE_URL}
+            camera={view.camera}
+            onReady={markViewReady}
+          />
+        </div>
+      ))}
     </div>
   );
 }
