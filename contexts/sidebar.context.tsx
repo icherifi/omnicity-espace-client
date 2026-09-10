@@ -49,7 +49,7 @@ export default function SidebarContextProvider({ children }: useCustomHook) {
       return;
     }
 
-    const projMatch = pathname.match(/^\/project\/\d+(?:\/(\w+))?$/);
+    const projMatch = pathname.match(/^\/project\/[0-9a-fA-F-]{36}(?:\/(\w+))?$/);
     if (projMatch) {
       const sub = projMatch[1];
       switch (sub) {
