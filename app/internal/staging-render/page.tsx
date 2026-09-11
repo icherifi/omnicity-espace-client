@@ -9,6 +9,9 @@ import { computeViews } from "@/components/scans/stagingCameraViews";
 interface RenderPayload {
   scanData: Scan;
   actions: StagingAction[];
+  /** Which named views (see stagingCameraViews.ts) to actually mount and
+   * screenshot - all of them when omitted. */
+  views?: string[];
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:6300";
@@ -37,12 +40,14 @@ export default function StagingRenderPage() {
   return <StagingRenderGrid payload={payload} />;
 }
 
-/** One StagedSceneRenderer mount per view (top-down + perspective), laid out in a
- * grid Playwright screenshots per-element - simpler and more reliable than
- * re-navigating or re-screenshotting the same Canvas N times. Generalizes the
- * single-flag readiness gate to "every view's onReady fired". */
+/** One StagedSceneRenderer mount per requested view (of the named views
+ * computeViews defines - top-down, perspective), laid out in a grid Playwright
+ * screenshots per-element - simpler and more reliable than re-navigating or
+ * re-screenshotting the same Canvas N times. Generalizes the single-flag
+ * readiness gate to "every requested view's onReady fired". */
 function StagingRenderGrid({ payload }: { payload: RenderPayload }) {
-  const views = computeViews(payload.scanData);
+  const allViews = computeViews(payload.scanData);
+  const views = payload.views ? allViews.filter((v) => payload.views!.includes(v.key)) : allViews;
   const readyCount = useRef(0);
   const [allReady, setAllReady] = useState(false);
 
