@@ -12,6 +12,9 @@ interface RenderPayload {
   /** Which named views (see stagingCameraViews.ts) to actually mount and
    * screenshot - all of them when omitted. */
   views?: string[];
+  /** RoomPlan identifiers of objects programmatically stripped before Claude
+   * ever saw the scan - see StagedSceneRenderer's strippedRoomplanIdentifiers. */
+  strippedRoomplanIdentifiers?: string[];
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:6300";
@@ -70,6 +73,7 @@ function StagingRenderGrid({ payload }: { payload: RenderPayload }) {
             apiBaseUrl={API_BASE_URL}
             camera={view.camera}
             onReady={markViewReady}
+            strippedRoomplanIdentifiers={payload.strippedRoomplanIdentifiers}
           />
         </div>
       ))}

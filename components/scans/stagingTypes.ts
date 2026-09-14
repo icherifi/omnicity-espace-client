@@ -22,14 +22,15 @@ export interface FloorMaterialInfo {
 }
 
 export type StagingAction =
-  | { type: "place"; item_no: string; position: [number, number, number]; rotation_y_degrees: number }
   | {
-      type: "replace";
-      object_name: string;
-      replaces_roomplan_identifier?: string;
+      type: "place";
       item_no: string;
-      position?: [number, number, number];
-      rotation_y_degrees?: number;
+      /** "local" for a non-IKEA model (see localModelService.ts on the backend) -
+       * tells FurnitureModel which backend route to fetch the GLB from. Omitted =
+       * "ikea", the original and still most common case. */
+      model_source?: "ikea" | "local";
+      position: [number, number, number];
+      rotation_y_degrees: number;
     }
   | { type: "wall_color"; wall_object_names: string[] | "all"; material_id: string; hex_color: string }
   | ({ type: "floor_material"; material_id: string } & FloorMaterialInfo);

@@ -5,10 +5,11 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 /**
- * One placed/replaced IKEA item. Fetches (and lets drei cache, keyed by URL) the
- * GLB from the backend's proxy route. `scene.clone(true)` is required, not
- * optional: useGLTF returns the SAME cached Object3D for a repeated URL (e.g. the
- * same chair used four times), and an Object3D can only live in one place in the
+ * One placed item, IKEA or a locally-onboarded model. Fetches (and lets drei
+ * cache, keyed by URL) the GLB from the backend's IKEA proxy or local-model
+ * route, per `modelSource`. `scene.clone(true)` is required, not optional:
+ * useGLTF returns the SAME cached Object3D for a repeated URL (e.g. the same
+ * chair used four times), and an Object3D can only live in one place in the
  * scene graph at once - reusing it directly would silently move the single
  * instance around instead of rendering multiple copies.
  *
@@ -21,6 +22,10 @@ import * as THREE from "three";
  */
 export const FurnitureModel: React.FC<{
   itemNo: string;
+  /** "local" fetches from this app's own local-model store (a non-IKEA asset,
+   * e.g. a specific TV model) instead of the IKEA catalog proxy - see
+   * localModelService.ts on the backend. Omitted = "ikea". */
+  modelSource?: "ikea" | "local";
   position: [number, number, number];
   rotationYDegrees: number;
   apiBaseUrl: string;
@@ -28,8 +33,9 @@ export const FurnitureModel: React.FC<{
    * already resolved via Suspense) - used by the headless render page to know
    * when every async piece of the scene is done, not just this one. */
   onSettled?: () => void;
-}> = ({ itemNo, position, rotationYDegrees, apiBaseUrl, onSettled }) => {
-  const url = `${apiBaseUrl}/api/ikea/model/${itemNo}`;
+}> = ({ itemNo, modelSource, position, rotationYDegrees, apiBaseUrl, onSettled }) => {
+  const url =
+    modelSource === "local" ? `${apiBaseUrl}/api/local-models/model/${itemNo}` : `${apiBaseUrl}/api/ikea/model/${itemNo}`;
   const { scene } = useGLTF(url, "/draco/");
 
   const { instance, adjustedPosition } = useMemo(() => {

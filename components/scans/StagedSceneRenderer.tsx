@@ -14,17 +14,15 @@ import { Scan, Transform } from "./useTransform";
 import { StagingAction } from "./stagingTypes";
 import { CameraSpec } from "./stagingCameraViews";
 
-/** Original scan objects a staging run never replaced (no IKEA equivalent - built-in
- * kitchen/bathroom fixtures) - anything NOT referenced by a replace action's
- * replaces_roomplan_identifier should still render, just not as a real IKEA model. */
-function untouchedObjects(scanData: Scan, actions: StagingAction[]): Transform[] {
-  const replacedIds = new Set(
-    actions
-      .filter((a): a is Extract<StagingAction, { type: "replace" }> => a.type === "replace")
-      .map((a) => a.replaces_roomplan_identifier)
-      .filter((id): id is string => !!id)
-  );
-  return (scanData.objects ?? []).filter((obj) => !obj.identifier || !replacedIds.has(obj.identifier));
+/** Original scan objects that still belong in the render: fixed equipment (no
+ * IKEA equivalent - built-in kitchen/bathroom fixtures, kept as real objects)
+ * MINUS anything a staging run programmatically stripped before Claude ever
+ * saw the scan (see furnitureStrippingService.ts on the backend) - without
+ * this second exclusion, every stripped item would reappear here as a generic
+ * gray box, stacked on top of its manifest replacement. */
+function untouchedObjects(scanData: Scan, strippedRoomplanIdentifiers: string[]): Transform[] {
+  const strippedIds = new Set(strippedRoomplanIdentifiers);
+  return (scanData.objects ?? []).filter((obj) => !obj.identifier || !strippedIds.has(obj.identifier));
 }
 
 function resolveWallColor(actions: StagingAction[], wall: Transform): string | undefined {
@@ -49,10 +47,8 @@ function findFloorMaterial(actions: StagingAction[]) {
   return null;
 }
 
-function isFurnitureAction(
-  action: StagingAction
-): action is Extract<StagingAction, { type: "place" | "replace" }> {
-  return action.type === "place" || action.type === "replace";
+function isFurnitureAction(action: StagingAction): action is Extract<StagingAction, { type: "place" }> {
+  return action.type === "place";
 }
 
 /**
@@ -118,11 +114,16 @@ export const StagedSceneRenderer: React.FC<{
    * self-check render. Omitted (the real end-user viewer's call site) = unchanged
    * default framing. */
   camera?: CameraSpec;
-}> = ({ scanData, actions, apiBaseUrl, onReady, camera }) => {
+  /** RoomPlan identifiers of objects a staging run programmatically stripped
+   * before Claude ever saw the scan - see StagingSummary.stripped_roomplan_identifiers.
+   * Omitted (a scan with no staging run yet, or an older persisted summary) =
+   * nothing suppressed, matching the pre-manifest behavior. */
+  strippedRoomplanIdentifiers?: string[];
+}> = ({ scanData, actions, apiBaseUrl, onReady, camera, strippedRoomplanIdentifiers }) => {
   const room = computeRoomShellInfo(scanData);
   const floorMaterial = findFloorMaterial(actions);
   const furnitureActions = actions.filter(isFurnitureAction);
-  const fallbackObjects = untouchedObjects(scanData, actions);
+  const fallbackObjects = untouchedObjects(scanData, strippedRoomplanIdentifiers ?? []);
 
   const totalAsync = (floorMaterial ? 1 : 0) + furnitureActions.length;
   const settledCount = useRef(0);
@@ -188,6 +189,7 @@ export const StagedSceneRenderer: React.FC<{
             <Suspense fallback={null}>
               <FurnitureModel
                 itemNo={action.item_no}
+                modelSource={action.model_source}
                 position={action.position ?? [0, 0, 0]}
                 rotationYDegrees={action.rotation_y_degrees ?? 0}
                 apiBaseUrl={apiBaseUrl}

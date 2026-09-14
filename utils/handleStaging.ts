@@ -9,6 +9,11 @@ export interface StagingSummary {
   notes: string;
   preview_render_path: string | null;
   errors: string[];
+  /** RoomPlan identifiers of original scanned objects programmatically
+   * stripped before Claude ever saw the scan - StagedSceneRenderer must
+   * suppress these exactly like a replaced object, or every stripped item
+   * reappears as a generic gray box. */
+  stripped_roomplan_identifiers: string[];
 }
 
 export interface ScanStagingState {

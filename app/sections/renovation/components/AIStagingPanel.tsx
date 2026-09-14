@@ -152,6 +152,7 @@ export default function AIStagingPanel() {
               scanData={scanData}
               actions={scan.staging_summary?.actions ?? []}
               apiBaseUrl={API_BASE_URL}
+              strippedRoomplanIdentifiers={scan.staging_summary?.stripped_roomplan_identifiers ?? []}
             />
           </div>
           <div className="flex justify-end">
