@@ -63,7 +63,10 @@ export default function Page() {
       const project = projects.find((p) => p.id === projectId);
       if (project) {
         setCurrentProjectDisplayed(project);
-      } else {
+      } else if (projects.length > 0) {
+        // Only bounce home once the projects list has actually loaded -
+        // on a fresh page load `projects` starts empty while the fetch
+        // is still in flight, and this effect re-runs once it resolves.
         router.push("/");
       }
     }

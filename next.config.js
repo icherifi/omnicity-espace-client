@@ -3,16 +3,6 @@ const nextConfig = {
     images: {
         domains: [new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname],
     },
-    async headers() {
-        return [
-            {
-                source: "/(.*)",
-                headers: [
-                    { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-                ],
-            },
-        ];
-    },
     async rewrites() {
         return [
             {

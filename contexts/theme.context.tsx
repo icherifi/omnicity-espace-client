@@ -38,11 +38,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("theme", theme)
   }, [theme, mounted])
 
-  // Éviter le rendu pendant l'hydratation
-  if (!mounted) {
-    return <div className="light">{children}</div>
-  }
-
+  // The context value must always be provided, even before mount (SSR and the
+  // first client render) - components that call useTheme() during that window
+  // (e.g. LoginBackground, which isn't lazy-loaded) would otherwise throw. Only
+  // the DOM class/localStorage sync above is actually hydration-sensitive, and
+  // that's already separately guarded by the `mounted` check in its own effect.
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}

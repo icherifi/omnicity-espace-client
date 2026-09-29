@@ -1,0 +1,36 @@
+// Frontend copies of the backend's staging types (src/types/staging.types.ts in
+// omnicity-express-server) - two separate deployable projects, kept in sync by hand,
+// matching this codebase's existing convention (RoomPlan Transform/Scan shapes are
+// already independently redeclared per-file rather than shared across the repos).
+
+export interface RoomShellInfo {
+  bounds_min: [number, number, number];
+  bounds_max: [number, number, number];
+  wall_object_names: string[];
+  floor_object_names: string[];
+  ceiling_object_names: string[];
+  /** One polygon (loop of [worldX, worldZ] points) per floors[] entity - RoomPlan's
+   * own real walkable-floor contour, not a derived/approximated one. */
+  floor_polygons: [number, number][][];
+}
+
+export interface FloorMaterialInfo {
+  diffuse_path: string;
+  normal_path: string;
+  roughness_path: string;
+  tile_size_cm: [number, number];
+}
+
+export type StagingAction =
+  | {
+      type: "place";
+      item_no: string;
+      /** "local" for a non-IKEA model (see localModelService.ts on the backend) -
+       * tells FurnitureModel which backend route to fetch the GLB from. Omitted =
+       * "ikea", the original and still most common case. */
+      model_source?: "ikea" | "local";
+      position: [number, number, number];
+      rotation_y_degrees: number;
+    }
+  | { type: "wall_color"; wall_object_names: string[] | "all"; material_id: string; hex_color: string }
+  | ({ type: "floor_material"; material_id: string } & FloorMaterialInfo);
