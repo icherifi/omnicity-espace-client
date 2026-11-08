@@ -37,7 +37,7 @@
 ## Configuration API
 
 - **Endpoint** : `https://app.go-kelvin.com/api/v2/dpes`
-- **Token** : `team-api-key-private-ajQB2M5iS7vPEguwNoZj6ncg`
+- **Token** : variable d’environnement `KELVIN_API_TOKEN` (voir `.env.example`)
 - **Format réponse** : Tableau d'objets DPE avec informations détaillées
 
 ## Gestion des erreurs

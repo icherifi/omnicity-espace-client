@@ -11,9 +11,8 @@ interface UseKelvinMapProps {
 }
 
 // Configuration pour la librairie kelvin
-const KELVIN_API_KEY = "team-api-key-public-BMaWJajnNFT8Kv2KFDanqGdL";
-const MAPBOX_ACCESS_TOKEN =
-  "pk.eyJ1IjoiaWNoZXJpZmkiLCJhIjoiY21rdmQ3bTk1MDVtZjNrcTcwZjg1cGRrOSJ9.JK0t10lVF0maEabiIKh-bA";
+const KELVIN_API_KEY = process.env.NEXT_PUBLIC_KELVIN_API_KEY ?? "";
+const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
 declare global {
   interface Window {
