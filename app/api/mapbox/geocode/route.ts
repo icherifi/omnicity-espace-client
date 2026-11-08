@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const MAPBOX_ACCESS_TOKEN =
-  "pk.eyJ1IjoiaWNoZXJpZmkiLCJhIjoiY21rdmQ3bTk1MDVtZjNrcTcwZjg1cGRrOSJ9.JK0t10lVF0maEabiIKh-bA";
+const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
 export async function GET(request: NextRequest) {
   try {

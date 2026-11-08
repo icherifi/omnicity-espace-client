@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const KELVIN_API_BASE_URL = "https://app.go-kelvin.com/api/v2";
-const KELVIN_API_TOKEN = "team-api-key-private-ajQB2M5iS7vPEguwNoZj6ncg";
+const KELVIN_API_TOKEN = process.env.KELVIN_API_TOKEN ?? "";
 
 export async function GET(request: NextRequest) {
   try {
