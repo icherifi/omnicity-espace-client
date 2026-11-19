@@ -1,5 +1,6 @@
 import { getToken } from "./supabase/client";
 import { StagingAction } from "@/components/scans/stagingTypes";
+import { apiFetch } from "@/utils/apiFetch";
 
 export type StagingStatus = "none" | "pending" | "processing" | "done" | "error";
 export type { StagingAction };
@@ -35,7 +36,7 @@ export const startStaging = async (scanId: number): Promise<boolean> => {
     return false;
   }
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/scans/${scanId}/stage`,
       {
         method: "POST",
@@ -60,7 +61,7 @@ export const getStagingState = async (scanId: number): Promise<ScanStagingState 
     return null;
   }
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/scans/${scanId}/stage`,
       {
         method: "GET",

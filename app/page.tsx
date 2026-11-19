@@ -2,7 +2,8 @@
 import * as React from "react";
 import { Progress } from "@/components/ui/progress";
 import { useRouter, usePathname } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
+import { useAccount } from "@/contexts/account.context";
+import PendingActivation from "@/components/PendingActivation";
 import { useSidebarContext } from "@/contexts/sidebar.context";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/Sidebar";
@@ -27,7 +28,8 @@ const sectionsMap = {
 };
 
 export default function Page() {
-  const [loading, setLoading] = React.useState(true);
+  const { status } = useAccount();
+  const loading = status !== "active";
   const { section, showEnergySummary, toggleEnergySummary } =
     useSidebarContext();
   const { setCurrentProjectDisplayed } = useDashboardContext();
@@ -36,19 +38,10 @@ export default function Page() {
   const pathname = usePathname();
 
   React.useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { user },
-      } = await createClient().auth.getUser();
-      if (!user) {
-        router.push("/login");
-      } else {
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-  }, [router]);
+    if (status === "signedOut") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   React.useEffect(() => {
     if (loading) return;
@@ -96,6 +89,10 @@ export default function Page() {
       )
     );
   };
+
+  if (status === "pending") {
+    return <PendingActivation />;
+  }
 
   if (loading) {
     return (

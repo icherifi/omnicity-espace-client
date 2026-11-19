@@ -17,6 +17,7 @@ import {
   generateMockResultsByAddress,
   generateMockResultsByDpe,
 } from "@/utils/mockData";
+import { apiFetch } from "@/utils/apiFetch";
 
 // Fonction utilitaire pour générer un UUID v4 valide
 function generateUUID(): string {
@@ -70,7 +71,7 @@ export class ProjectService {
         options.addressResults || options.quizResults || mockEnergyResults;
 
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
           {
             method: "POST",
@@ -129,7 +130,7 @@ export class ProjectService {
 
     // Sauvegarder les résultats énergétiques mock
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
         {
           method: "POST",
@@ -149,7 +150,7 @@ export class ProjectService {
       console.error("Error saving DPE energy data:", error);
     }
 
-    await saveEnergyChoice(selectedStrategy, selectedBouquet);
+    await saveEnergyChoice(selectedStrategy, selectedBouquet, projectId);
 
     return projectId;
   }
@@ -188,7 +189,7 @@ export class ProjectService {
         options.addressResults || options.quizResults || mockEnergyResults;
 
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
           {
             method: "POST",
@@ -247,7 +248,7 @@ export class ProjectService {
 
     // Sauvegarder les résultats énergétiques mock
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
         {
           method: "POST",
@@ -267,7 +268,7 @@ export class ProjectService {
       console.error("Error saving DPE energy data:", error);
     }
 
-    await saveEnergyChoice(selectedStrategy, selectedBouquet);
+    await saveEnergyChoice(selectedStrategy, selectedBouquet, projectId);
 
     return projectId;
   }
@@ -290,7 +291,7 @@ export class ProjectService {
     };
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/energy`,
         {
           method: "POST",

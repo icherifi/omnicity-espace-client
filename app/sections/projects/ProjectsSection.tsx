@@ -18,6 +18,8 @@ import { createClient } from "@/utils/supabase/client";
 import ProjectsTable from "@/components/projects/ProjectsTable";
 import { useProjectsContext } from "@/contexts/projects.context";
 import NewProjectDialog from "@/components/dialogs/NewProjectDialog";
+import { useSignOut } from "@/hooks/useSignOut";
+import CurrentUserLabel from "@/components/CurrentUserLabel";
 
 export default function ProjectsSection() {
   const router = useRouter();
@@ -33,16 +35,13 @@ export default function ProjectsSection() {
     }
   }, []);
 
-  const handleLogout = async () => {
-    await createClient().auth.signOut();
-    router.push("/login"); 
-  };
+  const handleLogout = useSignOut();
 
   return (
     <>
       <div className="flex items-center flex-row justify-end gap-4 mb-4">
         <p className="text-gray-900 dark:text-white text-center text-[20px] font-bold leading-[26.4px]">
-          Omnicity Admin
+          <CurrentUserLabel />
         </p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

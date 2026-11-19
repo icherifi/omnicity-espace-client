@@ -13,15 +13,13 @@ import {
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useTheme } from "@/contexts/theme.context";
+import { useSignOut } from "@/hooks/useSignOut";
 
 export default function MainHeader() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
-  const handleLogout = async () => {
-    await createClient().auth.signOut();
-    router.push("/login"); // Redirect to login page after logging out
-  };
+  const handleLogout = useSignOut();
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">

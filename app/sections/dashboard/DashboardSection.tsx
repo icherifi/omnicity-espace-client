@@ -33,6 +33,8 @@ import ProjectSummaryCard from "./components/ProjectSummaryCard";
 import { useAppRouter } from "@/hooks/useAppRouter";
 import Plan from "@/components/scans/Plan";
 import { Card } from "@/components/ui/card";
+import { useSignOut } from "@/hooks/useSignOut";
+import CurrentUserLabel from "@/components/CurrentUserLabel";
 
 export default function DashboardSection({
   onToggleSummary,
@@ -46,10 +48,7 @@ export default function DashboardSection({
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
-  const handleLogout = async () => {
-    await createClient().auth.signOut();
-    router.push("/login");
-  };
+  const handleLogout = useSignOut();
 
   if (projects.length === 0) {
     return (
@@ -105,7 +104,7 @@ export default function DashboardSection({
           Récapitulatif <FileText className="ml-2 w-4 h-4" />
         </Button>
         <p className="text-gray-900 dark:text-white text-center text-[20px] font-bold leading-[26.4px]">
-          Omnicity Admin
+          <CurrentUserLabel />
         </p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

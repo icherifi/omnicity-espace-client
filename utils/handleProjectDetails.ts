@@ -1,12 +1,13 @@
 import { Dispatch, SetStateAction } from "react";
 import { getToken } from "./supabase/client";
+import { apiFetch } from "@/utils/apiFetch";
 
 export const deleteProject = async (
   projectId: string,
   token: string,
 ): Promise<boolean> => {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
       {
         method: "DELETE",
@@ -31,7 +32,7 @@ export const archiveProject = async (
   token: string,
 ): Promise<boolean> => {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
       {
         method: "PUT",
@@ -59,7 +60,7 @@ export const getScans = async (projectId: string): Promise<any[] | null> => {
     return null;
   }
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/scans`,
       {
         method: "GET",
@@ -92,7 +93,7 @@ export const handleImageChange = async (
     formData.append("image", file);
     const imageId = Math.random().toString(36).substring(2, 15);
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/images/${imageId}`,
       {
         method: "POST",
@@ -124,7 +125,7 @@ export const updateProjectImage = async (
   token: string,
 ) => {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/imageFullPath`,
       {
         method: "PUT",
@@ -157,7 +158,7 @@ export const updateProject = async (
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
       {
         method: "PUT",
@@ -185,7 +186,7 @@ export const handleNewProject = async (
   token: string,
 ): Promise<{ message: string; data: { id: string }[] }> => {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
       {
         method: "POST",
@@ -220,7 +221,7 @@ export const fetchProjects = async (
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
       {
         method: "GET",

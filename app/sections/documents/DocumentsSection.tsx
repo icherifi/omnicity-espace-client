@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/contexts/theme.context";
 import ProjectRecapDialog from "@/components/dialogs/ProjectSummaryDialog/ProjectSummaryDialog";
+import { useSignOut } from "@/hooks/useSignOut";
+import CurrentUserLabel from "@/components/CurrentUserLabel";
 
 export default function DocumentsSection() {
   const { currentProjectDisplayed } = useDashboardContext();
@@ -63,10 +65,7 @@ export default function DocumentsSection() {
     );
   };
 
-  const handleLogout = async () => {
-    await createClient().auth.signOut();
-    router.push("/login"); 
-  };
+  const handleLogout = useSignOut();
 
   const supabase = createClient();
 
@@ -227,7 +226,7 @@ export default function DocumentsSection() {
       <div className="flex items-center flex-row justify-end gap-4 mb-4">
         <Button variant="outline" size={"lg"} className="w-fit rounded-[12px]" onClick={() => setOpenRecap(true)}>Récapitulatif <FileText className="ml-2 w-4 h-4" /></Button>
         <p className="text-gray-900 dark:text-white text-center text-[20px] font-bold leading-[26.4px]">
-          Omnicity Admin
+          <CurrentUserLabel />
         </p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

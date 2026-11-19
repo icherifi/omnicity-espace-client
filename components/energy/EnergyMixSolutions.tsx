@@ -177,6 +177,7 @@ export function EnergyMixSolutions({
       const energyChoiceRes = await saveEnergyChoice(
         selectedStrategy,
         selectedEnergyMix,
+        sessionId,
       );
       console.log("✅ Bouquet sauvegardé avec succès");
 

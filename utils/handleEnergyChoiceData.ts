@@ -3,15 +3,16 @@ import {
   KelvinInitialStateResponse,
   KelvinProjectedStateResponse,
 } from "@/types/simulation.types";
+import { apiFetch } from "@/utils/apiFetch";
 
-export async function saveEnergyChoice(strategy: string, bouquet: any) {
+export async function saveEnergyChoice(strategy: string, bouquet: any, projectId: string) {
   const token = await getToken();
   if (!token) {
     console.error("Utilisateur non authentifié");
     return null;
   }
 
-  const res = await fetch(
+  const res = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/choice`,
     {
       method: "POST",
@@ -20,6 +21,7 @@ export async function saveEnergyChoice(strategy: string, bouquet: any) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        projectId,
         strategy,
         bouquet,
       }),
@@ -46,7 +48,7 @@ export async function saveEnergyChoiceWithKelvinData(
     return null;
   }
 
-  const res = await fetch(
+  const res = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/energy/choice`,
     {
       method: "POST",

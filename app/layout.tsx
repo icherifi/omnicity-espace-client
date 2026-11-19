@@ -8,6 +8,7 @@ import DashboardContextProvider from "@/contexts/dashboard.context";
 import DesignPageContextProvider from "@/contexts/designPage.context";
 import { UnityContextProvider } from "./design/components/unityContext";
 import ProjectsContextProvider from "@/contexts/projects.context";
+import AccountContextProvider from "@/contexts/account.context";
 import SidebarContextProvider from "@/contexts/sidebar.context";
 import { bricolage } from "./fonts";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <AccountContextProvider>
     <ProjectsContextProvider>
       <NewProjectStandardFormContextProvider>
         <SimulationResultsContextProvider>
@@ -49,5 +51,6 @@ export default function RootLayout({
         </SimulationResultsContextProvider>
       </NewProjectStandardFormContextProvider>
     </ProjectsContextProvider>
+    </AccountContextProvider>
   );
 }

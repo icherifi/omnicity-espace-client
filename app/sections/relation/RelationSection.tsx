@@ -27,6 +27,8 @@ import { useTheme } from "@/contexts/theme.context";
 import { createClient } from "@/utils/supabase/client";
 import ProjectRecapDialog from "@/components/dialogs/ProjectSummaryDialog/ProjectSummaryDialog";
 import { useDashboardContext } from "@/contexts/dashboard.context";
+import { useSignOut } from "@/hooks/useSignOut";
+import CurrentUserLabel from "@/components/CurrentUserLabel";
 
 export default function RelationSection() {
   const [tab, setTab] = useState("professionals");
@@ -53,10 +55,7 @@ export default function RelationSection() {
   const { theme, setTheme } = useTheme();
   const { currentProjectDisplayed } = useDashboardContext();
 
-  const handleLogout = async () => {
-    await createClient().auth.signOut();
-    router.push("/login"); 
-  };
+  const handleLogout = useSignOut();
 
   const handleLoadSearchResults = async (query: string, cursor: string | null, append = false) => {
     await loadSearchResults(
@@ -176,7 +175,7 @@ export default function RelationSection() {
           <div className="flex items-center flex-row justify-end gap-4 mb-4">
             <Button variant="outline" size={"lg"} className="w-fit rounded-[12px]" onClick={() => setOpenRecap(true)}>Récapitulatif <FileText className="ml-2 w-4 h-4" /></Button>
             <p className="text-gray-900 dark:text-white text-center text-[20px] font-bold leading-[26.4px]">
-              Omnicity Admin
+              <CurrentUserLabel />
             </p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -254,7 +253,7 @@ export default function RelationSection() {
             <div className="flex items-center flex-row justify-end gap-4 mb-4">
               <Button variant="outline" size={"lg"} className="w-fit rounded-[12px]" onClick={() => setOpenRecap(true)}>Récapitulatif <FileText className="ml-2 w-4 h-4" /></Button>
               <p className="text-gray-900 dark:text-white text-center text-[20px] font-bold leading-[26.4px]">
-                Omnicity Admin
+                <CurrentUserLabel />
               </p>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
